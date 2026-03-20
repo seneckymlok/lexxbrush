@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";

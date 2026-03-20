@@ -2,6 +2,7 @@
 
 import { useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
@@ -53,11 +54,12 @@ export function ProductCard({ product, index }: ProductCardProps) {
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          <img
+          <Image
             src={product.images[0]}
             alt={product.name[locale as Locale]}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-            loading="lazy"
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
 
           {/* Dark overlay on hover */}

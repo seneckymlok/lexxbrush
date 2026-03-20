@@ -84,12 +84,12 @@ export default function CustomOrderPage() {
         }}
       />
 
-      {/* Character art — right side, more visible */}
+      {/* Character art — right side */}
       <img
         src="/characters/typecek2(png).webp"
         alt=""
         aria-hidden="true"
-        className="hidden lg:block absolute right-[-30px] top-[15%] w-[280px] opacity-[0.08] pointer-events-none select-none"
+        className="absolute right-[-12px] bottom-[3%] w-[80px] md:right-[-25px] md:bottom-[8%] md:w-[160px] lg:right-[-30px] lg:top-[15%] lg:bottom-auto lg:w-[280px] opacity-[0.04] md:opacity-[0.06] lg:opacity-[0.08] pointer-events-none select-none transition-none"
         style={{ filter: "invert(1) brightness(1.5) contrast(1.1)" }}
       />
 
@@ -98,7 +98,7 @@ export default function CustomOrderPage() {
         src="/characters/typecek1(png).webp"
         alt=""
         aria-hidden="true"
-        className="hidden xl:block absolute left-[-60px] bottom-[10%] w-[220px] opacity-[0.05] pointer-events-none select-none"
+        className="absolute left-[-10px] top-[6%] w-[70px] md:left-[-30px] md:top-[10%] md:w-[140px] lg:left-[-60px] lg:top-auto lg:bottom-[10%] lg:w-[220px] opacity-[0.03] md:opacity-[0.04] lg:opacity-[0.05] pointer-events-none select-none transition-none"
         style={{ filter: "brightness(1.3) contrast(1.2)", transform: "scaleX(-1)" }}
       />
 

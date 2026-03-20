@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -84,8 +85,8 @@ export default function CartPage() {
                   key={`${item.product.id}-${item.size}`}
                   className="cart-item flex items-center gap-4 md:gap-6 py-6 border-b border-white/5"
                 >
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden bg-concrete-light flex-shrink-0">
-                    <img src={item.product.images[0]} alt={item.product.name[locale as Locale]} className="w-full h-full object-cover" />
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden bg-concrete-light flex-shrink-0 relative">
+                    <Image src={item.product.images[0]} alt={item.product.name[locale as Locale]} fill sizes="96px" className="object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-wide uppercase text-chrome-bright truncate">

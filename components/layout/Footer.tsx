@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export function Footer() {
@@ -22,9 +23,11 @@ export function Footer() {
         <div className="py-12 md:py-16 flex flex-col items-center text-center md:text-left md:flex-row md:items-center md:justify-between gap-8">
           {/* Brand + description */}
           <div className="flex-shrink-0 flex flex-col items-center md:items-start">
-            <img
+            <Image
               src="/logo.png"
               alt="Lexxbrush"
+              width={200}
+              height={112}
               className="h-12 md:h-8 w-auto object-contain mb-3 opacity-80 hover:opacity-100 transition-opacity duration-300"
             />
             <p className="text-text-dim text-xs leading-relaxed max-w-[240px]">

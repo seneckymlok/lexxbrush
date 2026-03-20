@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import type { Product } from "@/lib/products";
 
 export interface CartItem {
@@ -38,6 +38,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("lexxbrush-cart", JSON.stringify(items));
   }, [items]);
 
+  const sprayAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    sprayAudioRef.current = new Audio("/spraycan.wav");
+    sprayAudioRef.current.volume = 0.4;
+  }, []);
+
+  const playSpraySound = useCallback(() => {
+    if (sprayAudioRef.current) {
+      sprayAudioRef.current.currentTime = 0;
+      sprayAudioRef.current.play().catch(() => {});
+    }
+  }, []);
+
   const addItem = useCallback((product: Product, size?: string) => {
     setItems((prev) => {
       const existing = prev.find(
@@ -47,6 +61,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (existing) {
         // One-of-a-kind items can only be added once
         if (product.isOneOfAKind) return prev;
+        playSpraySound();
         return prev.map((item) =>
           item.product.id === product.id && item.size === size
             ? { ...item, quantity: item.quantity + 1 }
@@ -54,9 +69,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
+      playSpraySound();
       return [...prev, { product, size, quantity: 1 }];
     });
-  }, []);
+  }, [playSpraySound]);
 
   const removeItem = useCallback((productId: string, size?: string) => {
     setItems((prev) =>

@@ -94,6 +94,13 @@ export function ProductGrid() {
         aria-hidden="true"
         className="overflow-art overflow-art-left select-none"
       />
+      {/* Character art — right edge */}
+      <img
+        src="/characters/typecek2(png).webp"
+        alt=""
+        aria-hidden="true"
+        className="overflow-art overflow-art-right select-none"
+      />
       {/* Section Header */}
       <div ref={titleRef} className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
         <div>

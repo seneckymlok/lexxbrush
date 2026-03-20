@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -94,11 +95,14 @@ export function HeroSection() {
 
       {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-[1440px] mx-auto px-6 md:px-10 pt-24 md:pt-32 pb-8 md:pb-12">
-        <img
+        <Image
           ref={logoRef}
           data-animate
           src="/logo.png"
-          alt="Lexxbrush"
+          alt="Lexxbrush — Hand-Airbrushed Wearable Art"
+          width={550}
+          height={309}
+          priority
           className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow will-change-transform"
         />
 
@@ -128,12 +132,14 @@ export function HeroSection() {
             <Link
               key={`${product.id}-${i}`}
               href={`/product/${product.id}`}
-              className="flex-shrink-0 w-[140px] md:w-[200px] lg:w-[240px] aspect-square rounded-lg overflow-hidden bg-concrete-light border border-white/5"
+              className="flex-shrink-0 w-[140px] md:w-[200px] lg:w-[240px] aspect-square rounded-lg overflow-hidden bg-concrete-light border border-white/5 relative"
             >
-              <img
+              <Image
                 src={product.images[0]}
                 alt={product.name.en}
-                className="w-full h-full object-cover opacity-90 hover:opacity-100 hover:scale-105 transition-all duration-500"
+                fill
+                sizes="(max-width: 768px) 140px, (max-width: 1024px) 200px, 240px"
+                className="object-cover opacity-90 hover:opacity-100 hover:scale-105 transition-all duration-500"
                 loading={i < 5 ? "eager" : "lazy"}
               />
             </Link>

@@ -26,13 +26,13 @@ export function OverflowArt() {
     [art1Ref.current, art2Ref.current].forEach((el) => {
       if (!el) return;
       gsap.to(el, {
-        yPercent: -15,
+        yPercent: -10,
         ease: "none",
         scrollTrigger: {
           trigger: el,
           start: "top bottom",
           end: "bottom top",
-          scrub: 1.5,
+          scrub: 0.5,
         },
       });
     });
