@@ -242,12 +242,12 @@
     display: block;
   }
 
-  /* Mobile: small, subtle, tucked into corners */
+  /* Mobile: larger, more visible */
   .overflow-art-right {
     right: -20px;
     top: auto;
     bottom: 2%;
-    width: 100px;
+    width: 150px;
     height: auto;
   }
 
@@ -255,7 +255,7 @@
     left: -16px;
     bottom: auto;
     top: 8%;
-    width: 90px;
+    width: 140px;
     height: auto;
   }
 
