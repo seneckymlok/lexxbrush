@@ -37,7 +37,7 @@ export function Footer() {
             />
             <p className="text-text-dim text-xs leading-relaxed max-w-[240px]">
               Hand-airbrushed wearable art.<br />
-              Every piece painted by hand in Prague.
+              Every piece painted entirely by hand.
             </p>
           </div>
 

@@ -38,17 +38,17 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Lexxbrush — Hand-Airbrushed Wearable Art from Prague",
+    default: "Lexxbrush — Hand-Airbrushed Wearable Art",
     template: "%s | Lexxbrush",
   },
   description:
-    "Every piece is unique. Hand-airbrushed streetwear painted in Prague — hoodies, tees, backpacks and custom orders. One-of-a-kind wearable art.",
+    "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand — hoodies, tees, backpacks and custom orders. One-of-a-kind wearable art.",
   keywords: [
     "airbrush",
     "streetwear",
     "handmade",
     "custom clothing",
-    "Prague",
+    "handmade",
     "wearable art",
     "lexxbrush",
     "hand painted",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lexxbrush — Hand-Airbrushed Wearable Art",
     description:
-      "Every piece is unique. Hand-airbrushed streetwear painted by hand in Prague.",
+      "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand.",
     url: baseUrl,
     siteName: "Lexxbrush",
     locale: "en_US",
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lexxbrush — Hand-Airbrushed Wearable Art",
     description:
-      "Every piece is unique. Hand-airbrushed streetwear painted by hand in Prague.",
+      "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand.",
     images: ["/logo.png"],
   },
   alternates: {
@@ -125,10 +125,10 @@ export default function RootLayout({
               name: "Lexxbrush",
               url: baseUrl,
               logo: `${baseUrl}/logo.png`,
-              description: "Hand-airbrushed wearable art from Prague. Every piece is unique.",
+              description: "Hand-airbrushed wearable art, made entirely by hand. Every piece is unique.",
               address: {
                 "@type": "PostalAddress",
-                addressLocality: "Prague",
+                addressLocality: "Europe",
                 addressCountry: "CZ",
               },
               sameAs: ["https://www.instagram.com/lexxbrush"],

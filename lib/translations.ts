@@ -9,7 +9,7 @@ export const translations = {
     },
     hero: {
       tagline: "Hand-Airbrushed Wearable Art",
-      subtitle: "Every piece is unique. Painted by hand in Prague.",
+      subtitle: "Every piece is unique. Painted entirely by hand.",
       cta: "Shop Collection",
     },
     shop: {
@@ -32,7 +32,7 @@ export const translations = {
       details: "Details",
       handPainted: "Hand-airbrushed",
       unique: "Unique piece",
-      madeInPrague: "Made in Prague",
+      madeByHand: "Made by hand",
     },
     custom: {
       title: "Custom Order",
@@ -72,7 +72,7 @@ export const translations = {
     },
     hero: {
       tagline: "Ručne Airbrushované Nositeľné Umenie",
-      subtitle: "Každý kus je unikát. Maľované ručne v Prahe.",
+      subtitle: "Každý kus je unikát. Maľované úplne ručne.",
       cta: "Pozrieť Kolekciu",
     },
     shop: {
@@ -95,7 +95,7 @@ export const translations = {
       details: "Detaily",
       handPainted: "Ručne airbrushované",
       unique: "Unikátny kus",
-      madeInPrague: "Vyrobené v Prahe",
+      madeByHand: "Vyrobené ručne",
     },
     custom: {
       title: "Na Zákazku",
