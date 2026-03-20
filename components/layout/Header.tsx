@@ -71,9 +71,11 @@ export function Header() {
       <nav className="relative max-w-[1440px] mx-auto px-5 md:px-10 flex items-center justify-between h-14 md:h-16">
         {/* Logo */}
         <Link href="/" className="relative group">
-          <img
+          <Image
             src="/logo.png"
             alt="Lexxbrush"
+            width={200}
+            height={112}
             className="h-7 md:h-8 w-auto object-contain transition-all duration-300 group-hover:brightness-125"
           />
         </Link>

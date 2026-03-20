@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Image from "next/image";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { getProducts, getProductsByCategory, categories } from "@/lib/products";
 import type { Product } from "@/lib/products";
@@ -88,17 +89,23 @@ export function ProductGrid() {
   return (
     <section ref={sectionRef} className="concrete-bg max-w-[1440px] mx-auto px-6 md:px-10 py-16 md:py-24 relative overflow-hidden">
       {/* Character art — left edge */}
-      <img
+      <Image
         src="/characters/typecek1(png).webp"
         alt=""
         aria-hidden="true"
+        width={640}
+        height={854}
+        loading="lazy"
         className="overflow-art overflow-art-left select-none"
       />
       {/* Character art — right edge */}
-      <img
+      <Image
         src="/characters/typecek2(png).webp"
         alt=""
         aria-hidden="true"
+        width={640}
+        height={854}
+        loading="lazy"
         className="overflow-art overflow-art-right select-none"
       />
       {/* Section Header */}

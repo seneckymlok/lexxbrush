@@ -103,6 +103,7 @@ export function HeroSection() {
           width={550}
           height={309}
           priority
+          fetchPriority="high"
           className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow will-change-transform"
         />
 

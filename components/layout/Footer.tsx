@@ -10,10 +10,13 @@ export function Footer() {
   return (
     <footer className="relative bg-void border-t border-white/5 mt-12 md:mt-24 overflow-hidden">
       {/* Character art bleeding from right */}
-      <img
+      <Image
         src="/characters/typecek1(png).webp"
         alt=""
         aria-hidden="true"
+        width={640}
+        height={854}
+        loading="lazy"
         className="hidden lg:block absolute right-[-40px] top-1/2 -translate-y-1/2 w-[200px] opacity-[0.06] pointer-events-none select-none"
         style={{ filter: "brightness(1.3) contrast(1.2)" }}
       />
