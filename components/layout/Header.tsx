@@ -77,6 +77,7 @@ export function Header() {
             width={200}
             height={112}
             priority
+            fetchPriority="high"
             sizes="(max-width: 768px) 100px, 120px"
             className="h-7 md:h-8 w-auto object-contain transition-all duration-300 group-hover:brightness-125"
           />
