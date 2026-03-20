@@ -19,6 +19,10 @@ export const metadata: Metadata = {
     "wearable art",
     "lexxbrush",
   ],
+  icons: {
+    icon: "/characters/typecek1(png).webp",
+    apple: "/characters/typecek1(png).webp",
+  },
   openGraph: {
     title: "Lexxbrush — Hand-Airbrushed Wearable Art",
     description: "Every piece is unique. Painted by hand in Prague.",
