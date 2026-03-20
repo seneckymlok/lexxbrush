@@ -1,22 +1,16 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { getProducts } from "@/lib/products";
 import type { Product } from "@/lib/products";
 
-gsap.registerPlugin(ScrollTrigger);
+interface HeroSectionProps {
+  products: Product[];
+}
 
-export function HeroSection() {
-  const [products, setInternalProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    getProducts().then(setInternalProducts);
-  }, []);
+export function HeroSection({ products }: HeroSectionProps) {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
@@ -39,45 +33,55 @@ export function HeroSection() {
       return;
     }
 
-    // 1. Set GSAP initial state (opacity:0) while still hidden
-    gsap.set(logoRef.current!, { opacity: 0, scale: 1.15 });
-    gsap.set(glowRef.current!, { opacity: 0, scale: 0.5 });
-    gsap.set(taglineRef.current!, { opacity: 0, y: 15 });
-    gsap.set(lineRef.current!, { opacity: 0, scaleX: 0 });
-    gsap.set(marqueeRef.current!, { opacity: 0, y: 30 });
+    // Dynamic import GSAP only when needed for animation
+    let cancelled = false;
+    (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      gsap.registerPlugin(ScrollTrigger);
 
-    // 2. NOW remove data-animate — elements become visible but opacity is 0, so no flash
-    els.forEach(el => { if (el) reveal(el); });
+      if (cancelled) return;
 
-    // 3. Animate in
-    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      // 1. Set GSAP initial state (opacity:0) while still hidden
+      gsap.set(logoRef.current!, { opacity: 0, scale: 1.15 });
+      gsap.set(glowRef.current!, { opacity: 0, scale: 0.5 });
+      gsap.set(taglineRef.current!, { opacity: 0, y: 15 });
+      gsap.set(lineRef.current!, { opacity: 0, scaleX: 0 });
+      gsap.set(marqueeRef.current!, { opacity: 0, y: 30 });
 
-    tl.to(logoRef.current, {
-      scale: 1, opacity: 1, duration: 0.8, delay: 0.1,
-    })
-      .to(glowRef.current, { opacity: 1, scale: 1, duration: 1 }, "-=0.6")
-      .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
-      .to(lineRef.current, { opacity: 1, scaleX: 1, transformOrigin: "center center", duration: 0.4 }, "-=0.2")
-      .to(marqueeRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.2");
+      // 2. NOW remove data-animate — elements become visible but opacity is 0, so no flash
+      els.forEach(el => { if (el) reveal(el); });
 
-    // Parallax logo on scroll
-    gsap.fromTo(
-      logoRef.current,
-      { yPercent: 0, scale: 1, opacity: 1 },
-      {
-        yPercent: 20, scale: 0.95, opacity: 0.4, ease: "none",
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top", end: "bottom top", scrub: true,
-        },
-      }
-    );
+      // 3. Animate in
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+      tl.to(logoRef.current, {
+        scale: 1, opacity: 1, duration: 0.8, delay: 0.1,
+      })
+        .to(glowRef.current, { opacity: 1, scale: 1, duration: 1 }, "-=0.6")
+        .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
+        .to(lineRef.current, { opacity: 1, scaleX: 1, transformOrigin: "center center", duration: 0.4 }, "-=0.2")
+        .to(marqueeRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.2");
+
+      // Parallax logo on scroll
+      gsap.fromTo(
+        logoRef.current,
+        { yPercent: 0, scale: 1, opacity: 1 },
+        {
+          yPercent: 20, scale: 0.95, opacity: 0.4, ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top", end: "bottom top", scrub: true,
+          },
+        }
+      );
+    })();
 
     return () => {
-      ScrollTrigger.getAll().forEach(st => {
-        if (st.trigger === containerRef.current) st.kill();
-      });
+      cancelled = true;
     };
   }, [reveal]);
 
@@ -105,7 +109,7 @@ export function HeroSection() {
           priority
           fetchPriority="high"
           sizes="(max-width: 767px) 280px, (max-width: 1023px) 450px, 550px"
-          className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow will-change-transform"
+          className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow"
         />
 
         <p

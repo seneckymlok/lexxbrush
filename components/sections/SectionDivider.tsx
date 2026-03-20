@@ -1,10 +1,6 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const DIVIDER_TEXT =
   "EVERY PIECE IS UNIQUE \u2022 HAND-AIRBRUSHED \u2022 MADE BY HAND \u2022 ONE OF A KIND \u2022 ";
@@ -23,45 +19,44 @@ export function SectionDivider() {
       return;
     }
 
-    // 1. Set opacity 0 via GSAP while element is still hidden by data-animate
-    gsap.set(el, { opacity: 0 });
+    let cancelled = false;
+    (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      gsap.registerPlugin(ScrollTrigger);
 
-    // 2. Remove data-animate — element is now "visible" but opacity:0, so no flash
-    el.removeAttribute("data-animate");
-    el.style.visibility = "visible";
+      if (cancelled || !el) return;
 
-    // 3. Fade in on scroll
-    gsap.to(el, {
-      opacity: 1,
-      duration: 0.6,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: el,
-        start: "top 90%",
-        once: true,
-      },
-    });
+      // 1. Set opacity 0 via GSAP while element is still hidden by data-animate
+      gsap.set(el, { opacity: 0 });
 
-    gsap.fromTo(lineRef.current,
-      { scaleX: 0 },
-      {
-        scaleX: 1,
-        transformOrigin: "center center",
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 90%",
-          once: true,
-        },
-      }
-    );
+      // 2. Remove data-animate — element is now "visible" but opacity:0, so no flash
+      el.removeAttribute("data-animate");
+      el.style.visibility = "visible";
 
-    return () => {
-      ScrollTrigger.getAll().forEach(st => {
-        if (st.trigger === el) st.kill();
+      // 3. Fade in on scroll
+      gsap.to(el, {
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 90%", once: true },
       });
-    };
+
+      gsap.fromTo(lineRef.current,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "center center",
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 90%", once: true },
+        }
+      );
+    })();
+
+    return () => { cancelled = true; };
   }, []);
 
   const repeatedText = Array(6).fill(DIVIDER_TEXT).join("");

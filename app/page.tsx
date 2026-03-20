@@ -1,13 +1,16 @@
 import { HeroSection } from "@/components/sections/HeroSection";
 import { SectionDivider } from "@/components/sections/SectionDivider";
 import { ProductGrid } from "@/components/sections/ProductGrid";
+import { getProducts } from "@/lib/products";
 
-export default function Home() {
+export default async function Home() {
+  const products = await getProducts();
+
   return (
     <div className="page-enter">
-      <HeroSection />
+      <HeroSection products={products} />
       <SectionDivider />
-      <ProductGrid />
+      <ProductGrid products={products} />
     </div>
   );
 }
