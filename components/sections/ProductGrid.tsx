@@ -96,6 +96,7 @@ export function ProductGrid() {
         width={640}
         height={854}
         loading="lazy"
+        sizes="(max-width: 767px) 90px, (max-width: 1023px) 160px, 280px"
         className="overflow-art overflow-art-left select-none"
       />
       {/* Character art — right edge */}
@@ -106,6 +107,7 @@ export function ProductGrid() {
         width={640}
         height={854}
         loading="lazy"
+        sizes="(max-width: 767px) 100px, (max-width: 1023px) 180px, 320px"
         className="overflow-art overflow-art-right select-none"
       />
       {/* Section Header */}

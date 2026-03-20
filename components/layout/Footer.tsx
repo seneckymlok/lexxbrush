@@ -17,6 +17,7 @@ export function Footer() {
         width={640}
         height={854}
         loading="lazy"
+        sizes="200px"
         className="hidden lg:block absolute right-[-40px] top-1/2 -translate-y-1/2 w-[200px] opacity-[0.06] pointer-events-none select-none"
         style={{ filter: "brightness(1.3) contrast(1.2)" }}
       />
@@ -31,6 +32,7 @@ export function Footer() {
               alt="Lexxbrush"
               width={200}
               height={112}
+              sizes="(max-width: 768px) 86px, 56px"
               className="h-12 md:h-8 w-auto object-contain mb-3 opacity-80 hover:opacity-100 transition-opacity duration-300"
             />
             <p className="text-text-dim text-xs leading-relaxed max-w-[240px]">

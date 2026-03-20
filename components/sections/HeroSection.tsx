@@ -104,6 +104,7 @@ export function HeroSection() {
           height={309}
           priority
           fetchPriority="high"
+          sizes="(max-width: 767px) 280px, (max-width: 1023px) 450px, 550px"
           className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow will-change-transform"
         />
 
