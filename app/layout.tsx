@@ -34,6 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="antialiased">
       <head>
+        {/* Critical: hide animated elements before ANY content paints.
+            This inline <style> is in the HTML itself — parsed before body renders. */}
+        <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}` }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -50,7 +53,7 @@ export default function RootLayout({
           <CartProvider>
             <ScrollProvider>
               <Header />
-              <main className="flex-1 pt-14 md:pt-16">{children}</main>
+              <main className="flex-1">{children}</main>
               <Footer />
             </ScrollProvider>
           </CartProvider>

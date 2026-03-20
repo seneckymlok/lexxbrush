@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { useGSAP } from "@gsap/react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -24,78 +24,61 @@ export function HeroSection() {
   const marqueeRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const reveal = useCallback((el: HTMLElement) => {
+    el.removeAttribute("data-animate");
+    el.style.visibility = "visible";
+  }, []);
 
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+  useEffect(() => {
+    const els = [logoRef.current, glowRef.current, taglineRef.current, lineRef.current, marqueeRef.current];
+    if (!containerRef.current || els.some(el => !el)) return;
 
-      // Logo scales in from slightly large with a glow burst
-      tl.from(logoRef.current, {
-        scale: 1.15,
-        opacity: 0,
-        duration: 0.8,
-        delay: 0.1,
-      })
-        .from(
-          glowRef.current,
-          {
-            opacity: 0,
-            scale: 0.5,
-            duration: 1,
-          },
-          "-=0.6"
-        )
-        .from(
-          taglineRef.current,
-          {
-            y: 15,
-            opacity: 0,
-            duration: 0.5,
-          },
-          "-=0.3"
-        )
-        .from(
-          lineRef.current,
-          {
-            scaleX: 0,
-            transformOrigin: "center center",
-            duration: 0.4,
-          },
-          "-=0.2"
-        )
-        .from(
-          marqueeRef.current,
-          {
-            y: 30,
-            opacity: 0,
-            duration: 0.5,
-          },
-          "-=0.2"
-        );
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      els.forEach(el => { if (el) { reveal(el); el.style.opacity = "1"; } });
+      return;
+    }
 
-      // Parallax logo on scroll – use fromTo so the start values are
-      // explicit and don't conflict with the intro .from() animation
-      gsap.fromTo(
-        logoRef.current,
-        { yPercent: 0, scale: 1, opacity: 1 },
-        {
-          yPercent: 20,
-          scale: 0.95,
-          opacity: 0.4,
-          ease: "none",
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        }
-      );
-    },
-    { scope: containerRef }
-  );
+    // 1. Set GSAP initial state (opacity:0) while still hidden
+    gsap.set(logoRef.current!, { opacity: 0, scale: 1.15 });
+    gsap.set(glowRef.current!, { opacity: 0, scale: 0.5 });
+    gsap.set(taglineRef.current!, { opacity: 0, y: 15 });
+    gsap.set(lineRef.current!, { opacity: 0, scaleX: 0 });
+    gsap.set(marqueeRef.current!, { opacity: 0, y: 30 });
+
+    // 2. NOW remove data-animate — elements become visible but opacity is 0, so no flash
+    els.forEach(el => { if (el) reveal(el); });
+
+    // 3. Animate in
+    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+    tl.to(logoRef.current, {
+      scale: 1, opacity: 1, duration: 0.8, delay: 0.1,
+    })
+      .to(glowRef.current, { opacity: 1, scale: 1, duration: 1 }, "-=0.6")
+      .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
+      .to(lineRef.current, { opacity: 1, scaleX: 1, transformOrigin: "center center", duration: 0.4 }, "-=0.2")
+      .to(marqueeRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.2");
+
+    // Parallax logo on scroll
+    gsap.fromTo(
+      logoRef.current,
+      { yPercent: 0, scale: 1, opacity: 1 },
+      {
+        yPercent: 20, scale: 0.95, opacity: 0.4, ease: "none",
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top", end: "bottom top", scrub: true,
+        },
+      }
+    );
+
+    return () => {
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.trigger === containerRef.current) st.kill();
+      });
+    };
+  }, [reveal]);
 
   const marqueeItems = [...products, ...products, ...products, ...products];
 
@@ -104,35 +87,33 @@ export function HeroSection() {
       {/* Radial glow behind logo */}
       <div
         ref={glowRef}
+        data-animate
         className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] md:w-[900px] md:h-[500px] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse, rgba(255,105,180,0.06) 0%, rgba(255,255,255,0.02) 40%, transparent 70%)",
-        }}
+        style={{ background: "radial-gradient(ellipse, rgba(255,105,180,0.06) 0%, rgba(255,255,255,0.02) 40%, transparent 70%)" }}
       />
 
       {/* Hero Content */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-[1440px] mx-auto px-6 md:px-10 pt-12 md:pt-20 pb-8 md:pb-12">
-        {/* Chrome Logo */}
+      <div className="relative z-10 flex flex-col items-center text-center max-w-[1440px] mx-auto px-6 md:px-10 pt-24 md:pt-32 pb-8 md:pb-12">
         <img
           ref={logoRef}
+          data-animate
           src="/logo.png"
           alt="Lexxbrush"
           className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow will-change-transform"
         />
 
-        {/* Tagline */}
         <p
           ref={taglineRef}
+          data-animate
           className="mt-6 md:mt-8 font-[family-name:var(--font-display)] text-xs md:text-sm tracking-[0.35em] uppercase text-chrome"
         >
           {t("hero.tagline")}
         </p>
 
-        {/* Divider line */}
         <div
           ref={lineRef}
-          className="w-8 h-[1px] bg-gradient-to-r from-transparent via-chrome to-transparent mt-5 mb-4"
+          data-animate
+          className="w-12 h-[1px] bg-white/10 mt-5 mb-4"
         />
 
         <p className="text-xs md:text-sm text-text-dim max-w-xs leading-relaxed">
@@ -141,11 +122,12 @@ export function HeroSection() {
       </div>
 
       {/* Marquee Strip */}
-      <div ref={marqueeRef} className="relative z-10 pb-6 overflow-hidden">
+      <div ref={marqueeRef} data-animate className="relative z-10 pb-6 overflow-hidden">
         <div className="animate-marquee flex gap-3 md:gap-4 w-max">
           {marqueeItems.map((product, i) => (
-            <div
+            <Link
               key={`${product.id}-${i}`}
+              href={`/product/${product.id}`}
               className="flex-shrink-0 w-[140px] md:w-[200px] lg:w-[240px] aspect-square rounded-lg overflow-hidden bg-concrete-light border border-white/5"
             >
               <img
@@ -154,7 +136,7 @@ export function HeroSection() {
                 className="w-full h-full object-cover opacity-90 hover:opacity-100 hover:scale-105 transition-all duration-500"
                 loading={i < 5 ? "eager" : "lazy"}
               />
-            </div>
+            </Link>
           ))}
         </div>
       </div>

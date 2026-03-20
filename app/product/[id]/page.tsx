@@ -20,6 +20,7 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const [added, setAdded] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
 
   const imageRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -36,19 +37,15 @@ export default function ProductPage() {
     if (loading || !product) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    gsap.from(imageRef.current, {
-      clipPath: "inset(100% 0 0 0)",
-      duration: 1,
-      ease: "power4.inOut",
-    });
+    gsap.fromTo(imageRef.current,
+      { clipPath: "inset(100% 0 0 0)" },
+      { clipPath: "inset(0% 0 0 0)", duration: 1, ease: "power4.inOut" }
+    );
 
-    gsap.from(infoRef.current, {
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power3.out",
-      delay: 0.4,
-    });
+    gsap.fromTo(infoRef.current,
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.4 }
+    );
   }, { dependencies: [loading] });
 
   if (loading) {
@@ -74,12 +71,14 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const hasMultipleImages = product.images.length > 1;
+
   return (
-    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 py-8 md:py-16">
+    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16">
       {/* Back button */}
       <button
         onClick={() => router.push("/")}
-        className="inline-flex items-center gap-2 text-sm text-chrome hover:text-white transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase mb-8"
+        className="inline-flex items-center gap-2 text-sm text-chrome hover:text-cyan transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase mb-8"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="19" y1="12" x2="5" y2="12" />
@@ -89,9 +88,35 @@ export default function ProductPage() {
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-        {/* Image */}
-        <div ref={imageRef} className="aspect-square rounded-xl overflow-hidden bg-concrete-light" style={{ clipPath: "inset(0 0 0 0)" }}>
-          <img src={product.images[0]} alt={product.name[locale as Locale]} className="w-full h-full object-cover" />
+        {/* Image section */}
+        <div>
+          {/* Main image */}
+          <div ref={imageRef} className="aspect-square rounded-xl overflow-hidden bg-concrete-light" style={{ clipPath: "inset(0 0 0 0)" }}>
+            <img
+              src={product.images[activeImage]}
+              alt={product.name[locale as Locale]}
+              className="w-full h-full object-cover transition-opacity duration-300"
+            />
+          </div>
+
+          {/* Thumbnail strip */}
+          {hasMultipleImages && (
+            <div className="flex gap-2 mt-3">
+              {product.images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImage(i)}
+                  className={`w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all duration-300 ${
+                    activeImage === i
+                      ? "border-pink opacity-100 shadow-[0_0_10px_rgba(255,105,180,0.2)]"
+                      : "border-transparent opacity-50 hover:opacity-80"
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Info */}
@@ -99,6 +124,9 @@ export default function ProductPage() {
           <div className="flex gap-2 mb-4">
             {product.isOneOfAKind && (
               <span className="stencil-badge inline-block px-3 py-1 text-[10px] rounded-full">{t("product.oneOfAKind")}</span>
+            )}
+            {product.isSold && (
+              <span className="badge-sold inline-block px-3 py-1 text-[10px] font-bold rounded-full">{t("product.sold")}</span>
             )}
           </div>
 
@@ -108,7 +136,7 @@ export default function ProductPage() {
 
           <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-white">&euro;{product.price}</p>
 
-          <div className="w-10 h-[1.5px] bg-gradient-to-r from-pink to-transparent my-6" />
+          <div className="w-10 h-[1px] bg-white/10 my-6" />
 
           <p className="text-chrome-light leading-relaxed max-w-lg">{product.description[locale as Locale]}</p>
 
@@ -122,7 +150,9 @@ export default function ProductPage() {
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={`w-12 h-12 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-semibold rounded-lg border transition-all duration-300 ${
-                      selectedSize === size ? "bg-white text-void border-white" : "bg-transparent text-chrome-light border-steel hover:border-chrome-light"
+                      selectedSize === size
+                        ? "bg-gradient-to-br from-pink-hot to-pink text-white border-pink/30 shadow-[0_0_12px_rgba(255,20,147,0.2)]"
+                        : "bg-transparent text-chrome-light border-steel hover:border-pink/40"
                     }`}
                   >
                     {size}
@@ -136,12 +166,12 @@ export default function ProductPage() {
           <button
             onClick={handleAddToCart}
             disabled={product.isSold}
-            className={`mt-8 w-full md:w-auto px-10 py-4 font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.15em] uppercase rounded-full transition-all duration-400 ${
+            className={`mt-8 w-full md:w-auto px-10 py-4 text-sm font-bold rounded-full transition-all duration-400 ${
               product.isSold
-                ? "bg-concrete-light text-text-dim cursor-not-allowed"
+                ? "bg-concrete-light text-text-dim cursor-not-allowed font-[family-name:var(--font-display)] tracking-[0.15em] uppercase"
                 : added
-                  ? "bg-pink text-void"
-                  : "bg-white text-void hover:bg-chrome-bright active:scale-[0.98]"
+                  ? "bg-cyan text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+                  : "btn-brand"
             }`}
           >
             {product.isSold ? t("product.sold") : added ? "Added!" : t("product.addToCart")}
@@ -152,13 +182,13 @@ export default function ProductPage() {
             <h3 className="text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-4">{t("product.details")}</h3>
             <ul className="space-y-2">
               <li className="flex items-center gap-3 text-sm text-chrome-light">
-                <span className="w-1.5 h-1.5 rounded-full bg-pink/60" />{t("product.handPainted")}
+                <span className="w-1.5 h-1.5 rounded-full bg-pink" />{t("product.handPainted")}
               </li>
               <li className="flex items-center gap-3 text-sm text-chrome-light">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan/60" />{t("product.unique")}
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan" />{t("product.unique")}
               </li>
               <li className="flex items-center gap-3 text-sm text-chrome-light">
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-hot/60" />{t("product.madeInPrague")}
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-hot" />{t("product.madeInPrague")}
               </li>
             </ul>
           </div>

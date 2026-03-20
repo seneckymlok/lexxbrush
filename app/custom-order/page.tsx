@@ -23,15 +23,18 @@ export default function CustomOrderPage() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const elements = formRef.current?.querySelectorAll(".form-reveal");
-    if (elements) {
-      gsap.from(elements, {
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: "power3.out",
-        delay: 0.2,
-      });
+    if (elements && elements.length > 0) {
+      gsap.fromTo(elements,
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power3.out",
+          delay: 0.2,
+        }
+      );
     }
   }, { scope: formRef });
 
@@ -57,11 +60,11 @@ export default function CustomOrderPage() {
   };
 
   const inputClasses =
-    "w-full bg-transparent border-b border-steel focus:border-chrome-light outline-none py-3 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300";
+    "w-full bg-transparent border-b border-steel focus:border-pink outline-none py-3 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300";
 
   return (
     <div className="page-enter relative min-h-screen overflow-hidden">
-      {/* Atmospheric background — faded studio photo */}
+      {/* Atmospheric background */}
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -73,7 +76,7 @@ export default function CustomOrderPage() {
         }}
       />
 
-      {/* Dark gradient overlay for form readability */}
+      {/* Dark gradient overlay */}
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -81,23 +84,32 @@ export default function CustomOrderPage() {
         }}
       />
 
-      {/* Decorative character — desktop only */}
+      {/* Character art — right side, more visible */}
       <img
         src="/characters/typecek2(png).webp"
         alt=""
         aria-hidden="true"
-        className="hidden lg:block absolute right-[-40px] top-[20%] w-[250px] opacity-[0.04] pointer-events-none"
-        style={{ filter: "invert(1) brightness(1.3)" }}
+        className="hidden lg:block absolute right-[-30px] top-[15%] w-[280px] opacity-[0.08] pointer-events-none select-none"
+        style={{ filter: "invert(1) brightness(1.5) contrast(1.1)" }}
+      />
+
+      {/* Character art — left side accent */}
+      <img
+        src="/characters/typecek1(png).webp"
+        alt=""
+        aria-hidden="true"
+        className="hidden xl:block absolute left-[-60px] bottom-[10%] w-[220px] opacity-[0.05] pointer-events-none select-none"
+        style={{ filter: "brightness(1.3) contrast(1.2)", transform: "scaleX(-1)" }}
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-6 pb-12 md:pt-10 md:pb-24">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-12 md:pt-26 md:pb-24">
         <div className="max-w-2xl mx-auto" ref={formRef}>
           <div className="form-reveal">
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
               {t("custom.title")}
             </h1>
-            <div className="w-10 h-[2px] bg-gradient-to-r from-pink to-transparent mt-4 mb-6" />
+            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6" />
             <p className="text-chrome leading-relaxed max-w-md mb-12">
               {t("custom.subtitle")}
             </p>
@@ -167,7 +179,7 @@ export default function CustomOrderPage() {
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 placeholder={t("custom.descriptionPlaceholder")}
-                className={`${inputClasses} resize-none border rounded-lg p-4 border-steel focus:border-chrome-light`}
+                className="w-full bg-transparent border border-steel focus:border-pink outline-none rounded-lg p-4 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300 resize-none"
               />
             </div>
 
@@ -175,7 +187,7 @@ export default function CustomOrderPage() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="w-full md:w-auto px-10 py-4 bg-white text-void font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.15em] uppercase rounded-full hover:bg-chrome-bright active:scale-[0.98] transition-all duration-400 disabled:opacity-50"
+                className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
               >
                 {status === "sending" ? "..." : t("custom.submit")}
               </button>
@@ -183,7 +195,8 @@ export default function CustomOrderPage() {
 
             {status === "success" && (
               <div className="form-reveal">
-                <p className="text-cyan text-sm font-medium">
+                <p className="text-cyan text-sm font-medium flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan animate-pulse" />
                   {t("custom.success")}
                 </p>
               </div>
@@ -191,7 +204,8 @@ export default function CustomOrderPage() {
 
             {status === "error" && (
               <div className="form-reveal">
-                <p className="text-pink text-sm font-medium">
+                <p className="text-pink-hot text-sm font-medium flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-pink-hot" />
                   {t("custom.error")}
                 </p>
               </div>

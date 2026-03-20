@@ -157,9 +157,9 @@
     filter: blur(0.5px);
   }
 
-  /* Marquee */
+  /* Marquee — product images, slower pace */
   .animate-marquee {
-    animation: marquee 20s linear infinite;
+    animation: marquee 40s linear infinite;
   }
 
   .animate-marquee:hover {
@@ -171,13 +171,65 @@
     animation: fadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
-  /* Stencil badge */
+  /* Stencil badge — colored */
   .stencil-badge {
-    border: 1px solid var(--color-chrome);
-    color: var(--color-chrome-light);
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    color: var(--color-cyan);
     font-family: var(--font-display);
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+  }
+
+  .badge-sold {
+    border: 1px solid rgba(255, 20, 147, 0.5);
+    color: var(--color-pink-hot);
+    font-family: var(--font-display);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(255, 20, 147, 0.3);
+  }
+
+  /* Brand CTA button — gradient with glow */
+  .btn-brand {
+    position: relative;
+    background-image: linear-gradient(135deg, var(--color-pink-hot) 0%, var(--color-pink) 50%, var(--color-cyan) 100%);
+    background-size: 200% 200%;
+    background-position: 0% 0%;
+    color: var(--color-white);
+    font-family: var(--font-display);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.15), 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-brand:hover {
+    background-position: 100% 100%;
+    box-shadow: 0 0 30px rgba(255, 20, 147, 0.25), 0 0 15px rgba(0, 229, 255, 0.15), 0 6px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .btn-brand:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Secondary/outline CTA */
+  .btn-outline {
+    position: relative;
+    background: transparent;
+    color: var(--color-chrome-bright);
+    font-family: var(--font-display);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-steel);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--color-pink);
+    color: var(--color-white);
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.1);
   }
 
   /* Overflow art — character PNGs bleeding off viewport edges */

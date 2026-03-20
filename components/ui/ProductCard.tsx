@@ -11,38 +11,6 @@ interface ProductCardProps {
   index: number;
 }
 
-// Preloaded audio pool for reliable, consistent playback
-const POOL_SIZE = 4;
-let audioPool: HTMLAudioElement[] = [];
-let poolIndex = 0;
-
-function initPool() {
-  // Re-init if pool was cleared (e.g. hot reload)
-  if (audioPool.length === POOL_SIZE) return;
-  audioPool = [];
-  for (let i = 0; i < POOL_SIZE; i++) {
-    const a = new Audio("/spraycan.wav");
-    a.volume = 0.06;
-    a.preload = "auto";
-    audioPool.push(a);
-  }
-}
-
-function playSpraySound() {
-  if (typeof window === "undefined") return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (window.innerWidth < 768) return;
-
-  initPool();
-
-  const audio = audioPool[poolIndex % POOL_SIZE];
-  poolIndex++;
-  audio.currentTime = 0;
-  audio.play().catch(() => {
-    /* autoplay blocked — silently ignore */
-  });
-}
-
 export function ProductCard({ product, index }: ProductCardProps) {
   const { locale, t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -74,9 +42,8 @@ export function ProductCard({ product, index }: ProductCardProps) {
   return (
     <div
       ref={cardRef}
-      className="reveal group card-perspective"
+      className="group card-perspective"
       style={{ animationDelay: `${index * 80}ms` }}
-      onMouseEnter={playSpraySound}
     >
       <Link href={`/product/${product.id}`} className="block">
         {/* Image Container */}
@@ -99,12 +66,12 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2 pointer-events-none">
             {product.isOneOfAKind && (
-              <span className="stencil-badge inline-block px-2.5 py-1 bg-void/70 backdrop-blur-sm text-[10px] rounded-full">
+              <span className="stencil-badge inline-block px-2.5 py-1 bg-void/60 backdrop-blur-sm text-[10px] rounded-full">
                 {t("shop.oneOfAKind")}
               </span>
             )}
             {product.isSold && (
-              <span className="inline-block px-2.5 py-1 bg-pink-hot/80 backdrop-blur-sm text-[10px] font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-white rounded-full">
+              <span className="badge-sold inline-block px-2.5 py-1 bg-void/60 backdrop-blur-sm text-[10px] font-bold rounded-full">
                 {t("shop.sold")}
               </span>
             )}
@@ -112,7 +79,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
 
           {/* Quick view hint */}
           <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out pointer-events-none">
-            <span className="inline-block px-4 py-2 bg-white text-void text-xs font-[family-name:var(--font-display)] font-medium tracking-wider uppercase rounded-full">
+            <span className="btn-brand inline-block px-4 py-2 text-xs font-medium rounded-full">
               {t("shop.viewDetails")}
             </span>
           </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -14,42 +13,70 @@ export function SectionDivider() {
   const containerRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-      gsap.from(lineRef.current, {
-        scaleX: 0,
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.removeAttribute("data-animate");
+      el.style.visibility = "visible";
+      return;
+    }
+
+    // 1. Set opacity 0 via GSAP while element is still hidden by data-animate
+    gsap.set(el, { opacity: 0 });
+
+    // 2. Remove data-animate — element is now "visible" but opacity:0, so no flash
+    el.removeAttribute("data-animate");
+    el.style.visibility = "visible";
+
+    // 3. Fade in on scroll
+    gsap.to(el, {
+      opacity: 1,
+      duration: 0.6,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: el,
+        start: "top 90%",
+        once: true,
+      },
+    });
+
+    gsap.fromTo(lineRef.current,
+      { scaleX: 0 },
+      {
+        scaleX: 1,
         transformOrigin: "center center",
         duration: 1,
         ease: "power3.out",
         scrollTrigger: {
-          trigger: containerRef.current,
+          trigger: el,
           start: "top 90%",
+          once: true,
         },
-      });
-    },
-    { scope: containerRef }
-  );
+      }
+    );
 
-  // Repeat the text enough to fill a wide marquee strip
+    return () => {
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.trigger === el) st.kill();
+      });
+    };
+  }, []);
+
   const repeatedText = Array(6).fill(DIVIDER_TEXT).join("");
 
   return (
     <div
       ref={containerRef}
+      data-animate
       className="relative overflow-hidden py-6 md:py-8"
       style={{ transform: "skewY(-1.5deg)" }}
     >
-      {/* Animated gradient line */}
+      {/* Animated line */}
       <div
         ref={lineRef}
-        className="absolute top-1/2 left-0 right-0 h-[1px] -translate-y-1/2"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent 0%, var(--color-pink) 30%, var(--color-cyan) 70%, transparent 100%)",
-          opacity: 0.3,
-        }}
+        className="absolute top-1/2 left-0 right-0 h-[1px] -translate-y-1/2 bg-white/10"
       />
 
       {/* Text marquee */}

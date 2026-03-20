@@ -19,9 +19,10 @@ export default function CartPage() {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const elements = containerRef.current?.querySelectorAll(".cart-item");
       if (elements && elements.length > 0) {
-        gsap.from(elements, {
-          x: -20, opacity: 0, duration: 0.5, stagger: 0.08, ease: "power3.out",
-        });
+        gsap.fromTo(elements,
+          { x: -20, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "power3.out" }
+        );
       }
     },
     { scope: containerRef, dependencies: [items.length] }
@@ -45,7 +46,6 @@ export default function CartPage() {
       const data = await res.json();
 
       if (data.url) {
-        // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
         alert(data.error || "Something went wrong. Please try again.");
@@ -58,19 +58,19 @@ export default function CartPage() {
   }
 
   return (
-    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-4 pb-12 md:pt-8 md:pb-24">
+    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-18 pb-12 md:pt-24 md:pb-24">
       <div className="max-w-3xl mx-auto" ref={containerRef}>
         <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
           {t("cart.title")}
         </h1>
-        <div className="w-10 h-[2px] bg-gradient-to-r from-pink to-transparent mt-4 mb-12" />
+        <div className="w-10 h-[1px] bg-white/10 mt-4 mb-12" />
 
         {items.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-chrome text-lg mb-6">{t("cart.empty")}</p>
             <Link
               href="/"
-              className="inline-block px-8 py-3 bg-white text-void font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.15em] uppercase rounded-full hover:bg-chrome-bright transition-colors duration-300"
+              className="btn-outline inline-block px-8 py-3 text-sm font-bold rounded-full"
             >
               {t("cart.continueShopping")}
             </Link>
@@ -92,7 +92,7 @@ export default function CartPage() {
                       {item.product.name[locale as Locale]}
                     </h3>
                     {item.size && (
-                      <p className="mt-1 text-xs text-chrome">{t("cart.size")}: {item.size}</p>
+                      <p className="mt-1 text-xs text-cyan">{t("cart.size")}: {item.size}</p>
                     )}
                     <p className="mt-1 text-sm font-medium text-white">
                       &euro;{item.product.price}
@@ -101,7 +101,7 @@ export default function CartPage() {
                   </div>
                   <button
                     onClick={() => removeItem(item.product.id, item.size)}
-                    className="flex-shrink-0 text-xs text-chrome hover:text-pink transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase"
+                    className="flex-shrink-0 text-xs text-chrome hover:text-pink-hot transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase"
                   >
                     {t("cart.remove")}
                   </button>
@@ -123,14 +123,14 @@ export default function CartPage() {
               <button
                 onClick={handleCheckout}
                 disabled={checkingOut}
-                className="w-full py-4 bg-white text-void font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.15em] uppercase rounded-full hover:bg-chrome-bright active:scale-[0.98] transition-all duration-400 disabled:opacity-50"
+                className="w-full py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
               >
                 {checkingOut ? "Redirecting to payment..." : t("cart.checkout")}
               </button>
 
               <Link
                 href="/"
-                className="block text-center mt-4 text-sm text-chrome hover:text-white transition-colors duration-300"
+                className="block text-center mt-4 text-sm text-chrome hover:text-cyan transition-colors duration-300"
               >
                 {t("cart.continueShopping")}
               </Link>
