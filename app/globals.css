@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Bebas Neue", sans-serif;
-  --font-body: "DM Sans", sans-serif;
-  --font-accent: "Instrument Serif", serif;
+  --font-display: var(--font-bebas), "Bebas Neue", sans-serif;
+  --font-body: var(--font-dm-sans), "DM Sans", sans-serif;
+  --font-accent: var(--font-instrument), "Instrument Serif", serif;
 
   --color-void: #0A0A0A;
   --color-concrete: #111111;

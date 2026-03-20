@@ -1,10 +1,31 @@
 import type { Metadata, Viewport } from "next";
+import { Bebas_Neue, DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-bebas",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-instrument",
+  display: "swap",
+});
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.com";
 
@@ -89,17 +110,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="antialiased">
+    <html lang="en" className={`antialiased ${bebasNeue.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
       <head>
         {/* Critical: hide animated elements before ANY content paints */}
         <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}` }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://nfvocdkvtaittmvbmaoq.supabase.co" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif&display=swap"
-          rel="stylesheet"
-        />
         {/* JSON-LD Organization structured data */}
         <script
           type="application/ld+json"
