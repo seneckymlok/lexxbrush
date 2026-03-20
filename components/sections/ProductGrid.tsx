@@ -143,7 +143,7 @@ export function ProductGrid() {
         className="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
       >
         {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
+          Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="aspect-square rounded-lg bg-white/[0.02] animate-pulse" />
           ))
         ) : (
