@@ -159,7 +159,59 @@ export default function NewProductPage() {
           </div>
           <div>
             <label className={labelClass}>Sizes (comma-separated)</label>
-            <input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} className={inputClass} placeholder="S, M, L, XL" />
+            {(() => {
+              const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
+              const selectedSizes = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
+              const toggleSize = (size: string) => {
+                const updated = selectedSizes.includes(size)
+                  ? selectedSizes.filter(s => s !== size)
+                  : [...selectedSizes, size];
+                setForm({ ...form, sizes: updated.join(", ") });
+              };
+              return (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    {PRESET_SIZES.map(size => (
+                      <button key={size} type="button" onClick={() => toggleSize(size)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+                          selectedSizes.includes(size)
+                            ? "bg-white text-black border-white"
+                            : "bg-white/5 text-white/40 border-white/10 hover:border-white/25 hover:text-white/60"
+                        }`}>
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      className={inputClass}
+                      placeholder="Custom size, press Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (val && !selectedSizes.includes(val)) {
+                            setForm({ ...form, sizes: [...selectedSizes, val].join(", ") });
+                          }
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }}
+                    />
+                  </div>
+                  {selectedSizes.filter(s => !PRESET_SIZES.includes(s)).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedSizes.filter(s => !PRESET_SIZES.includes(s)).map(s => (
+                        <span key={s} className="inline-flex items-center gap-1 px-2 py-1 bg-white/10 text-white/60 text-xs rounded-md">
+                          {s}
+                          <button type="button" onClick={() => toggleSize(s)} className="text-white/30 hover:text-white/60">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         </div>
 
