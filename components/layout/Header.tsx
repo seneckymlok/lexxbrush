@@ -98,7 +98,7 @@ export function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled || mobileMenuOpen
+          scrolled && !mobileMenuOpen
             ? "bg-void/95 backdrop-blur-md border-b border-white/5"
             : "bg-transparent"
         }`}
@@ -247,7 +247,7 @@ export function Header() {
                   </span>
 
                   {/* High-impact Typographic Link */}
-                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.5rem,11.5vw,5.5rem)] leading-[0.95] font-black tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 transition-all duration-500 group-hover:from-cyan group-hover:to-pink pb-2 pt-3 pr-4 break-words">
+                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.5rem,11.5vw,5.5rem)] leading-[0.95] font-black tracking-normal uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 transition-all duration-500 group-hover:from-cyan group-hover:to-pink pb-2 pt-3 pr-4 break-words">
                     {t(link.key)}
                     
                     {/* Floating Cart Indicator */}
