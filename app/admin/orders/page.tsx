@@ -30,6 +30,12 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   useEffect(() => {
     adminFetch("/api/admin?table=orders")
@@ -40,17 +46,43 @@ export default function AdminOrdersPage() {
   }, []);
 
   async function updateStatus(id: string, status: string) {
-    await adminFetch("/api/admin", {
-      method: "PATCH",
-      body: JSON.stringify({ table: "orders", id, data: { status } }),
-    });
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+    try {
+      const res = await adminFetch("/api/admin", {
+        method: "PATCH",
+        body: JSON.stringify({ table: "orders", id, data: { status } }),
+      });
+      
+      if (!res.ok) throw new Error("Failed to update status");
+      
+      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+
+      if (status === "shipped") {
+        showToast("Order marked as Shipped. Notification email sent to customer.");
+      } else {
+        showToast(`Order status updated to ${status}`);
+      }
+    } catch (err: any) {
+      showToast(err.message || "Error updating status", "error");
+    }
   }
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Loading orders...</div></div>;
 
   return (
-    <div>
+    <div className="relative">
+      {/* Toast Notification */}
+      {toast && (
+        <div 
+          className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-lg shadow-lg border text-sm font-medium animate-in fade-in slide-in-from-top-4 duration-300 ${
+            toast.type === "success" 
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" 
+              : "bg-red-500/10 border-red-500/30 text-red-400"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
+
       <h1 className="text-xl font-semibold text-white mb-8">Orders</h1>
       {orders.length === 0 ? (
         <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-16 text-center"><p className="text-white/30 text-sm">No orders yet</p></div>
