@@ -185,7 +185,7 @@ export default function CustomOrderPage() {
             </div>
 
             <div className="form-reveal pt-4">
-              <MagneticButton as="div" strength={0.25} className="w-full md:w-auto inline-block">
+              <MagneticButton as="div" className="w-full md:w-auto">
                 <button
                   type="submit"
                   disabled={status === "sending"}

@@ -188,7 +188,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           )}
 
           {/* Add to Cart */}
-          <MagneticButton as="div" strength={0.25} className="inline-block">
+          <MagneticButton as="div">
             <button
               onClick={handleAddToCart}
               disabled={product.isSold}

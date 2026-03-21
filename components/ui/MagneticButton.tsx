@@ -13,7 +13,7 @@ interface MagneticButtonProps {
 export function MagneticButton({
   children,
   className = "",
-  strength = 0.3,
+  strength = 0.12,
   as: Tag = "button",
   ...rest
 }: MagneticButtonProps) {

@@ -243,7 +243,7 @@ export default function CheckoutPage() {
 
               {/* Submit — visible on desktop */}
               <div className="hidden md:block">
-              <MagneticButton as="div" strength={0.2} className="w-full">
+              <MagneticButton as="div" className="w-full">
                 <button
                   type="submit"
                   disabled={submitting}
