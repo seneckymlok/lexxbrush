@@ -10,20 +10,20 @@ import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-bebas",
   display: "swap",
 });
 
 const dmSans = DM_Sans({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-dm-sans",
   display: "swap",
 });
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-instrument",
   display: "swap",
 });
