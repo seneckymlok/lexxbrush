@@ -29,6 +29,17 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   );
   const [added, setAdded] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const handlePrevImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (product) setActiveImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (product) setActiveImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+  };
 
   const imageRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
@@ -101,15 +112,44 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         {/* Image section */}
         <div>
           {/* Main image */}
-          <div ref={imageRef} className="aspect-square rounded-xl overflow-hidden bg-concrete-light relative" style={{ clipPath: "inset(0 0 0 0)" }}>
+          <div 
+            ref={imageRef} 
+            className="aspect-square rounded-xl overflow-hidden bg-[url('/noise.png')] relative cursor-zoom-in group" 
+            style={{ clipPath: "inset(0 0 0 0)" }}
+            onClick={() => setIsLightboxOpen(true)}
+          >
             <Image
               src={product.images[activeImage]}
               alt={product.name[locale as Locale]}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover transition-opacity duration-300"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               priority
             />
+            
+            {hasMultipleImages && (
+              <>
+                <button
+                  onClick={handlePrevImage}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-70 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black/50 z-10 hover:scale-105 active:scale-95"
+                  aria-label="Previous image"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-70 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black/50 z-10 hover:scale-105 active:scale-95"
+                  aria-label="Next image"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </>
+            )}
+
+            {/* Zoom Hint Icon */}
+            <div className="absolute top-4 right-4 w-10 h-10 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+            </div>
           </div>
 
           {/* Thumbnail strip */}
@@ -217,6 +257,54 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Lightbox Overlay */}
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-[100] bg-[#080808]/95 flex items-center justify-center backdrop-blur-xl animate-in fade-in duration-300"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
+            className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110]"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          
+          {hasMultipleImages && (
+            <button 
+              onClick={handlePrevImage}
+              className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+            >
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+          )}
+
+          <div 
+            className="relative w-full h-[85vh] md:h-[90vh] max-w-[90vw] md:max-w-[80vw] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={product.images[activeImage]}
+              alt={`${product.name[locale as Locale]} - Zoomed`}
+              fill
+              className="object-contain"
+              sizes="100vw"
+              priority
+            />
+          </div>
+
+          {hasMultipleImages && (
+            <button 
+              onClick={handleNextImage}
+              className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+            >
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
