@@ -113,7 +113,7 @@ export default function CheckoutPage() {
         </h1>
         <div className="w-10 h-[1px] bg-white/10 mt-4 mb-12" />
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="on">
           <div className="grid md:grid-cols-[1fr_340px] gap-12 md:gap-16">
             {/* Left — Form */}
             <div className="space-y-10">
@@ -124,9 +124,13 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>{t("checkout.email")}</label>
+                    <label htmlFor="email" className={labelClass}>{t("checkout.email")}</label>
                     <input
+                      id="email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
+                      inputMode="email"
                       required
                       value={form.email}
                       onChange={(e) => update("email", e.target.value)}
@@ -135,9 +139,12 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>{t("checkout.name")}</label>
+                    <label htmlFor="name" className={labelClass}>{t("checkout.name")}</label>
                     <input
+                      id="name"
+                      name="name"
                       type="text"
+                      autoComplete="name"
                       required
                       value={form.name}
                       onChange={(e) => update("name", e.target.value)}
@@ -154,9 +161,12 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>{t("checkout.address")}</label>
+                    <label htmlFor="address" className={labelClass}>{t("checkout.address")}</label>
                     <input
+                      id="address"
+                      name="address"
                       type="text"
+                      autoComplete="address-line1"
                       required
                       value={form.address}
                       onChange={(e) => update("address", e.target.value)}
@@ -164,9 +174,12 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>{t("checkout.address2")}</label>
+                    <label htmlFor="address2" className={labelClass}>{t("checkout.address2")}</label>
                     <input
+                      id="address2"
+                      name="address2"
                       type="text"
+                      autoComplete="address-line2"
                       value={form.address2}
                       onChange={(e) => update("address2", e.target.value)}
                       className={inputClass}
@@ -174,9 +187,12 @@ export default function CheckoutPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className={labelClass}>{t("checkout.city")}</label>
+                      <label htmlFor="city" className={labelClass}>{t("checkout.city")}</label>
                       <input
+                        id="city"
+                        name="city"
                         type="text"
+                        autoComplete="address-level2"
                         required
                         value={form.city}
                         onChange={(e) => update("city", e.target.value)}
@@ -184,9 +200,13 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>{t("checkout.postalCode")}</label>
+                      <label htmlFor="postalCode" className={labelClass}>{t("checkout.postalCode")}</label>
                       <input
+                        id="postalCode"
+                        name="postalCode"
                         type="text"
+                        autoComplete="postal-code"
+                        inputMode="numeric"
                         required
                         value={form.postalCode}
                         onChange={(e) => update("postalCode", e.target.value)}
@@ -195,8 +215,11 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div>
-                    <label className={labelClass}>{t("checkout.country")}</label>
+                    <label htmlFor="country" className={labelClass}>{t("checkout.country")}</label>
                     <select
+                      id="country"
+                      name="country"
+                      autoComplete="country"
                       required
                       value={form.country}
                       onChange={(e) => update("country", e.target.value)}
@@ -224,7 +247,7 @@ export default function CheckoutPage() {
                   disabled={submitting}
                   className="w-full py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
                 >
-                  {submitting ? t("checkout.processing") : t("checkout.placeOrder")}
+                  {submitting ? t("checkout.processing") : t("checkout.pay")}
                 </button>
                 <Link
                   href="/cart"
@@ -288,7 +311,7 @@ export default function CheckoutPage() {
                     disabled={submitting}
                     className="w-full py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
                   >
-                    {submitting ? t("checkout.processing") : t("checkout.placeOrder")}
+                    {submitting ? t("checkout.processing") : t("checkout.pay")}
                   </button>
                   <Link
                     href="/cart"
