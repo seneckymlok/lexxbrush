@@ -144,12 +144,14 @@
     mask-image: radial-gradient(white, black);
   }
 
-  .card-glow:hover {
-    border-color: rgba(123, 47, 190, 0.2);
-    box-shadow:
-      0 0 20px rgba(123, 47, 190, 0.08),
-      0 0 40px rgba(255, 105, 180, 0.04),
-      0 8px 32px rgba(0, 0, 0, 0.4);
+  @media (hover: hover) {
+    .card-glow:hover {
+      border-color: rgba(123, 47, 190, 0.2);
+      box-shadow:
+        0 0 20px rgba(123, 47, 190, 0.08),
+        0 0 40px rgba(255, 105, 180, 0.04),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+    }
   }
 
   /* Logo subtle hover */
@@ -158,8 +160,10 @@
     transition: filter 0.3s ease;
   }
 
-  .logo-glow:hover {
-    filter: brightness(1.15);
+  @media (hover: hover) {
+    .logo-glow:hover {
+      filter: brightness(1.15);
+    }
   }
 
   /* Spray dot */
@@ -219,10 +223,12 @@
     box-shadow: 0 0 20px rgba(123, 47, 190, 0.15), 0 4px 15px rgba(0, 0, 0, 0.3);
   }
 
-  .btn-brand:hover {
-    background-position: 100% 100%;
-    box-shadow: 0 0 30px rgba(123, 47, 190, 0.25), 0 0 15px rgba(0, 229, 255, 0.15), 0 6px 20px rgba(0, 0, 0, 0.4);
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    .btn-brand:hover {
+      background-position: 100% 100%;
+      box-shadow: 0 0 30px rgba(123, 47, 190, 0.25), 0 0 15px rgba(0, 229, 255, 0.15), 0 6px 20px rgba(0, 0, 0, 0.4);
+      transform: translateY(-2px);
+    }
   }
 
   .btn-brand:active {
@@ -241,10 +247,12 @@
     transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .btn-outline:hover {
-    border-color: var(--color-pink);
-    color: var(--color-white);
-    box-shadow: 0 0 15px rgba(255, 105, 180, 0.1);
+  @media (hover: hover) {
+    .btn-outline:hover {
+      border-color: var(--color-pink);
+      color: var(--color-white);
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.1);
+    }
   }
 
   /* Overflow art — character PNGs bleeding off viewport edges */
