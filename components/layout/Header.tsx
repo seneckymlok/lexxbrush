@@ -55,6 +55,7 @@ function MenuIcon({ open }: { open: boolean }) {
 const NAV_LINKS = [
   { href: "/", key: "nav.shop" },
   { href: "/custom-order", key: "nav.custom" },
+  { href: "/contact", key: "nav.contact" },
   { href: "/cart", key: "nav.cart" },
 ] as const;
 
@@ -119,6 +120,12 @@ export function Header() {
               className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
             >
               {t("nav.custom")}
+            </Link>
+            <Link
+              href="/contact"
+              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
+            >
+              {t("nav.contact")}
             </Link>
 
             <LanguageSwitcher />
