@@ -118,11 +118,14 @@ export default function CustomOrderPage() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="form-reveal">
-              <label className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
+              <label htmlFor="custom-name" className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
                 {t("custom.name")}
               </label>
               <input
+                id="custom-name"
+                name="name"
                 type="text"
+                autoComplete="name"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -131,11 +134,15 @@ export default function CustomOrderPage() {
             </div>
 
             <div className="form-reveal">
-              <label className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
+              <label htmlFor="custom-email" className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
                 {t("custom.email")}
               </label>
               <input
+                id="custom-email"
+                name="email"
                 type="email"
+                autoComplete="email"
+                inputMode="email"
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
