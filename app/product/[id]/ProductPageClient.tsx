@@ -308,7 +308,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           {/* Close button */}
           <button 
             onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
-            className="fixed top-4 right-4 md:top-8 md:right-8 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+            className="fixed top-24 right-4 md:top-16 md:right-12 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
             aria-label="Close"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>

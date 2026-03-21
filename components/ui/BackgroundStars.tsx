@@ -40,7 +40,7 @@ export function BackgroundStars() {
     <div 
       ref={containerRef} 
       // inset is extended to -10% so parallax movement doesn't reveal edges
-      className="fixed inset-[-10%] z-0 pointer-events-none overflow-hidden mix-blend-screen"
+      className="fixed inset-[-10%] z-[30] pointer-events-none overflow-hidden mix-blend-screen"
       aria-hidden="true"
     >
       {/* LAYER 3 (Furthest, moves least, smallest/dimmest) */}
