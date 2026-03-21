@@ -68,15 +68,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (customer?.name && customer?.address) {
-      // Pre-fill shipping in metadata for the webhook to use
+      // We already collected shipping — store in metadata, don't ask again
       sessionConfig.metadata.customer_name = customer.name;
       sessionConfig.metadata.shipping_address = JSON.stringify(customer.address);
-
-      // Let Stripe confirm the address (still collect for verification)
-      sessionConfig.shipping_address_collection = {
-        allowed_countries: ["SK", "CZ", "DE", "AT", "PL", "HU", "US", "GB", "FR", "IT", "ES", "NL", "BE"],
-      };
+      // No shipping_address_collection → Stripe shows payment only
     } else {
+      // Fallback: let Stripe collect shipping if no customer data
       sessionConfig.shipping_address_collection = {
         allowed_countries: ["SK", "CZ", "DE", "AT", "PL", "HU", "US", "GB", "FR", "IT", "ES", "NL", "BE"],
       };
