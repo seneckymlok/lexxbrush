@@ -65,10 +65,11 @@ export default function AccountPage() {
       {/* Account Header — editorial */}
       <div className="mb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-bold uppercase tracking-[0.04em] text-white">
+          <div className="text-center md:text-left">
+            <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
               {t("auth.account")}
             </h1>
+            <div className="w-10 h-[1px] bg-white/10 mt-3 mx-auto md:mx-0" />
           </div>
 
           <div className="flex items-center gap-6">

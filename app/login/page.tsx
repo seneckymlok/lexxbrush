@@ -91,11 +91,12 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-[420px]">
-        {/* Title — minimal editorial */}
+        {/* Title */}
         <div className="mb-10 text-center md:text-left">
-          <h1 className="font-[family-name:var(--font-display)] text-[2.5rem] leading-[1] font-bold uppercase tracking-[0.08em] text-white">
+          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
             {t("auth.login")}
           </h1>
+          <div className="w-10 h-[1px] bg-white/10 mt-3 mx-auto md:mx-0" />
         </div>
 
         {/* Email not confirmed */}
