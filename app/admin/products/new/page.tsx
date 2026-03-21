@@ -187,7 +187,7 @@ export default function NewProductPage() {
             onDragLeave={(e) => e.currentTarget.classList.remove("border-white/30")}
             onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove("border-white/30"); handleFileSelect(e.dataTransfer.files); }}
           >
-            📸 Drop images here or click to browse
+            Drop images here or click to browse
             <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFileSelect(e.target.files)} />
           </label>
         </div>

@@ -6,10 +6,42 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "Dashboard", icon: "📊" },
-  { href: "/admin/products", label: "Products", icon: "👕" },
-  { href: "/admin/orders", label: "Orders", icon: "📦" },
-  { href: "/admin/custom-orders", label: "Custom Orders", icon: "🎨" },
+  {
+    href: "/admin",
+    label: "Dashboard",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    href: "/admin/products",
+    label: "Products",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" />
+      </svg>
+    ),
+  },
+  {
+    href: "/admin/orders",
+    label: "Orders",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    href: "/admin/custom-orders",
+    label: "Custom Orders",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -84,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     : "text-white/40 hover:text-white/70 hover:bg-white/[0.02]"
                 }`}
               >
-                <span className="text-base">{item.icon}</span>
+                <span className="flex-shrink-0 opacity-70">{item.icon}</span>
                 {item.label}
               </Link>
             );
