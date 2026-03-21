@@ -33,7 +33,7 @@ export function Footer() {
               width={200}
               height={112}
               sizes="(max-width: 768px) 86px, 56px"
-              className="h-12 md:h-8 w-auto object-contain mb-3 opacity-80 hover:opacity-100 transition-opacity duration-300"
+              className="h-16 md:h-12 w-auto object-contain mb-3 opacity-80 hover:opacity-100 transition-opacity duration-300"
             />
             <p className="text-text-dim text-xs leading-relaxed max-w-[240px]">
               Hand-airbrushed wearable art.<br />

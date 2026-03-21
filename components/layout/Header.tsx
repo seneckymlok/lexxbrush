@@ -102,7 +102,7 @@ export function Header() {
               priority
               fetchPriority="high"
               sizes="(max-width: 768px) 100px, 120px"
-              className="h-7 md:h-8 w-auto object-contain transition-all duration-300 group-hover:brightness-125"
+              className="h-9 md:h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-125"
             />
           </Link>
 
