@@ -6,7 +6,10 @@ import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { Product } from "@/lib/products";
 
-function AirbrushStar({ className = "" }: { className?: string }) {
+function AirbrushStar({ className = "", variant = 1 }: { className?: string; variant?: 1 | 2 | 3 }) {
+  const isV2 = variant === 2;
+  const isV3 = variant === 3;
+
   return (
     <svg 
       viewBox="0 0 100 100" 
@@ -16,35 +19,77 @@ function AirbrushStar({ className = "" }: { className?: string }) {
       aria-hidden="true"
     >
       <defs>
-        <filter id="blur-ring-heavy" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="6" />
+        <filter id={`blur-ring-heavy-${variant}`} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation={isV2 ? "8" : isV3 ? "5" : "6"} />
         </filter>
-        <filter id="blur-ring-light" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" />
+        <filter id={`blur-ring-light-${variant}`} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation={isV2 ? "4" : isV3 ? "2.5" : "3"} />
         </filter>
-        <filter id="blur-cross" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.5" />
+        <filter id={`blur-cross-${variant}`} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation={isV2 ? "2" : isV3 ? "1" : "1.5"} />
         </filter>
       </defs>
 
       {/* Fuzzy concentric rings background */}
-      <circle cx="50" cy="50" r="16" stroke="currentColor" strokeWidth="4" opacity="0.4" filter="url(#blur-ring-heavy)" />
-      <circle cx="50" cy="50" r="28" stroke="currentColor" strokeWidth="3" opacity="0.3" filter="url(#blur-ring-light)" />
+      <circle 
+        cx={isV3 ? "48" : "50"} 
+        cy={isV2 ? "52" : "50"} 
+        r={isV2 ? "18" : isV3 ? "14" : "16"} 
+        stroke="currentColor" strokeWidth="4" opacity="0.4" 
+        filter={`url(#blur-ring-heavy-${variant})`} 
+      />
+      {variant !== 3 && (
+        <circle 
+          cx="50" cy="50" 
+          r={isV2 ? "25" : "28"} 
+          stroke="currentColor" strokeWidth={isV2 ? "2" : "3"} 
+          opacity="0.3" 
+          filter={`url(#blur-ring-light-${variant})`} 
+        />
+      )}
       
       {/* Blurred cross layer */}
-      <g fill="currentColor" opacity="0.6" filter="url(#blur-cross)">
-        <path d="M50 10 L54 50 L50 90 L46 50 Z" />
-        <path d="M10 50 L50 46 L90 50 L50 54 Z" />
+      <g fill="currentColor" opacity={isV2 ? "0.5" : "0.6"} filter={`url(#blur-cross-${variant})`}>
+        {isV2 ? (
+          <>
+            <path d="M50 15 L55 50 L50 85 L45 50 Z" />
+            <path d="M15 50 L50 45 L85 50 L50 55 Z" />
+          </>
+        ) : isV3 ? (
+          <>
+            <path d="M48 8 L52 50 L48 92 L44 50 Z" />
+            <path d="M8 48 L50 44 L92 48 L50 52 Z" />
+          </>
+        ) : (
+          <>
+            <path d="M50 10 L54 50 L50 90 L46 50 Z" />
+            <path d="M10 50 L50 46 L90 50 L50 54 Z" />
+          </>
+        )}
       </g>
       
       {/* Sharp inner core cross */}
       <g fill="currentColor" opacity="0.9">
-        <path d="M50 12 L52 50 L50 88 L48 50 Z" />
-        <path d="M12 50 L50 48 L88 50 L50 52 Z" />
+        {isV2 ? (
+          <>
+            <path d="M50 18 L51 50 L50 82 L49 50 Z" />
+            <path d="M18 50 L50 49 L82 50 L50 51 Z" />
+          </>
+        ) : isV3 ? (
+          <>
+            <path d="M49 14 L50.5 50 L49 86 L47.5 50 Z" />
+            <path d="M14 49 L50 47.5 L86 49 L50 50.5 Z" />
+          </>
+        ) : (
+          <>
+            <path d="M50 12 L52 50 L50 88 L48 50 Z" />
+            <path d="M12 50 L50 48 L88 50 L50 52 Z" />
+          </>
+        )}
       </g>
       
       {/* Darker/brighter center dot */}
-      <circle cx="50" cy="50" r="2" fill="currentColor" />
+      <circle cx="50" cy="50" r={isV2 ? "3" : isV3 ? "1.5" : "2"} fill="currentColor" />
     </svg>
   );
 }
@@ -204,14 +249,23 @@ export function HeroSection({ products }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Hand-airbrushed star elements — matching provided reference */}
+      {/* Hand-airbrushed star elements — subtle, neutral, organically imperfect */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <AirbrushStar className="absolute top-[20%] right-[12%] w-24 h-24 text-white opacity-[0.25] rotate-[15deg] mix-blend-screen" />
-        <AirbrushStar className="absolute top-[35%] right-[8%] w-16 h-16 text-pink opacity-[0.35] -rotate-[10deg] mix-blend-screen animate-pulse" />
-        <AirbrushStar className="absolute bottom-[20%] left-[4%] w-20 h-20 text-lime opacity-[0.3] rotate-[5deg] mix-blend-screen" />
-        <AirbrushStar className="absolute top-[60%] left-[12%] w-14 h-14 text-cyan opacity-[0.4] rotate-[25deg] mix-blend-screen" />
-        <AirbrushStar className="absolute top-[45%] right-[18%] w-12 h-12 text-amber opacity-[0.3] -rotate-[15deg] mix-blend-screen" />
-        <AirbrushStar className="absolute top-[10%] left-[20%] w-10 h-10 text-violet opacity-[0.4] rotate-[45deg] mix-blend-screen" />
+        {/* Top-left cluster: framing the logo */}
+        <AirbrushStar variant={2} className="absolute top-[15%] left-[12%] w-10 h-10 text-white/50 opacity-[0.15] rotate-[10deg] mix-blend-screen scale-x-110" />
+        <AirbrushStar variant={3} className="absolute top-[28%] left-[6%] w-6 h-6 text-white/40 opacity-[0.1] -rotate-[15deg] mix-blend-screen" />
+        
+        {/* Top-right floating high */}
+        <AirbrushStar variant={1} className="absolute top-[18%] right-[16%] w-12 h-12 text-white/60 opacity-[0.12] -rotate-[5deg] mix-blend-screen scale-y-110" />
+        
+        {/* Mid-right offset */}
+        <AirbrushStar variant={3} className="absolute top-[45%] right-[8%] w-8 h-8 text-white/50 opacity-[0.15] rotate-[35deg] mix-blend-screen" />
+        
+        {/* Bottom-left framing near marquee */}
+        <AirbrushStar variant={1} className="absolute bottom-[28%] left-[18%] w-9 h-9 text-white/40 opacity-[0.1] rotate-[20deg] mix-blend-screen" />
+        
+        {/* Extreme bottom-right */}
+        <AirbrushStar variant={2} className="absolute bottom-[22%] right-[12%] w-7 h-7 text-white/60 opacity-[0.15] -rotate-[30deg] mix-blend-screen scale-x-125" />
       </div>
     </section>
   );
