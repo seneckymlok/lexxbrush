@@ -129,28 +129,35 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               priority
             />
 
-            {/* Heart Icon Overlay */}
+            {/* Favorite — spray tag mark */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (product) toggleFavorite(product.id);
               }}
-              className="absolute top-4 left-4 z-20 w-12 h-12 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center border border-white/10 transition-all duration-300 hover:scale-110 hover:bg-black/40 group/heart"
+              className={`absolute top-4 left-4 z-20 w-11 h-11 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                product && isFavorite(product.id)
+                  ? "bg-void/40 text-pink"
+                  : "bg-black/20 border border-white/10 text-white hover:text-pink hover:bg-black/40"
+              }`}
               aria-label={product && isFavorite(product.id) ? "Remove from favorites" : "Add to favorites"}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill={product && isFavorite(product.id) ? "#ff69b4" : "none"}
-                stroke={product && isFavorite(product.id) ? "#ff69b4" : "currentColor"}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`transition-all duration-300 ${product && isFavorite(product.id) ? "scale-110" : "text-white group-hover/heart:text-pink scale-100"}`}
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              <svg width="22" height="22" viewBox="0 0 24 24">
+                <path
+                  d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z"
+                  fill={product && isFavorite(product.id) ? "var(--color-pink)" : "none"}
+                  stroke={product && isFavorite(product.id) ? "var(--color-pink)" : "currentColor"}
+                  strokeWidth={product && isFavorite(product.id) ? "0" : "1.5"}
+                  strokeLinejoin="round"
+                  className="transition-all duration-400"
+                />
+                {product && isFavorite(product.id) && (
+                  <>
+                    <circle cx="19" cy="4" r="1" fill="var(--color-pink)" opacity="0.5" />
+                    <circle cx="5" cy="19" r="0.8" fill="var(--color-pink)" opacity="0.4" />
+                  </>
+                )}
               </svg>
             </button>
             

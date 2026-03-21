@@ -13,6 +13,38 @@ interface ProductCardProps {
   index: number;
 }
 
+/** Spray-paint star/asterisk — a graffiti "tag" mark for favorites */
+function FavoriteIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      className={`transition-all duration-400 ${
+        active ? "scale-110" : "scale-100"
+      }`}
+    >
+      {/* Spray paint splatter — organic asterisk shape */}
+      <path
+        d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z"
+        fill={active ? "var(--color-pink)" : "none"}
+        stroke={active ? "var(--color-pink)" : "currentColor"}
+        strokeWidth={active ? "0" : "1.5"}
+        strokeLinejoin="round"
+        className="transition-all duration-400"
+      />
+      {active && (
+        <>
+          {/* Tiny spray dots around the star */}
+          <circle cx="19" cy="4" r="1" fill="var(--color-pink)" opacity="0.5" />
+          <circle cx="5" cy="19" r="0.8" fill="var(--color-pink)" opacity="0.4" />
+          <circle cx="21" cy="14" r="0.6" fill="var(--color-pink)" opacity="0.3" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export function ProductCard({ product, index }: ProductCardProps) {
   const { locale, t } = useLanguage();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -21,8 +53,9 @@ export function ProductCard({ product, index }: ProductCardProps) {
 
   const isFav = isFavorite(product.id);
 
-  const handleHeartClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Stop link navigation
+  const handleFavClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     toggleFavorite(product.id);
   };
 
@@ -87,6 +120,19 @@ export function ProductCard({ product, index }: ProductCardProps) {
               </span>
             )}
           </div>
+
+          {/* Favorite button — spray tag */}
+          <button
+            onClick={handleFavClick}
+            className={`absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 ${
+              isFav
+                ? "bg-void/40 backdrop-blur-sm text-pink"
+                : "bg-void/20 backdrop-blur-sm text-white/50 opacity-0 group-hover:opacity-100 hover:text-white"
+            }`}
+            aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+          >
+            <FavoriteIcon active={isFav} />
+          </button>
 
           {/* Quick view hint */}
           <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out pointer-events-none">

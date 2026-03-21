@@ -291,9 +291,7 @@ export default function CheckoutPage() {
 
               {/* Error */}
               {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg mt-8 text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                  {error}
-                </div>
+                <p className="text-red-400/80 text-sm mt-8">{error}</p>
               )}
 
               {/* Submit — visible on desktop */}

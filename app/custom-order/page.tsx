@@ -216,18 +216,11 @@ export default function CustomOrderPage() {
             </div>
 
             {status === "success" && (
-              <div className="form-reveal">
-                <p className="text-cyan text-sm font-medium flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan animate-pulse" />
-                  {t("custom.success")}
-                </p>
-              </div>
+              <p className="form-reveal text-cyan/80 text-sm">{t("custom.success")}</p>
             )}
 
             {status === "error" && (
-              <div className="form-reveal bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                {errorMsg}
-              </div>
+              <p className="form-reveal text-red-400/80 text-sm">{errorMsg}</p>
             )}
           </form>
         </div>

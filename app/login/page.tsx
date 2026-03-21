@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function LoginPage() {
@@ -17,8 +18,8 @@ export default function LoginPage() {
   const [isUnconfirmed, setIsUnconfirmed] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  // Countdown timer
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setInterval(() => setCooldown((c) => c - 1), 1000);
@@ -44,7 +45,6 @@ export default function LoginPage() {
     });
 
     if (error) {
-      // Detect "Email not confirmed" error
       if (error.message.toLowerCase().includes("email not confirmed")) {
         setIsUnconfirmed(true);
         setError(null);
@@ -74,33 +74,59 @@ export default function LoginPage() {
   }, [cooldown, email]);
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-4 flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 z-0 bg-void"></div>
-      
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-2xl z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold uppercase tracking-widest text-white mb-2 text-center">
-          {t("auth.login")}
-        </h1>
-        <p className="text-white/50 text-sm text-center mb-8">
-          {t("auth.welcomeBack")}
-        </p>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
+      {/* Background texture */}
+      <div className="absolute inset-0 concrete-bg" />
 
-        {/* Email not confirmed banner with resend */}
+      {/* Subtle character art */}
+      <div className="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none select-none">
+        <Image
+          src="/characters/typecek1(png).webp"
+          alt=""
+          width={400}
+          height={400}
+          className="invert brightness-150"
+          aria-hidden="true"
+        />
+      </div>
+
+      <div className="relative z-10 w-full max-w-[420px]">
+        {/* Brand mark */}
+        <div className="flex justify-center mb-10">
+          <Link href="/">
+            <Image
+              src="/logo.png"
+              alt="Lexxbrush"
+              width={160}
+              height={90}
+              className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity duration-500"
+            />
+          </Link>
+        </div>
+
+        {/* Title — minimal editorial */}
+        <div className="mb-10">
+          <h1 className="font-[family-name:var(--font-display)] text-[2.5rem] leading-[1] font-bold uppercase tracking-[0.08em] text-white">
+            {t("auth.login")}
+          </h1>
+          <div className="flex items-center gap-3 mt-3">
+            <div className="w-8 h-[1px] bg-white/20" />
+            <p className="font-[family-name:var(--font-accent)] text-sm italic text-chrome">
+              {t("auth.welcomeBack")}
+            </p>
+          </div>
+        </div>
+
+        {/* Email not confirmed */}
         {isUnconfirmed && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-6 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              <span className="text-amber-400 text-sm font-medium">{t("auth.emailNotConfirmed")}</span>
-            </div>
-            <p className="text-white/40 text-xs mb-3">{t("auth.checkSpam")}</p>
+          <div className="mb-8">
+            <p className="text-amber-400/80 text-sm mb-1">
+              {t("auth.emailNotConfirmed")}
+            </p>
+            <p className="text-white/25 text-xs leading-relaxed mb-3">{t("auth.checkSpam")}</p>
 
             {resendSuccess && (
-              <p className="text-emerald-400 text-xs mb-2 flex items-center justify-center gap-1.5">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              <p className="text-emerald-400/70 text-xs mb-2">
                 {t("auth.emailResent")}
               </p>
             )}
@@ -108,32 +134,32 @@ export default function LoginPage() {
             <button
               onClick={handleResendConfirmation}
               disabled={cooldown > 0}
-              className="text-xs text-amber-400/80 hover:text-amber-400 disabled:text-white/30 transition-colors duration-300 disabled:cursor-not-allowed"
+              className="text-xs text-white/30 hover:text-white/50 disabled:text-white/15 transition-colors duration-300 disabled:cursor-not-allowed"
             >
               {cooldown > 0 ? (
-                <span className="flex items-center justify-center gap-1.5">
-                  {t("auth.resendIn")}{" "}
-                  <span className="inline-flex items-center justify-center min-w-[2rem] px-1.5 py-0.5 rounded bg-white/10 text-white/60 font-mono text-[10px] tabular-nums">
-                    {cooldown}s
-                  </span>
-                </span>
+                <span className="font-mono text-[11px]">{t("auth.resendIn")} {cooldown}s</span>
               ) : (
-                <span className="underline underline-offset-4">{t("auth.resendEmail")}</span>
+                <span className="border-b border-white/20 pb-px">{t("auth.resendEmail")}</span>
               )}
             </button>
           </div>
         )}
 
-        {/* Generic error */}
+        {/* Error */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg mb-6 text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-            {error}
-          </div>
+          <p className="text-red-400/80 text-sm mb-8">{error}</p>
         )}
 
-        <form onSubmit={handleLogin} noValidate className="space-y-5">
-          <div>
-            <label className="block text-xs font-bold tracking-widest text-white/50 uppercase mb-2">
+        <form onSubmit={handleLogin} noValidate className="space-y-6">
+          {/* Email field */}
+          <div className="relative">
+            <label
+              className={`absolute left-0 transition-all duration-300 pointer-events-none font-[family-name:var(--font-display)] tracking-[0.15em] uppercase ${
+                focusedField === "email" || email
+                  ? "text-[10px] -top-5 text-chrome"
+                  : "text-xs top-3 text-white/25"
+              }`}
+            >
               {t("auth.email")}
             </label>
             <input
@@ -141,58 +167,78 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
-              placeholder="you@example.com"
+              onFocus={() => setFocusedField("email")}
+              onBlur={() => setFocusedField(null)}
+              className="w-full bg-transparent border-b border-white/10 focus:border-white/40 px-0 py-3 text-white text-sm focus:outline-none transition-all duration-300"
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-bold tracking-widest text-white/50 uppercase mb-2">
+          {/* Password field */}
+          <div className="relative">
+            <label
+              className={`absolute left-0 transition-all duration-300 pointer-events-none font-[family-name:var(--font-display)] tracking-[0.15em] uppercase ${
+                focusedField === "password" || password
+                  ? "text-[10px] -top-5 text-chrome"
+                  : "text-xs top-3 text-white/25"
+              }`}
+            >
               {t("auth.password")}
             </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setFocusedField("password")}
+              onBlur={() => setFocusedField(null)}
+              className="w-full bg-transparent border-b border-white/10 focus:border-white/40 px-0 py-3 pr-10 text-white text-sm focus:outline-none transition-all duration-300"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-3 text-white/20 hover:text-white/50 transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white text-black font-bold uppercase tracking-[0.15em] py-4 rounded-lg hover:bg-white/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+            className="group relative w-full mt-8 py-4 font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 disabled:opacity-40"
           >
-            {loading ? t("auth.signingIn") : t("auth.signIn")}
+            {/* Background fill animation */}
+            <span className="absolute inset-0 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left group-hover:scale-x-100 scale-x-100" />
+            <span className="absolute inset-0 bg-white/0 group-hover:bg-chrome-bright transition-colors duration-300" />
+            <span className="relative z-10 text-void font-bold">
+              {loading ? t("auth.signingIn") : t("auth.signIn")}
+            </span>
           </button>
         </form>
 
-        <p className="text-center text-sm text-white/50 mt-6">
+        {/* Divider */}
+        <div className="flex items-center gap-4 my-8">
+          <div className="flex-1 h-[1px] bg-white/[0.06]" />
+          <span className="text-[10px] text-white/20 font-[family-name:var(--font-display)] tracking-[0.2em] uppercase">or</span>
+          <div className="flex-1 h-[1px] bg-white/[0.06]" />
+        </div>
+
+        <p className="text-center text-sm text-white/40">
           {t("auth.noAccount")}{" "}
-          <Link href="/register" className="text-white hover:underline">
+          <Link href="/register" className="text-white/70 hover:text-white border-b border-white/20 hover:border-white/50 pb-px transition-all duration-300">
             {t("auth.signUp")}
           </Link>
         </p>
