@@ -201,14 +201,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full mt-8 py-4 font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 disabled:opacity-40"
+            className="w-full mt-8 py-4 btn-brand font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.2em] uppercase rounded-full disabled:opacity-50"
           >
-            {/* Background fill animation */}
-            <span className="absolute inset-0 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left group-hover:scale-x-100 scale-x-100" />
-            <span className="absolute inset-0 bg-white/0 group-hover:bg-chrome-bright transition-colors duration-300" />
-            <span className="relative z-10 text-void font-bold">
-              {loading ? t("auth.signingIn") : t("auth.signIn")}
-            </span>
+            {loading ? t("auth.signingIn") : t("auth.signIn")}
           </button>
         </form>
 

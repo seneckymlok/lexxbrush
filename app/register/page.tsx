@@ -230,13 +230,9 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full mt-8 py-4 font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 disabled:opacity-40"
+            className="w-full mt-8 py-4 btn-brand font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.2em] uppercase rounded-full disabled:opacity-50"
           >
-            <span className="absolute inset-0 bg-white" />
-            <span className="absolute inset-0 bg-white/0 group-hover:bg-chrome-bright transition-colors duration-300" />
-            <span className="relative z-10 text-void font-bold">
-              {loading ? t("auth.signingUp") : t("auth.signUp")}
-            </span>
+            {loading ? t("auth.signingUp") : t("auth.signUp")}
           </button>
         </form>
 
