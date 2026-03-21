@@ -91,19 +91,6 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-[420px]">
-        {/* Brand mark */}
-        <div className="flex justify-center mb-10">
-          <Link href="/">
-            <Image
-              src="/logo.png"
-              alt="Lexxbrush"
-              width={160}
-              height={90}
-              className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity duration-500"
-            />
-          </Link>
-        </div>
-
         {/* Title — minimal editorial */}
         <div className="mb-10">
           <h1 className="font-[family-name:var(--font-display)] text-[2.5rem] leading-[1] font-bold uppercase tracking-[0.08em] text-white">
