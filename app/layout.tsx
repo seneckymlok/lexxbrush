@@ -43,6 +43,8 @@ export const metadata: Metadata = {
   description:
     "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand — hoodies, tees, backpacks and custom orders. One-of-a-kind wearable art.",
   keywords: [
+    "44lexx",
+    "lexxbrush",
     "airbrush",
     "streetwear",
     "handmade",
