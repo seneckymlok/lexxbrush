@@ -209,30 +209,62 @@
     text-shadow: 0 0 8px rgba(255, 20, 147, 0.3);
   }
 
-  /* Brand CTA button — 4-color gradient with glow */
+  /* Brand CTA button — deep gradient with prismatic shimmer */
   .btn-brand {
     position: relative;
-    background-image: linear-gradient(135deg, var(--color-pink-hot) 0%, var(--color-pink) 30%, var(--color-violet) 70%, var(--color-cyan) 100%);
-    background-size: 200% 200%;
-    background-position: 0% 0%;
+    overflow: hidden;
+    background: linear-gradient(135deg, hsl(330, 65%, 38%) 0%, hsl(280, 50%, 25%) 100%);
     color: var(--color-white);
     font-family: var(--font-display);
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 0 0 20px rgba(123, 47, 190, 0.15), 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  /* Shimmer sweep — light that travels across the button */
+  .btn-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.06) 35%,
+      rgba(255, 220, 255, 0.12) 43%,
+      rgba(220, 230, 255, 0.18) 50%,
+      rgba(200, 255, 255, 0.12) 57%,
+      rgba(255, 255, 255, 0.06) 65%,
+      transparent 80%
+    );
+    translate: -120% 0;
+    pointer-events: none;
+    mix-blend-mode: overlay;
   }
 
   @media (hover: hover) {
     .btn-brand:hover {
-      background-position: 100% 100%;
-      box-shadow: 0 0 30px rgba(123, 47, 190, 0.25), 0 0 15px rgba(0, 229, 255, 0.15), 0 6px 20px rgba(0, 0, 0, 0.4);
       transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow:
+        0 8px 30px rgba(160, 50, 110, 0.2),
+        0 0 60px rgba(100, 30, 160, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-brand:hover::before {
+      animation: shimmer-sweep 0.7s ease-out forwards;
     }
   }
 
+  @keyframes shimmer-sweep {
+    to { translate: 120% 0; }
+  }
+
   .btn-brand:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.97);
+    transition: transform 0.1s;
   }
 
   /* Secondary/outline CTA */
