@@ -27,14 +27,16 @@ export function Footer() {
         <div className="py-12 md:py-16 flex flex-col items-center text-center md:text-left md:flex-row md:items-center md:justify-between gap-8">
           {/* Brand + description */}
           <div className="flex-shrink-0 flex flex-col items-center md:items-start">
-            <Image
-              src="/logo.png"
-              alt="Lexxbrush"
-              width={200}
-              height={112}
-              sizes="(max-width: 768px) 86px, 56px"
-              className="h-16 md:h-12 w-auto object-contain mb-3 opacity-80 hover:opacity-100 transition-opacity duration-300"
-            />
+            <Link href="/" className="inline-block">
+              <Image
+                src="/logo.png"
+                alt="Lexxbrush"
+                width={200}
+                height={112}
+                sizes="(max-width: 768px) 86px, 56px"
+                className="h-16 md:h-12 w-auto object-contain mb-3 opacity-80 hover:opacity-100 transition-opacity duration-300"
+              />
+            </Link>
             <p className="text-text-dim text-xs leading-relaxed max-w-[240px]">
               Hand-airbrushed wearable art.<br />
               Every piece painted entirely by hand.
