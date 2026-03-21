@@ -65,14 +65,14 @@ export default function AccountPage() {
       {/* Account Header — editorial */}
       <div className="mb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
             <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
               {t("auth.account")}
             </h1>
             <div className="w-10 h-[1px] bg-white/10 mt-3 mx-auto md:mx-0" />
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center justify-center md:justify-end gap-6 w-full md:w-auto">
             <p className="text-white/30 text-sm font-mono">{user.email}</p>
             <button
               onClick={signOut}
@@ -84,7 +84,7 @@ export default function AccountPage() {
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
-              <span className="font-[family-name:var(--font-display)] text-xs tracking-[0.15em] uppercase hidden md:inline">
+              <span className="font-[family-name:var(--font-display)] text-xs tracking-[0.15em] uppercase">
                 {t("auth.signOut")}
               </span>
             </button>
@@ -154,9 +154,9 @@ export default function AccountPage() {
         ) : orders.length === 0 ? (
           <div className="border border-white/[0.06] py-16 text-center">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 text-white/10">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 01-8 0" />
+              <path d="M5 7h14l-1.5 13a1 1 0 01-1 .9H7.5a1 1 0 01-1-.9L5 7z" />
+              <path d="M9 7V5a3 3 0 016 0v2" />
+              <path d="M15.5 20.9c0 .6.3 1.4.7 1.8" strokeWidth="1.3" />
             </svg>
             <p className="text-white/25 text-sm mb-6">{t("auth.noOrders")}</p>
             <button
