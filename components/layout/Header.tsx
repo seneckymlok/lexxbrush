@@ -202,7 +202,7 @@ export function Header() {
         }`}
       >
         {/* Foundation: deep frosted glass */}
-        <div className="absolute inset-0 bg-[#050505]/60 backdrop-blur-3xl" />
+        <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-3xl" />
         
         {/* Texture: subtle noise injected */}
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay" />
