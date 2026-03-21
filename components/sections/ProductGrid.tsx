@@ -100,15 +100,15 @@ export function ProductGrid({ products }: ProductGridProps) {
       />
       {/* Section Header */}
       <div ref={titleRef} className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-        <div>
+        <div className="text-center md:text-left">
           <h2 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
             {t("shop.title")}
           </h2>
-          <div className="w-10 h-[1px] bg-white/10 mt-3" />
+          <div className="w-10 h-[1px] bg-white/10 mt-3 mx-auto md:mx-0" />
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap justify-center md:justify-start gap-2">
           {categories.map((cat) => (
             <button
               key={cat.id}
