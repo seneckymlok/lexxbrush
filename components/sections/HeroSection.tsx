@@ -44,26 +44,34 @@ export function HeroSection({ products }: HeroSectionProps) {
 
       if (cancelled) return;
 
-      // 1. Set GSAP initial state (opacity:0) while still hidden
-      gsap.set(logoRef.current!, { opacity: 0, scale: 1.15 });
-      gsap.set(glowRef.current!, { opacity: 0, scale: 0.5 });
-      gsap.set(taglineRef.current!, { opacity: 0, y: 15 });
-      gsap.set(lineRef.current!, { opacity: 0, scaleX: 0 });
-      gsap.set(marqueeRef.current!, { opacity: 0, y: 30 });
+      // Skip intro animation on return visits (only animate on first load)
+      const hasAnimated = sessionStorage.getItem("hero-animated");
+      if (hasAnimated) {
+        els.forEach(el => { if (el) { reveal(el); el.style.opacity = "1"; } });
+      } else {
+        // 1. Set GSAP initial state (opacity:0) while still hidden
+        gsap.set(logoRef.current!, { opacity: 0, scale: 1.15 });
+        gsap.set(glowRef.current!, { opacity: 0, scale: 0.5 });
+        gsap.set(taglineRef.current!, { opacity: 0, y: 15 });
+        gsap.set(lineRef.current!, { opacity: 0, scaleX: 0 });
+        gsap.set(marqueeRef.current!, { opacity: 0, y: 30 });
 
-      // 2. NOW remove data-animate — elements become visible but opacity is 0, so no flash
-      els.forEach(el => { if (el) reveal(el); });
+        // 2. NOW remove data-animate — elements become visible but opacity is 0, so no flash
+        els.forEach(el => { if (el) reveal(el); });
 
-      // 3. Animate in
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+        // 3. Animate in
+        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-      tl.to(logoRef.current, {
-        scale: 1, opacity: 1, duration: 0.8, delay: 0.1,
-      })
-        .to(glowRef.current, { opacity: 1, scale: 1, duration: 1 }, "-=0.6")
-        .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
-        .to(lineRef.current, { opacity: 1, scaleX: 1, transformOrigin: "center center", duration: 0.4 }, "-=0.2")
-        .to(marqueeRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.2");
+        tl.to(logoRef.current, {
+          scale: 1, opacity: 1, duration: 0.8, delay: 0.1,
+        })
+          .to(glowRef.current, { opacity: 1, scale: 1, duration: 1 }, "-=0.6")
+          .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
+          .to(lineRef.current, { opacity: 1, scaleX: 1, transformOrigin: "center center", duration: 0.4 }, "-=0.2")
+          .to(marqueeRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.2");
+
+        sessionStorage.setItem("hero-animated", "1");
+      }
 
       // Parallax logo on scroll
       gsap.fromTo(
