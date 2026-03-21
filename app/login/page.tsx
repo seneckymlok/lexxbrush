@@ -79,7 +79,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 concrete-bg" />
 
       {/* Subtle character art */}
-      <div className="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none select-none">
+      <div className="absolute right-0 top-20 opacity-[0.03] pointer-events-none select-none">
         <Image
           src="/characters/typecek1(png).webp"
           alt=""
@@ -92,16 +92,10 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-[420px]">
         {/* Title — minimal editorial */}
-        <div className="mb-10">
+        <div className="mb-10 text-center md:text-left">
           <h1 className="font-[family-name:var(--font-display)] text-[2.5rem] leading-[1] font-bold uppercase tracking-[0.08em] text-white">
             {t("auth.login")}
           </h1>
-          <div className="flex items-center gap-3 mt-3">
-            <div className="w-8 h-[1px] bg-white/20" />
-            <p className="font-[family-name:var(--font-accent)] text-sm italic text-chrome">
-              {t("auth.welcomeBack")}
-            </p>
-          </div>
         </div>
 
         {/* Email not confirmed */}

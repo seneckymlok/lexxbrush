@@ -145,16 +145,10 @@ export default function RegisterPage() {
 
       <div className="relative z-10 w-full max-w-[420px]">
         {/* Title */}
-        <div className="mb-10">
+        <div className="mb-10 text-center md:text-left">
           <h1 className="font-[family-name:var(--font-display)] text-[2.5rem] leading-[1] font-bold uppercase tracking-[0.08em] text-white">
             {t("auth.register")}
           </h1>
-          <div className="flex items-center gap-3 mt-3">
-            <div className="w-8 h-[1px] bg-white/20" />
-            <p className="font-[family-name:var(--font-accent)] text-sm italic text-chrome">
-              {t("auth.joinUs")}
-            </p>
-          </div>
         </div>
 
         {/* Error */}
