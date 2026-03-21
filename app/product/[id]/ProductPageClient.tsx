@@ -202,50 +202,14 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             {product.isSold ? t("product.sold") : added ? "Added!" : t("product.addToCart")}
           </button>
 
-          {/* Details — Premium icon grid */}
+          {/* Details — editorial strip */}
           <div className="mt-10 pt-6 border-t border-white/5">
-            <h3 className="text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-5">{t("product.details")}</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {/* Hand-airbrushed */}
-              <div className="group flex flex-col items-center text-center gap-2.5 p-4 rounded-xl border border-white/[0.04] bg-white/[0.015] hover:border-pink/20 hover:bg-white/[0.03] transition-all duration-300">
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-pink/10 text-pink group-hover:bg-pink/15 transition-colors duration-300">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M18.37 2.63 14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3Z" />
-                    <path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7" />
-                    <path d="M14.5 17.5 4.5 15" />
-                  </svg>
-                </div>
-                <span className="text-[10px] md:text-xs font-[family-name:var(--font-display)] tracking-[0.1em] uppercase text-chrome-light leading-tight">{t("product.handPainted")}</span>
-              </div>
-
-              {/* Unique piece */}
-              <div className="group flex flex-col items-center text-center gap-2.5 p-4 rounded-xl border border-white/[0.04] bg-white/[0.015] hover:border-lime/20 hover:bg-white/[0.03] transition-all duration-300">
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-lime/10 text-lime group-hover:bg-lime/15 transition-colors duration-300">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
-                    <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
-                    <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
-                    <path d="M2 12a10 10 0 0 1 18-6" />
-                    <path d="M2 16h.01" />
-                    <path d="M21.8 16c.2-2 .131-5.354 0-6" />
-                    <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
-                  </svg>
-                </div>
-                <span className="text-[10px] md:text-xs font-[family-name:var(--font-display)] tracking-[0.1em] uppercase text-chrome-light leading-tight">{t("product.unique")}</span>
-              </div>
-
-              {/* Made by hand */}
-              <div className="group flex flex-col items-center text-center gap-2.5 p-4 rounded-xl border border-white/[0.04] bg-white/[0.015] hover:border-violet/20 hover:bg-white/[0.03] transition-all duration-300">
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-violet/10 text-violet group-hover:bg-violet/15 transition-colors duration-300">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16" />
-                    <path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9" />
-                    <path d="m2 15 6 6" />
-                    <path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] md:text-xs font-[family-name:var(--font-display)] tracking-[0.1em] uppercase text-chrome-light leading-tight">{t("product.madeByHand")}</span>
-              </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.handPainted")}</span>
+              <span className="w-1 h-1 rounded-full bg-pink" aria-hidden="true" />
+              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.unique")}</span>
+              <span className="w-1 h-1 rounded-full bg-lime" aria-hidden="true" />
+              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.madeByHand")}</span>
             </div>
           </div>
         </div>
