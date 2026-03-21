@@ -150,17 +150,14 @@
     transform: translateY(-4px);
   }
 
-  /* Logo glow pulse */
+  /* Logo subtle hover */
   .logo-glow {
-    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.1))
-            drop-shadow(0 0 60px rgba(123, 47, 190, 0.06))
-            drop-shadow(0 0 90px rgba(255, 105, 180, 0.04));
+    filter: brightness(1);
+    transition: filter 0.3s ease;
   }
 
   .logo-glow:hover {
-    filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.15))
-            drop-shadow(0 0 60px rgba(123, 47, 190, 0.1))
-            drop-shadow(0 0 100px rgba(255, 105, 180, 0.08));
+    filter: brightness(1.15);
   }
 
   /* Spray dot */

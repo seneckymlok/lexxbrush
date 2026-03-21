@@ -16,8 +16,8 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
       gsap.registerPlugin(ScrollTrigger);
 
       const lenis = new Lenis({
-        duration: 0.8,
-        easing: (t) => 1 - Math.pow(1 - t, 3),
+        duration: 0.5,
+        easing: (t) => 1 - Math.pow(1 - t, 2),
         smoothWheel: true,
       });
 
