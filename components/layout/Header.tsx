@@ -212,8 +212,8 @@ export function Header() {
 
         {/* Character Art Backdrop — matching project vision */}
         <div 
-          className={`absolute -right-20 top-[10%] pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-            mobileMenuOpen ? "opacity-[0.04] translate-x-0" : "opacity-0 translate-x-12"
+          className={`absolute -right-20 -top-5 pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${
+            mobileMenuOpen ? "opacity-[0.15] translate-x-0" : "opacity-0 translate-x-12"
           }`}
           style={{ transitionDelay: mobileMenuOpen ? "200ms" : "0ms" }}
         >
@@ -222,7 +222,7 @@ export function Header() {
             alt=""
             width={600}
             height={600}
-            className="invert brightness-150 rotate-[-5deg]"
+            className="rotate-[-5deg]"
             aria-hidden="true"
             priority={false}
           />
@@ -290,9 +290,10 @@ export function Header() {
               </span>
               <span className="font-[family-name:var(--font-body)] text-sm tracking-wide text-white group-hover:text-pink transition-colors flex items-center gap-2">
                 @lexxbrush
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60 transition-all group-hover:opacity-100 group-hover:text-pink">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                 </svg>
               </span>
             </a>
