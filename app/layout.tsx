@@ -5,6 +5,8 @@ import { LayoutShell } from "@/components/layout/LayoutShell";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -144,11 +146,15 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-void text-text">
         <LanguageProvider>
-          <CartProvider>
-            <ScrollProvider>
-              <LayoutShell>{children}</LayoutShell>
-            </ScrollProvider>
-          </CartProvider>
+          <AuthProvider>
+            <FavoritesProvider>
+              <CartProvider>
+                <ScrollProvider>
+                  <LayoutShell>{children}</LayoutShell>
+                </ScrollProvider>
+              </CartProvider>
+            </FavoritesProvider>
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

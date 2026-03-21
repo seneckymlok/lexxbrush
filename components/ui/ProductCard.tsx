@@ -4,6 +4,7 @@ import { useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useFavorites } from "@/components/providers/FavoritesProvider";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
 
@@ -14,8 +15,16 @@ interface ProductCardProps {
 
 export function ProductCard({ product, index }: ProductCardProps) {
   const { locale, t } = useLanguage();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+
+  const isFav = isFavorite(product.id);
+
+  const handleHeartClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Stop link navigation
+    toggleFavorite(product.id);
+  };
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

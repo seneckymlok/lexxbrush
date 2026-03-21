@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, customer, successUrl, cancelUrl } = await req.json();
+    const { items, customer, successUrl, cancelUrl, userId, saveProfile } = await req.json();
     const supabase = createAdminClient();
 
     // Validate products and prices against database
@@ -61,6 +61,23 @@ export async function POST(req: NextRequest) {
         ).slice(0, 500),
       },
     };
+
+    if (userId) {
+      sessionConfig.metadata.user_id = userId;
+
+      if (saveProfile && customer?.name && customer?.address) {
+        await supabase.from("profiles").upsert({
+          id: userId,
+          full_name: customer.name,
+          address: customer.address.line1,
+          address2: customer.address.line2 || null,
+          city: customer.address.city,
+          postal_code: customer.address.postal_code,
+          country: customer.address.country,
+          updated_at: new Date().toISOString(),
+        });
+      }
+    }
 
     if (customer?.email) {
       sessionConfig.customer_email = customer.email;

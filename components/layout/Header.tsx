@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
@@ -52,6 +53,15 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
+function UserIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
 const NAV_LINKS = [
   { href: "/", key: "nav.shop" },
   { href: "/custom-order", key: "nav.custom" },
@@ -62,6 +72,7 @@ const NAV_LINKS = [
 export function Header() {
   const { t } = useLanguage();
   const { totalItems } = useCart();
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -130,6 +141,15 @@ export function Header() {
 
             <LanguageSwitcher />
 
+            {/* Account */}
+            <Link
+              href={user ? "/account" : "/login"}
+              className="text-chrome-light hover:text-cyan transition-colors duration-200"
+              aria-label="Account"
+            >
+              <UserIcon />
+            </Link>
+
             {/* Cart */}
             <Link
               href="/cart"
@@ -144,8 +164,12 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Mobile: Cart + Menu Button */}
+          {/* Mobile: Account + Cart + Menu Button */}
           <div className="flex md:hidden items-center gap-5 z-10">
+            <Link href={user ? "/account" : "/login"} className="text-chrome-light" onClick={closeMenu}>
+              <UserIcon size={18} />
+            </Link>
+            
             <Link href="/cart" className="relative text-chrome-light" onClick={closeMenu}>
               <BagIcon size={18} />
               {totalItems > 0 && (

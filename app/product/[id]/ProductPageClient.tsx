@@ -7,6 +7,7 @@ import gsap from "gsap";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useCart } from "@/components/providers/CartProvider";
+import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { getProduct } from "@/lib/products";
 import type { Product } from "@/lib/products";
@@ -21,6 +22,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   const router = useRouter();
   const { locale, t } = useLanguage();
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [product, setProduct] = useState<Product | undefined>(initialProduct);
   const [loading, setLoading] = useState(!initialProduct);
@@ -126,6 +128,31 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               priority
             />
+
+            {/* Heart Icon Overlay */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (product) toggleFavorite(product.id);
+              }}
+              className="absolute top-4 left-4 z-20 w-12 h-12 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center border border-white/10 transition-all duration-300 hover:scale-110 hover:bg-black/40 group/heart"
+              aria-label={product && isFavorite(product.id) ? "Remove from favorites" : "Add to favorites"}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill={product && isFavorite(product.id) ? "#ff69b4" : "none"}
+                stroke={product && isFavorite(product.id) ? "#ff69b4" : "currentColor"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-all duration-300 ${product && isFavorite(product.id) ? "scale-110" : "text-white group-hover/heart:text-pink scale-100"}`}
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
             
             {hasMultipleImages && (
               <>

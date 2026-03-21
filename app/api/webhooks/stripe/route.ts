@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       // Create order in database
       await supabase.from("orders").insert({
         stripe_session_id: session.id,
+        user_id: session.metadata?.user_id || null,
         stripe_payment_intent: session.payment_intent,
         customer_email: session.customer_details?.email,
         items,

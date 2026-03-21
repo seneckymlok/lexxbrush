@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useCart } from "@/components/providers/CartProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 import type { Locale } from "@/lib/translations";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
@@ -27,6 +29,7 @@ const COUNTRIES = [
 export default function CheckoutPage() {
   const { locale, t } = useLanguage();
   const { items, totalPrice } = useCart();
+  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -39,6 +42,28 @@ export default function CheckoutPage() {
     postalCode: "",
     country: "SK",
   });
+  const [saveProfile, setSaveProfile] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    setForm(prev => ({ ...prev, email: user.email || prev.email }));
+
+    const fetchProfile = async () => {
+      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      if (data) {
+        setForm(prev => ({
+          ...prev,
+          name: data.full_name || prev.name,
+          address: data.address || prev.address,
+          address2: data.address2 || prev.address2,
+          city: data.city || prev.city,
+          postalCode: data.postal_code || prev.postalCode,
+          country: data.country || prev.country,
+        }));
+      }
+    };
+    fetchProfile();
+  }, [user]);
 
   function update(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -55,6 +80,8 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userId: user?.id,
+          saveProfile,
           items: items.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
@@ -238,6 +265,21 @@ export default function CheckoutPage() {
                       ))}
                     </select>
                   </div>
+                  
+                  {user && (
+                    <div className="flex items-center gap-3 pt-2">
+                      <input
+                        type="checkbox"
+                        id="saveProfile"
+                        checked={saveProfile}
+                        onChange={(e) => setSaveProfile(e.target.checked)}
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-chrome focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                      />
+                      <label htmlFor="saveProfile" className="text-sm text-chrome hover:text-white cursor-pointer transition-colors">
+                        {t("checkout.saveAddress")}
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
 
