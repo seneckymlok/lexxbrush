@@ -26,7 +26,7 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.com";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 
 export const viewport: Viewport = {
   themeColor: "#0A0A0A",
@@ -47,14 +47,14 @@ export const metadata: Metadata = {
     "streetwear",
     "handmade",
     "custom clothing",
-    "handmade",
     "wearable art",
     "lexxbrush",
     "hand painted",
     "custom streetwear",
     "airbrushed hoodie",
     "unique fashion",
-    "Czech Republic",
+    "Slovakia",
+    "one of a kind",
   ],
   authors: [{ name: "Lexxbrush", url: baseUrl }],
   creator: "Lexxbrush",
@@ -127,8 +127,10 @@ export default function RootLayout({
               description: "Hand-airbrushed wearable art, made entirely by hand. Every piece is unique.",
               address: {
                 "@type": "PostalAddress",
-                addressLocality: "Europe",
-                addressCountry: "CZ",
+                streetAddress: "Stará ulica 38/27",
+                addressLocality: "Slovenská Kajňa",
+                postalCode: "094 02",
+                addressCountry: "SK",
               },
               sameAs: ["https://www.instagram.com/lexxbrush"],
             }),

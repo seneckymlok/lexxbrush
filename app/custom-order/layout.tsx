@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.com";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 
 export const metadata: Metadata = {
   title: "Custom Order — Get Your Own Airbrushed Piece",
   description:
-    "Commission a one-of-a-kind hand-airbrushed piece. Tell us your vision and we'll bring it to life. Custom hoodies, tees, jackets and more.",
+    "Commission a one-of-a-kind hand-airbrushed piece. Tell me your vision and I'll bring it to life. Custom hoodies, tees, jackets and more.",
   openGraph: {
     title: "Custom Order | Lexxbrush",
     description: "Commission your own hand-airbrushed wearable art, made entirely by hand.",
