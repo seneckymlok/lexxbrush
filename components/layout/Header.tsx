@@ -192,104 +192,117 @@ export function Header() {
       </header>
 
       {/* ═══════════════════════════════════════════════════════════
-          FULL-SCREEN MOBILE MENU — Editorial Catalog Style
+          FULL-SCREEN MOBILE MENU — The Ultimate Premium Experience
       ═══════════════════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`fixed inset-0 z-40 lg:hidden overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           mobileMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Background — pure black, no blur */}
-        <div className="absolute inset-0 bg-void/[0.98]" />
+        {/* Foundation: deep frosted glass */}
+        <div className="absolute inset-0 bg-[#050505]/60 backdrop-blur-3xl" />
+        
+        {/* Texture: subtle noise injected */}
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay" />
 
-        {/* Content */}
-        <div className="relative h-full flex flex-col justify-between px-8 pt-20 pb-10">
+        {/* Ambient light orbs for depth — scale and fade in on open */}
+        <div 
+          className={`absolute -top-[20%] -right-[20%] w-[60%] h-[60%] bg-pink/20 blur-[120px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100" : "scale-50 opacity-0"}`} 
+          style={{ transitionDelay: mobileMenuOpen ? "100ms" : "0ms" }}
+        />
+        <div 
+          className={`absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-cyan/20 blur-[120px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100" : "scale-50 opacity-0"}`} 
+          style={{ transitionDelay: mobileMenuOpen ? "200ms" : "0ms" }}
+        />
 
-          {/* Tagline */}
+        {/* Dynamic Content Container */}
+        <div className="relative h-full flex flex-col justify-between px-6 md:px-12 pt-28 pb-10">
+
+          {/* Subtitle / Brand Tagline */}
           <div
-            className={`transition-all duration-500 ${
-              mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+            className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"
             }`}
-            style={{ transitionDelay: mobileMenuOpen ? "100ms" : "0ms" }}
+            style={{ transitionDelay: mobileMenuOpen ? "300ms" : "0ms" }}
           >
-            <p className="font-[family-name:var(--font-accent)] text-sm italic text-chrome tracking-wide">
-              Hand-airbrushed wearable art
+            <p className="font-[family-name:var(--font-accent)] text-xs md:text-sm italic text-chrome tracking-[0.2em] uppercase">
+              {t("shop.oneOfAKind") || "Hand-painted Wearable Art"}
             </p>
+            <div className="w-12 h-[1px] bg-white/20 mt-4" />
           </div>
 
-          {/* Navigation links */}
-          <nav className="flex flex-col -my-2">
+          {/* Master Navigation Links */}
+          <nav className="flex flex-col flex-1 justify-center gap-2 md:gap-4 my-8">
             {NAV_LINKS.map((link, i) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={closeMenu}
-                className={`group block transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                  mobileMenuOpen
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
-                }`}
-                style={{
-                  transitionDuration: "600ms",
-                  transitionDelay: mobileMenuOpen ? `${180 + i * 70}ms` : "0ms",
-                }}
-              >
-                {/* Top rule */}
-                <div className="w-full h-[1px] bg-white/[0.06]" />
-
-                <div className="py-5 flex items-baseline gap-4">
-                  {/* Number */}
-                  <span className="font-[family-name:var(--font-accent)] text-sm italic text-chrome tabular-nums">
+              <div key={link.href} className="overflow-hidden">
+                <Link
+                  href={link.href}
+                  onClick={closeMenu}
+                  className={`group flex items-start gap-4 md:gap-6 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    mobileMenuOpen
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-full"
+                  }`}
+                  style={{
+                    transitionDelay: mobileMenuOpen ? `${300 + i * 80}ms` : "0ms",
+                  }}
+                >
+                  {/* Numbering */}
+                  <span className="font-[family-name:var(--font-accent)] text-xs md:text-sm italic text-white/30 tabular-nums mt-3 md:mt-5 transition-colors duration-300 group-hover:text-cyan">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
-                  {/* Link text */}
-                  <span className="font-[family-name:var(--font-display)] text-[clamp(2.2rem,9vw,3.5rem)] leading-[1] tracking-[0.02em] uppercase text-chrome-bright group-active:text-white transition-colors duration-200">
+                  {/* High-impact Typographic Link */}
+                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.8rem,13vw,6rem)] leading-[0.9] font-black tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 transition-all duration-500 group-hover:from-cyan group-hover:to-pink">
                     {t(link.key)}
+                    
+                    {/* Floating Cart Indicator */}
+                    {link.href === "/cart" && totalItems > 0 && (
+                      <span className="absolute -top-1 -right-4 md:-right-6 text-pink text-sm md:text-lg font-bold font-sans">
+                        •
+                      </span>
+                    )}
                   </span>
-
-                  {/* Cart count */}
-                  {link.href === "/cart" && totalItems > 0 && (
-                    <span className="font-[family-name:var(--font-accent)] text-sm italic text-pink">
-                      {totalItems}
-                    </span>
-                  )}
-                </div>
-
-                {/* Bottom rule on last item */}
-                {i === NAV_LINKS.length - 1 && (
-                  <div className="w-full h-[1px] bg-white/[0.06]" />
-                )}
-              </Link>
+                </Link>
+              </div>
             ))}
           </nav>
 
-          {/* Footer — Instagram + Language */}
+          {/* Premium Footer Elements */}
           <div
-            className={`flex items-center justify-between transition-all duration-500 ${
+            className={`flex items-end justify-between border-t border-white/10 pt-6 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
               mobileMenuOpen
                 ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+                : "opacity-0 translate-y-8"
             }`}
-            style={{ transitionDelay: mobileMenuOpen ? "450ms" : "0ms" }}
+            style={{ transitionDelay: mobileMenuOpen ? "600ms" : "0ms" }}
           >
+            {/* Social Link */}
             <a
               href="https://www.instagram.com/lexxbrush"
               target="_blank"
               rel="noopener noreferrer"
-              className="ig-hover text-chrome transition-colors duration-300"
+              className="group flex flex-col gap-2"
               aria-label="Instagram"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-300">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-              </svg>
+              <span className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.2em] uppercase text-white/30 group-hover:text-white/50 transition-colors">
+                Follow Us
+              </span>
+              <span className="font-[family-name:var(--font-body)] text-sm tracking-wide text-white group-hover:text-pink transition-colors flex items-center gap-2">
+                @lexxbrush
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
             </a>
 
-            <LanguageSwitcher />
+            {/* Language Switch */}
+            <div className="scale-90 md:scale-100 origin-bottom-right">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </div>
