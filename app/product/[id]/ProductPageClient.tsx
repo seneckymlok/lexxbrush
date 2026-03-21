@@ -42,8 +42,17 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     };
     if (isLightboxOpen) {
       window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
   }, [isLightboxOpen]);
 
   const handlePrevImage = (e?: React.MouseEvent) => {
@@ -325,7 +334,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           )}
 
           <div 
-            className="relative w-full h-[85vh] md:h-[90vh] max-w-[90vw] md:max-w-[80vw] flex items-center justify-center"
+            className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw] flex items-center justify-center -mt-12 md:mt-0"
           >
             <Image
               src={product.images[activeImage]}
