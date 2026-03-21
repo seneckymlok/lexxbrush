@@ -174,10 +174,10 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                     role="radio"
                     aria-checked={selectedSize === size}
                     aria-label={`Size ${size}`}
-                    className={`w-12 h-12 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-semibold rounded-lg border transition-all duration-300 ${
+                    className={`w-12 h-12 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-medium rounded-lg border transition-all duration-300 ${
                       selectedSize === size
-                        ? "bg-gradient-to-br from-pink-hot to-pink text-white border-pink/30 shadow-[0_0_12px_rgba(255,20,147,0.2)]"
-                        : "bg-transparent text-chrome-light border-steel hover:border-pink/40"
+                        ? "bg-white/15 text-white border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                        : "bg-transparent text-chrome-dim border-white/10 hover:border-white/25 hover:text-chrome"
                     }`}
                   >
                     {size}
