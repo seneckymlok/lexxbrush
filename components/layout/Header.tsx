@@ -201,20 +201,25 @@ export function Header() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Foundation: solid opaque black */}
-        <div className="absolute inset-0 bg-[#050505] backdrop-blur-3xl" />
+        {/* Foundation: deep atmospheric dark radial mesh */}
+        <div className="absolute inset-0 bg-[#030303]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#0A1015] via-[#040404] to-[#010101]" />
         
-        {/* Texture: subtle noise injected */}
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay" />
+        {/* Texture: high-end noise overlay, very subtle */}
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-15 mix-blend-overlay" />
 
-        {/* Ambient light orbs for depth — scale and fade in on open */}
+        {/* Ambient bioluminescent light orbs for depth and mood */}
         <div 
-          className={`absolute -top-[20%] -right-[20%] w-[60%] h-[60%] bg-pink/20 blur-[120px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100" : "scale-50 opacity-0"}`} 
-          style={{ transitionDelay: mobileMenuOpen ? "100ms" : "0ms" }}
+          className={`absolute -top-[10%] -right-[15%] w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] bg-cyan/[0.08] blur-[100px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100 translate-x-0 translate-y-0" : "scale-75 opacity-0 translate-x-10 -translate-y-10"}`} 
+          style={{ transitionDelay: mobileMenuOpen ? "150ms" : "0ms" }}
         />
         <div 
-          className={`absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-cyan/20 blur-[120px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100" : "scale-50 opacity-0"}`} 
-          style={{ transitionDelay: mobileMenuOpen ? "200ms" : "0ms" }}
+          className={`absolute top-[40%] -left-[20%] w-[90vw] h-[90vw] max-w-[600px] max-h-[600px] bg-pink/[0.06] blur-[120px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100 translate-x-0" : "scale-75 opacity-0 -translate-x-10"}`} 
+          style={{ transitionDelay: mobileMenuOpen ? "250ms" : "0ms" }}
+        />
+        <div 
+          className={`absolute -bottom-[10%] right-[10%] w-[70vw] h-[70vw] max-w-[400px] max-h-[400px] bg-white/[0.03] blur-[90px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100 translate-y-0" : "scale-75 opacity-0 translate-y-10"}`} 
+          style={{ transitionDelay: mobileMenuOpen ? "350ms" : "0ms" }}
         />
 
         {/* Dynamic Content Container */}

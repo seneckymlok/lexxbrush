@@ -33,14 +33,6 @@ function FavoriteIcon({ active }: { active: boolean }) {
         strokeLinejoin="round"
         className="transition-all duration-400"
       />
-      {active && (
-        <>
-          {/* Tiny spray dots around the star */}
-          <circle cx="19" cy="4" r="1" fill="var(--color-pink)" opacity="0.5" />
-          <circle cx="5" cy="19" r="0.8" fill="var(--color-pink)" opacity="0.4" />
-          <circle cx="21" cy="14" r="0.6" fill="var(--color-pink)" opacity="0.3" />
-        </>
-      )}
     </svg>
   );
 }
