@@ -53,13 +53,12 @@ export async function POST(req: NextRequest) {
         product_ids: JSON.stringify(productIds),
         items: JSON.stringify(
           items.map((item: any) => ({
-            product_id: item.productId,
-            name: products.find((p) => p.id === item.productId)?.name_en,
-            price: products.find((p) => p.id === item.productId)?.price,
-            qty: item.quantity || 1,
-            size: item.size || null,
+            id: item.productId.slice(0, 8),
+            n: (products.find((p) => p.id === item.productId)?.name_en || "").slice(0, 20),
+            q: item.quantity || 1,
+            s: item.size || "",
           }))
-        ),
+        ).slice(0, 500),
       },
     };
 
