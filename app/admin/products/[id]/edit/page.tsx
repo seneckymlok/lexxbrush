@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 const CATEGORIES = ["tees", "hoodies", "pants", "bags", "accessories"];
 
@@ -158,11 +159,12 @@ export default function EditProductPage() {
           <div><label className={labelClass}>Description (EN)</label><textarea rows={3} value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} className={`${inputClass} resize-none`} /></div>
           <div><label className={labelClass}>Description (SK)</label><textarea rows={3} value={form.description_sk} onChange={(e) => setForm({ ...form, description_sk: e.target.value })} className={`${inputClass} resize-none`} /></div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div><label className={labelClass}>Price (€)</label><input required type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputClass} /></div>
-          <div><label className={labelClass}>Category</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputClass}>{CATEGORIES.map((c) => (<option key={c} value={c} className="bg-[#1a1a1a]">{c.charAt(0).toUpperCase() + c.slice(1)}</option>))}</select></div>
-          <div><label className={labelClass}>Sizes</label>
-            {(() => {
+          <div><label className={labelClass}>Category</label><CustomSelect value={form.category} onChange={(val) => setForm({ ...form, category: val })} options={CATEGORIES.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))} /></div>
+        </div>
+        <div><label className={labelClass}>Sizes</label>
+          {(() => {
               const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
               const selectedSizes = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
               const toggleSize = (size: string) => {
@@ -221,7 +223,6 @@ export default function EditProductPage() {
               );
             })()}
           </div>
-        </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <button type="button" onClick={() => setForm({ ...form, is_one_of_a_kind: !form.is_one_of_a_kind })} className={`w-10 h-5 rounded-full transition-colors ${form.is_one_of_a_kind ? "bg-green-500" : "bg-white/10"}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_one_of_a_kind ? "translate-x-5" : ""}`} /></button>

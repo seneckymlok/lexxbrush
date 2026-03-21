@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import CustomSelect from "@/components/ui/CustomSelect";
 
 const CATEGORIES = ["tees", "hoodies", "pants", "bags", "accessories"];
 
@@ -146,20 +147,23 @@ export default function NewProductPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Price (€)</label>
             <input required type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputClass} placeholder="189" />
           </div>
           <div>
             <label className={labelClass}>Category</label>
-            <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputClass}>
-              {CATEGORIES.map((c) => (<option key={c} value={c} className="bg-[#1a1a1a]">{c.charAt(0).toUpperCase() + c.slice(1)}</option>))}
-            </select>
+            <CustomSelect
+              value={form.category}
+              onChange={(val) => setForm({ ...form, category: val })}
+              options={CATEGORIES.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))}
+            />
           </div>
-          <div>
-            <label className={labelClass}>Sizes (comma-separated)</label>
-            {(() => {
+        </div>
+        <div>
+          <label className={labelClass}>Sizes (comma-separated)</label>
+          {(() => {
               const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
               const selectedSizes = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
               const toggleSize = (size: string) => {
@@ -218,7 +222,6 @@ export default function NewProductPage() {
               );
             })()}
           </div>
-        </div>
 
         <div className="flex items-center gap-3">
           <button type="button" onClick={() => setForm({ ...form, is_one_of_a_kind: !form.is_one_of_a_kind })} className={`w-10 h-5 rounded-full transition-colors ${form.is_one_of_a_kind ? "bg-green-500" : "bg-white/10"}`}>
