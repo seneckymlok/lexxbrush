@@ -145,7 +145,7 @@ export default function CheckoutPage() {
         <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
           {t("checkout.title")}
         </h1>
-        <div className="w-10 h-[1px] bg-white/10 mt-4 mb-12" />
+        <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-12" />
 
         <form onSubmit={handleSubmit} autoComplete="on" noValidate>
           <div className="grid md:grid-cols-[1fr_340px] gap-12 md:gap-16">

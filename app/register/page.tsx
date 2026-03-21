@@ -149,7 +149,7 @@ export default function RegisterPage() {
           <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
             {t("auth.register")}
           </h1>
-          <div className="w-10 h-[1px] bg-white/10 mt-3 mx-auto md:mx-0" />
+          <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-3 mx-auto md:mx-0" />
         </div>
 
         {/* Error */}

@@ -120,7 +120,7 @@ export default function CustomOrderPage() {
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
               {t("custom.title")}
             </h1>
-            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6 mx-auto md:mx-0" />
+            <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-6 mx-auto md:mx-0" />
             <p className="text-chrome leading-relaxed max-w-md mx-auto md:mx-0 mb-12">
               {t("custom.subtitle")}
             </p>

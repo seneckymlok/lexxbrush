@@ -35,7 +35,7 @@ export default function CartPage() {
         <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
           {t("cart.title")}
         </h1>
-        <div className="w-10 h-[1px] bg-white/10 mt-4 mb-12" />
+        <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-12" />
 
         {items.length === 0 ? (
           <div className="text-center py-20">

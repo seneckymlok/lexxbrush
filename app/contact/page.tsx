@@ -23,7 +23,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg("");
-    
+
     if (!e.currentTarget.checkValidity()) {
       setStatus("error");
       setErrorMsg(t("auth.fillAllFields") || "Please fill out all required fields.");
@@ -82,7 +82,7 @@ export default function ContactPage() {
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
               {t("contact.title")}
             </h1>
-            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6 mx-auto md:mx-0" />
+            <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-6 mx-auto md:mx-0" />
             <p className="text-chrome leading-relaxed max-w-md mx-auto md:mx-0">
               {t("contact.subtitle")}
             </p>
@@ -170,7 +170,7 @@ export default function ContactPage() {
                     <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                   </svg>
-                  @lexxbrush
+                  lexxbrush
                 </a>
               </div>
 

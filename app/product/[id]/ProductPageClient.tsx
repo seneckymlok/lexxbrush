@@ -239,7 +239,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
           <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-white">&euro;{product.price}</p>
 
-          <div className="w-10 h-[1px] bg-white/10 my-6" />
+          <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent my-6" />
 
           <p className="text-chrome-light leading-relaxed max-w-lg">{product.description[locale as Locale]}</p>
 

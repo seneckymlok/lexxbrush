@@ -132,7 +132,7 @@ export function HeroSection({ products }: HeroSectionProps) {
         <div
           ref={lineRef}
           data-animate
-          className="w-12 h-[1px] bg-white/10 mt-5 mb-4"
+          className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-5 mb-4"
         />
 
         <p className="text-xs md:text-sm text-text-dim max-w-xs leading-relaxed">
