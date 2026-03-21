@@ -5,7 +5,7 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How Lexxbrush, s. r. o. collects, uses, and protects your personal data. GDPR-compliant privacy policy for our hand-airbrushed wearable art store.",
+    "Privacy policy for Lexxbrush, s. r. o. — how we handle your personal data (GDPR).",
   alternates: {
     canonical: `${baseUrl}/privacy`,
   },

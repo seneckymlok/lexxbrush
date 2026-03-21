@@ -5,7 +5,7 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 export const metadata: Metadata = {
   title: "Shipping & Returns",
   description:
-    "Shipping zones, delivery times, return policy, and refund information for Lexxbrush hand-airbrushed products. EU-wide shipping from Slovakia.",
+    "Shipping, delivery, and return policy for Lexxbrush. EU-wide shipping from Slovakia.",
   alternates: {
     canonical: `${baseUrl}/shipping`,
   },
