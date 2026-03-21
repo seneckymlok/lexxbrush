@@ -109,9 +109,9 @@ export default function AccountPage() {
 
         {favorites.length === 0 ? (
           <div className="border border-white/[0.06] py-16 text-center">
-            {/* Empty state spray can */}
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-4 text-white/10">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            {/* Empty state star */}
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" className="mx-auto mb-4 text-white/10">
+              <path d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z" />
             </svg>
             <p className="text-white/25 text-sm mb-6">{t("auth.noFavorites")}</p>
             <button

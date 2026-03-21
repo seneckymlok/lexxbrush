@@ -33,6 +33,19 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   const [activeImage, setActiveImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsLightboxOpen(false);
+      }
+    };
+    if (isLightboxOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLightboxOpen]);
+
   const handlePrevImage = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (product) setActiveImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
@@ -295,7 +308,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           {/* Close button */}
           <button 
             onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
-            className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110]"
+            className="fixed top-4 right-4 md:top-8 md:right-8 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+            aria-label="Close"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
@@ -303,7 +317,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           {hasMultipleImages && (
             <button 
               onClick={handlePrevImage}
-              className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+              className="fixed left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+              aria-label="Previous image"
             >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
@@ -311,7 +326,6 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
           <div 
             className="relative w-full h-[85vh] md:h-[90vh] max-w-[90vw] md:max-w-[80vw] flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
           >
             <Image
               src={product.images[activeImage]}
@@ -326,7 +340,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           {hasMultipleImages && (
             <button 
               onClick={handleNextImage}
-              className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+              className="fixed right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+              aria-label="Next image"
             >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>

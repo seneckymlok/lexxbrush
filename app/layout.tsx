@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
+import { BackgroundStars } from "@/components/ui/BackgroundStars";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -145,6 +146,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-void text-text">
+        <BackgroundStars />
         <LanguageProvider>
           <AuthProvider>
             <FavoritesProvider>
