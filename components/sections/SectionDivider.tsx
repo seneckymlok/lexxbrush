@@ -85,10 +85,6 @@ export function SectionDivider() {
           </span>
         </div>
       </div>
-
-      {/* Subtle spray dots */}
-      <div className="spray-dot absolute top-2 left-[20%] opacity-20 bg-violet" />
-      <div className="spray-dot absolute bottom-3 right-[35%] opacity-15 bg-lime w-[3px] h-[3px]" />
     </div>
   );
 }

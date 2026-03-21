@@ -205,7 +205,7 @@ export function HeroSection({ products }: HeroSectionProps) {
       </div>
 
       {/* Hand-airbrushed star elements — matching provided reference */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" data-animate>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <AirbrushStar className="absolute top-[20%] right-[12%] w-24 h-24 text-white opacity-[0.25] rotate-[15deg] mix-blend-screen" />
         <AirbrushStar className="absolute top-[35%] right-[8%] w-16 h-16 text-pink opacity-[0.35] -rotate-[10deg] mix-blend-screen animate-pulse" />
         <AirbrushStar className="absolute bottom-[20%] left-[4%] w-20 h-20 text-lime opacity-[0.3] rotate-[5deg] mix-blend-screen" />
