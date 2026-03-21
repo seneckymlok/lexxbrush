@@ -160,9 +160,9 @@ export function Header() {
         </nav>
       </header>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          FULL-SCREEN MOBILE MENU — Immersive Streetwear Experience
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════
+          FULL-SCREEN MOBILE MENU — Editorial Catalog Style
+      ═══════════════════════════════════════════════════════════ */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           mobileMenuOpen
@@ -170,110 +170,96 @@ export function Header() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Background */}
-        <div className="absolute inset-0 bg-void/[0.97] backdrop-blur-xl" />
+        {/* Background — pure black, no blur */}
+        <div className="absolute inset-0 bg-void/[0.98]" />
 
-        {/* Ghost character art — right side */}
-        <div
-          className={`absolute right-[-20px] top-[15%] w-[200px] h-[280px] transition-all duration-700 delay-200 ${
-            mobileMenuOpen ? "opacity-[0.04] translate-x-0" : "opacity-0 translate-x-10"
-          }`}
-        >
-          <Image
-            src="/characters/typecek2(png).webp"
-            alt=""
-            aria-hidden="true"
-            width={200}
-            height={280}
-            className="w-full h-auto"
-            style={{ filter: "invert(1) brightness(1.5)" }}
-          />
-        </div>
+        {/* Content */}
+        <div className="relative h-full flex flex-col justify-between px-8 pt-20 pb-10">
 
-        {/* Content container */}
-        <div className="relative h-full flex flex-col justify-center px-8">
-          {/* Main navigation links — oversized */}
-          <nav className="flex flex-col gap-2">
+          {/* Tagline */}
+          <div
+            className={`transition-all duration-500 ${
+              mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+            }`}
+            style={{ transitionDelay: mobileMenuOpen ? "100ms" : "0ms" }}
+          >
+            <p className="font-[family-name:var(--font-accent)] text-sm italic text-chrome tracking-wide">
+              Hand-airbrushed wearable art
+            </p>
+          </div>
+
+          {/* Navigation links */}
+          <nav className="flex flex-col -my-2">
             {NAV_LINKS.map((link, i) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={closeMenu}
-                className={`group relative block transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                className={`group block transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
                   mobileMenuOpen
                     ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-8"
+                    : "opacity-0 translate-y-6"
                 }`}
                 style={{
                   transitionDuration: "600ms",
-                  transitionDelay: mobileMenuOpen ? `${150 + i * 80}ms` : "0ms",
+                  transitionDelay: mobileMenuOpen ? `${180 + i * 70}ms` : "0ms",
                 }}
               >
-                {/* Link text */}
-                <span className="font-[family-name:var(--font-display)] text-[clamp(3rem,12vw,5rem)] leading-[0.9] tracking-[0.02em] uppercase text-chrome-bright group-hover:text-white group-active:text-white transition-colors duration-300">
-                  {t(link.key)}
-                  {/* Cart badge inline */}
+                {/* Top rule */}
+                <div className="w-full h-[1px] bg-white/[0.06]" />
+
+                <div className="py-5 flex items-baseline gap-4">
+                  {/* Number */}
+                  <span className="font-[family-name:var(--font-accent)] text-sm italic text-chrome tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* Link text */}
+                  <span className="font-[family-name:var(--font-display)] text-[clamp(2.2rem,9vw,3.5rem)] leading-[1] tracking-[0.02em] uppercase text-chrome-bright group-active:text-white transition-colors duration-200">
+                    {t(link.key)}
+                  </span>
+
+                  {/* Cart count */}
                   {link.href === "/cart" && totalItems > 0 && (
-                    <span className="inline-flex items-center justify-center ml-3 w-8 h-8 bg-pink text-void text-sm font-bold rounded-full align-middle shadow-[0_0_20px_rgba(255,105,180,0.3)]">
+                    <span className="font-[family-name:var(--font-accent)] text-sm italic text-pink">
                       {totalItems}
                     </span>
                   )}
-                </span>
+                </div>
 
-                {/* Spray-paint accent line */}
-                <div
-                  className={`mt-1 h-[3px] rounded-full transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    mobileMenuOpen
-                      ? "w-full opacity-100"
-                      : "w-0 opacity-0"
-                  }`}
-                  style={{
-                    background: i === 0
-                      ? "linear-gradient(90deg, #FF69B4 0%, rgba(255,105,180,0) 70%)"
-                      : i === 1
-                        ? "linear-gradient(90deg, #7B2FBE 0%, rgba(123,47,190,0) 70%)"
-                        : "linear-gradient(90deg, #39FF14 0%, rgba(57,255,20,0) 70%)",
-                    transitionDuration: "800ms",
-                    transitionDelay: mobileMenuOpen ? `${350 + i * 80}ms` : "0ms",
-                  }}
-                />
+                {/* Bottom rule on last item */}
+                {i === NAV_LINKS.length - 1 && (
+                  <div className="w-full h-[1px] bg-white/[0.06]" />
+                )}
               </Link>
             ))}
           </nav>
 
-          {/* Bottom section — Instagram + Language */}
+          {/* Footer — Instagram + Language */}
           <div
-            className={`mt-16 flex items-center justify-between transition-all duration-500 ${
+            className={`flex items-center justify-between transition-all duration-500 ${
               mobileMenuOpen
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
             }`}
-            style={{ transitionDelay: mobileMenuOpen ? "500ms" : "0ms" }}
+            style={{ transitionDelay: mobileMenuOpen ? "450ms" : "0ms" }}
           >
-            {/* Instagram */}
             <a
               href="https://www.instagram.com/lexxbrush"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2.5 text-chrome hover:text-pink transition-colors duration-300 group"
+              className="text-chrome hover:text-white transition-colors duration-300"
+              aria-label="Instagram"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform duration-300">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5" />
                 <circle cx="12" cy="12" r="5" />
                 <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
               </svg>
-              <span className="font-[family-name:var(--font-display)] text-xs tracking-[0.2em] uppercase">Instagram</span>
             </a>
 
-            {/* Language Switcher */}
             <LanguageSwitcher />
           </div>
-
-          {/* Spray dots — atmospheric detail */}
-          <div className="spray-dot absolute top-[18%] left-[15%] opacity-30" />
-          <div className="spray-dot absolute bottom-[22%] right-[20%] opacity-20 bg-violet w-[3px] h-[3px]" />
-          <div className="spray-dot absolute top-[45%] right-[8%] opacity-15 bg-lime w-[2px] h-[2px]" />
-          <div className="spray-dot absolute bottom-[35%] left-[25%] opacity-10 bg-amber w-[3px] h-[3px]" />
         </div>
       </div>
     </>
