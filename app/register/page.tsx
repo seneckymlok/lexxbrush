@@ -14,10 +14,16 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (!e.currentTarget.checkValidity()) {
+      setError(t("auth.fillAllFields") || "Please fill out all required fields properly.");
+      setLoading(false);
+      return;
+    }
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -48,12 +54,12 @@ export default function RegisterPage() {
         </p>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg mb-6">
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg mb-6 text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleRegister} className="space-y-5">
+        <form onSubmit={handleRegister} noValidate className="space-y-5">
           <div>
             <label className="block text-xs font-bold tracking-widest text-white/50 uppercase mb-2">
               {t("auth.email")}
@@ -63,7 +69,7 @@ export default function RegisterPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
               placeholder="you@example.com"
             />
           </div>
@@ -78,7 +84,7 @@ export default function RegisterPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300"
               placeholder="••••••••"
             />
           </div>
@@ -86,7 +92,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white text-black font-bold uppercase tracking-widest py-4 rounded-lg hover:bg-white/90 transition-colors disabled:opacity-50 mt-4"
+            className="w-full bg-white text-black font-bold uppercase tracking-[0.15em] py-4 rounded-lg hover:bg-white/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
           >
             {loading ? t("auth.signingUp") : t("auth.signUp")}
           </button>

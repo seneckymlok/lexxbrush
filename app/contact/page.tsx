@@ -11,6 +11,7 @@ export default function ContactPage() {
   const formRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useGSAP(() => {
     if (!formRef.current) return;
@@ -19,8 +20,16 @@ export default function ContactPage() {
     });
   }, { scope: formRef });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMsg("");
+    
+    if (!e.currentTarget.checkValidity()) {
+      setStatus("error");
+      setErrorMsg(t("auth.fillAllFields") || "Please fill out all required fields.");
+      return;
+    }
+
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
@@ -33,11 +42,12 @@ export default function ContactPage() {
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch {
       setStatus("error");
+      setErrorMsg(t("contact.error") || "Something went wrong. Please try again.");
     }
   };
 
   const inputClasses =
-    "w-full bg-transparent border-b border-steel focus:border-cyan outline-none py-3 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300";
+    "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300";
 
   const companyInfo: Record<string, { label: string; value: string }[]> = {
     en: [
@@ -80,7 +90,7 @@ export default function ContactPage() {
 
           <div className="grid md:grid-cols-2 gap-16">
             {/* Form */}
-            <form onSubmit={handleSubmit} autoComplete="on" className="space-y-8">
+            <form onSubmit={handleSubmit} autoComplete="on" noValidate className="space-y-8">
               <div className="form-reveal">
                 <label htmlFor="contact-name" className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
                   {t("contact.name")}
@@ -115,7 +125,7 @@ export default function ContactPage() {
                 <textarea id="contact-message" name="message" required rows={5} value={form.message}
                   placeholder={t("contact.messagePlaceholder")}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full bg-transparent border border-steel focus:border-cyan outline-none rounded-lg p-4 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300 resize-none" />
+                  className={`${inputClasses} resize-none`} />
               </div>
 
               <div className="form-reveal pt-2">
@@ -131,8 +141,8 @@ export default function ContactPage() {
                 </div>
               )}
               {status === "error" && (
-                <div className="form-reveal">
-                  <p className="text-pink text-sm">{t("contact.error")}</p>
+                <div className="form-reveal bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                  {errorMsg}
                 </div>
               )}
             </form>

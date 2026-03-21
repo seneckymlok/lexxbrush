@@ -69,9 +69,15 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (items.length === 0) return;
+    
+    if (!e.currentTarget.checkValidity()) {
+      setError(t("auth.fillAllFields") || "Please fill out all required fields correctly.");
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
@@ -129,7 +135,7 @@ export default function CheckoutPage() {
   }
 
   const inputClass =
-    "w-full bg-concrete-light border border-white/[0.06] rounded-lg px-4 py-3 text-sm text-white placeholder:text-text-dim focus:outline-none focus:border-white/20 transition-colors duration-200";
+    "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300";
   const labelClass =
     "block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1.5";
 
@@ -141,7 +147,7 @@ export default function CheckoutPage() {
         </h1>
         <div className="w-10 h-[1px] bg-white/10 mt-4 mb-12" />
 
-        <form onSubmit={handleSubmit} autoComplete="on">
+        <form onSubmit={handleSubmit} autoComplete="on" noValidate>
           <div className="grid md:grid-cols-[1fr_340px] gap-12 md:gap-16">
             {/* Left — Form */}
             <div className="space-y-10">
@@ -285,7 +291,9 @@ export default function CheckoutPage() {
 
               {/* Error */}
               {error && (
-                <p className="text-pink-hot text-sm">{error}</p>
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg mt-8 text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                  {error}
+                </div>
               )}
 
               {/* Submit — visible on desktop */}

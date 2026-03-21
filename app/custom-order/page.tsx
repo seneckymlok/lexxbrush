@@ -11,6 +11,7 @@ export default function CustomOrderPage() {
   const { t } = useLanguage();
   const formRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -39,8 +40,16 @@ export default function CustomOrderPage() {
     }
   }, { scope: formRef });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMsg("");
+
+    if (!e.currentTarget.checkValidity()) {
+      setStatus("error");
+      setErrorMsg(t("auth.fillAllFields") || "Please fill out all required fields.");
+      return;
+    }
+
     setStatus("sending");
 
     try {
@@ -57,6 +66,7 @@ export default function CustomOrderPage() {
       setForm({ name: "", email: "", garment: "", description: "", budget: "" });
     } catch {
       setStatus("error");
+      setErrorMsg(t("custom.error") || "Something went wrong. Please try again.");
     }
   };
 
@@ -116,7 +126,7 @@ export default function CustomOrderPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-8">
             <div className="form-reveal">
               <label htmlFor="custom-name" className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
                 {t("custom.name")}
@@ -189,7 +199,7 @@ export default function CustomOrderPage() {
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 placeholder={t("custom.descriptionPlaceholder")}
-                className="w-full bg-transparent border border-steel focus:border-pink outline-none rounded-lg p-4 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300 resize-none"
+                className={`${inputClasses} resize-none`}
               />
             </div>
 
@@ -215,11 +225,8 @@ export default function CustomOrderPage() {
             )}
 
             {status === "error" && (
-              <div className="form-reveal">
-                <p className="text-pink-hot text-sm font-medium flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-pink-hot" />
-                  {t("custom.error")}
-                </p>
+              <div className="form-reveal bg-red-500/10 border border-red-500/30 text-red-400 text-sm py-3 px-4 rounded-lg text-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                {errorMsg}
               </div>
             )}
           </form>
