@@ -201,26 +201,32 @@ export function Header() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Foundation: deep atmospheric dark radial mesh */}
-        <div className="absolute inset-0 bg-[#030303]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#0A1015] via-[#040404] to-[#010101]" />
+        {/* Foundation: deep atmospheric dark screen */}
+        <div className="absolute inset-0 bg-[#060606]" />
+        
+        {/* Subtle radial light to anchor the brand */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.03] via-transparent to-transparent" />
         
         {/* Texture: high-end noise overlay, very subtle */}
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-15 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.15] mix-blend-overlay" />
 
-        {/* Ambient bioluminescent light orbs for depth and mood */}
+        {/* Character Art Backdrop — matching project vision */}
         <div 
-          className={`absolute -top-[10%] -right-[15%] w-[80vw] h-[80vw] max-w-[500px] max-h-[500px] bg-cyan/[0.08] blur-[100px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100 translate-x-0 translate-y-0" : "scale-75 opacity-0 translate-x-10 -translate-y-10"}`} 
-          style={{ transitionDelay: mobileMenuOpen ? "150ms" : "0ms" }}
-        />
-        <div 
-          className={`absolute top-[40%] -left-[20%] w-[90vw] h-[90vw] max-w-[600px] max-h-[600px] bg-pink/[0.06] blur-[120px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100 translate-x-0" : "scale-75 opacity-0 -translate-x-10"}`} 
-          style={{ transitionDelay: mobileMenuOpen ? "250ms" : "0ms" }}
-        />
-        <div 
-          className={`absolute -bottom-[10%] right-[10%] w-[70vw] h-[70vw] max-w-[400px] max-h-[400px] bg-white/[0.03] blur-[90px] rounded-full mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileMenuOpen ? "scale-100 opacity-100 translate-y-0" : "scale-75 opacity-0 translate-y-10"}`} 
-          style={{ transitionDelay: mobileMenuOpen ? "350ms" : "0ms" }}
-        />
+          className={`absolute -right-20 top-[10%] pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            mobileMenuOpen ? "opacity-[0.04] translate-x-0" : "opacity-0 translate-x-12"
+          }`}
+          style={{ transitionDelay: mobileMenuOpen ? "200ms" : "0ms" }}
+        >
+          <Image
+            src="/characters/typecek3(png).webp"
+            alt=""
+            width={600}
+            height={600}
+            className="invert brightness-150 rotate-[-5deg]"
+            aria-hidden="true"
+            priority={false}
+          />
+        </div>
 
         {/* Dynamic Content Container */}
         <div className="relative h-full flex flex-col justify-between px-6 md:px-12 pt-28 pb-10">
