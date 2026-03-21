@@ -106,12 +106,12 @@ export default function CustomOrderPage() {
       {/* Content */}
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-12 md:pt-26 md:pb-24">
         <div className="max-w-2xl mx-auto" ref={formRef}>
-          <div className="form-reveal">
+          <div className="form-reveal text-center md:text-left">
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
               {t("custom.title")}
             </h1>
-            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6" />
-            <p className="text-chrome leading-relaxed max-w-md mb-12">
+            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6 mx-auto md:mx-0" />
+            <p className="text-chrome leading-relaxed max-w-md mx-auto md:mx-0 mb-12">
               {t("custom.subtitle")}
             </p>
           </div>
