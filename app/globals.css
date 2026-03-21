@@ -267,6 +267,25 @@
     transition: transform 0.1s;
   }
 
+  /* Instagram gradient hover */
+  .ig-hover {
+    transition: all 0.3s ease;
+  }
+
+  @media (hover: hover) {
+    .ig-hover:hover {
+      background: linear-gradient(45deg, #FEDA75, #FA7E1E, #D62976, #962FBF, #4F5BD5);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ig-hover:hover svg {
+      stroke: #D62976;
+      filter: drop-shadow(0 0 6px rgba(214, 41, 118, 0.4));
+    }
+  }
+
   /* Secondary/outline CTA */
   .btn-outline {
     position: relative;

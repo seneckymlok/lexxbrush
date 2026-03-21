@@ -255,7 +255,7 @@ export function Header() {
               href="https://www.instagram.com/lexxbrush"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-chrome hover:text-[#E4405F] transition-colors duration-300"
+              className="ig-hover text-chrome transition-colors duration-300"
               aria-label="Instagram"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

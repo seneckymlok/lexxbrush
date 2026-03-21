@@ -78,7 +78,7 @@ export function Footer() {
               href="https://www.instagram.com/lexxbrush"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-[#E4405F] transition-colors duration-300 group"
+              className="ig-hover inline-flex items-center gap-2 text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim transition-colors duration-300 group"
             >
               <svg
                 width="16"
