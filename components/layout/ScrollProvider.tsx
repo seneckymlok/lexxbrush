@@ -5,6 +5,7 @@ import { useEffect } from "react";
 export function ScrollProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cleanup: (() => void) | undefined;
+    let rafId: number;
 
     (async () => {
       const [{ default: Lenis }, { default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -16,19 +17,22 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
       gsap.registerPlugin(ScrollTrigger);
 
       const lenis = new Lenis({
-        duration: 0.5,
-        easing: (t) => 1 - Math.pow(1 - t, 2),
+        duration: 0.3,
+        easing: (t) => t,
         smoothWheel: true,
+        touchMultiplier: 0.5,
       });
 
       lenis.on("scroll", ScrollTrigger.update);
 
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-      });
-      gsap.ticker.lagSmoothing(0);
+      function raf(time: number) {
+        lenis.raf(time);
+        rafId = requestAnimationFrame(raf);
+      }
+      rafId = requestAnimationFrame(raf);
 
       cleanup = () => {
+        cancelAnimationFrame(rafId);
         lenis.destroy();
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       };
