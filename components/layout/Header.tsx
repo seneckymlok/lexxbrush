@@ -46,7 +46,7 @@ function MenuIcon({ open }: { open: boolean }) {
         className={`absolute block h-[2px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           open
             ? "-rotate-45 w-6 bg-pink"
-            : "translate-y-[4px] w-4 bg-chrome-light"
+            : "translate-y-[4px] w-6 bg-chrome-light"
         }`}
       />
     </div>

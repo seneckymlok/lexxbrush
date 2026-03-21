@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Image from "next/image";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { AirbrushStar } from "@/components/ui/AirbrushStar";
 import { getProductsByCategory, categories } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
@@ -98,6 +99,13 @@ export function ProductGrid({ products }: ProductGridProps) {
         sizes="(max-width: 767px) 100px, (max-width: 1023px) 180px, 320px"
         className="overflow-art overflow-art-right select-none"
       />
+      
+      {/* Subtle organic stars for background texture */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <AirbrushStar variant={1} className="absolute top-[30%] -left-[5%] w-16 h-16 text-white/30 opacity-[0.08] rotate-[15deg] mix-blend-screen scale-x-125" />
+        <AirbrushStar variant={2} className="absolute bottom-[20%] -right-[8%] w-20 h-20 text-white/40 opacity-[0.1] -rotate-[10deg] mix-blend-screen scale-y-110" />
+      </div>
+
       {/* Section Header */}
       <div ref={titleRef} className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
         <div className="text-center md:text-left">

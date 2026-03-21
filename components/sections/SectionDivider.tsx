@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import { AirbrushStar } from "@/components/ui/AirbrushStar";
 
 const DIVIDER_TEXT =
   "EVERY PIECE IS UNIQUE \u2022 HAND-AIRBRUSHED \u2022 MADE BY HAND \u2022 ONE OF A KIND \u2022 ";
@@ -84,6 +85,13 @@ export function SectionDivider() {
             {repeatedText}
           </span>
         </div>
+      </div>
+
+      {/* Subtle organic stars tracking behind the marquee */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ transform: "skewY(1.5deg)" }}>
+        <AirbrushStar variant={2} className="absolute -top-[10%] left-[25%] w-10 h-10 text-white/50 opacity-[0.1] -rotate-[15deg] mix-blend-screen scale-y-125" />
+        <AirbrushStar variant={3} className="absolute bottom-[0%] right-[30%] w-6 h-6 text-white/40 opacity-[0.08] rotate-[25deg] mix-blend-screen" />
+        <AirbrushStar variant={1} className="absolute top-[15%] right-[10%] w-8 h-8 text-white/40 opacity-[0.12] -rotate-[5deg] mix-blend-screen" />
       </div>
     </div>
   );
