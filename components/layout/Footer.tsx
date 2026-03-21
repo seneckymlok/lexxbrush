@@ -78,7 +78,7 @@ export function Footer() {
               href="https://www.instagram.com/lexxbrush"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-cyan transition-colors duration-300 group"
+              className="inline-flex items-center gap-2 text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-[#E4405F] transition-colors duration-300 group"
             >
               <svg
                 width="16"
@@ -89,7 +89,7 @@ export function Footer() {
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="group-hover:drop-shadow-[0_0_6px_rgba(0,229,255,0.4)] transition-all duration-300"
+                className="group-hover:drop-shadow-[0_0_6px_rgba(228,64,95,0.4)] transition-all duration-300"
               >
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                 <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
