@@ -8,7 +8,7 @@ export function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="relative bg-void border-t border-white/5 mt-12 md:mt-24 overflow-hidden">
+    <footer className="relative bg-void border-t border-white/5 overflow-hidden">
       {/* Character art bleeding from right */}
       <Image
         src="/characters/typecek1(png).webp"
