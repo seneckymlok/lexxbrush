@@ -17,10 +17,10 @@ export function ScrollProvider({ children }: { children: React.ReactNode }) {
       gsap.registerPlugin(ScrollTrigger);
 
       const lenis = new Lenis({
-        duration: 0.3,
-        easing: (t) => t,
+        duration: 0.4,
+        easing: (t) => 1 - Math.pow(1 - t, 1.5),
         smoothWheel: true,
-        touchMultiplier: 0.5,
+        touchMultiplier: 0.3,
       });
 
       lenis.on("scroll", ScrollTrigger.update);
