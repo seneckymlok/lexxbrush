@@ -231,8 +231,8 @@ export function Header() {
                     background: i === 0
                       ? "linear-gradient(90deg, #FF69B4 0%, rgba(255,105,180,0) 70%)"
                       : i === 1
-                        ? "linear-gradient(90deg, #00E5FF 0%, rgba(0,229,255,0) 70%)"
-                        : "linear-gradient(90deg, #FF1493 0%, rgba(255,20,147,0) 70%)",
+                        ? "linear-gradient(90deg, #7B2FBE 0%, rgba(123,47,190,0) 70%)"
+                        : "linear-gradient(90deg, #39FF14 0%, rgba(57,255,20,0) 70%)",
                     transitionDuration: "800ms",
                     transitionDelay: mobileMenuOpen ? `${350 + i * 80}ms` : "0ms",
                   }}
@@ -271,8 +271,9 @@ export function Header() {
 
           {/* Spray dots — atmospheric detail */}
           <div className="spray-dot absolute top-[18%] left-[15%] opacity-30" />
-          <div className="spray-dot absolute bottom-[22%] right-[20%] opacity-20 bg-cyan w-[3px] h-[3px]" />
-          <div className="spray-dot absolute top-[45%] right-[8%] opacity-15 w-[2px] h-[2px]" />
+          <div className="spray-dot absolute bottom-[22%] right-[20%] opacity-20 bg-violet w-[3px] h-[3px]" />
+          <div className="spray-dot absolute top-[45%] right-[8%] opacity-15 bg-lime w-[2px] h-[2px]" />
+          <div className="spray-dot absolute bottom-[35%] left-[25%] opacity-10 bg-amber w-[3px] h-[3px]" />
         </div>
       </div>
     </>

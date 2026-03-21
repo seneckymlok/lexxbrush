@@ -153,11 +153,12 @@ export function HeroSection({ products }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Spray dots */}
+      {/* Spray dots — full palette */}
       <div className="spray-dot absolute top-[20%] right-[12%]" />
-      <div className="spray-dot absolute top-[35%] right-[8%] opacity-20 w-[3px] h-[3px]" />
-      <div className="spray-dot absolute bottom-[30%] left-[6%] opacity-15 w-[2px] h-[2px]" />
+      <div className="spray-dot absolute top-[35%] right-[8%] opacity-20 w-[3px] h-[3px] bg-violet" />
+      <div className="spray-dot absolute bottom-[30%] left-[6%] opacity-15 w-[2px] h-[2px] bg-lime" />
       <div className="spray-dot absolute top-[60%] left-[15%] opacity-10 bg-cyan w-[3px] h-[3px]" />
+      <div className="spray-dot absolute top-[45%] right-[18%] opacity-12 bg-amber w-[2px] h-[2px]" />
     </section>
   );
 }
