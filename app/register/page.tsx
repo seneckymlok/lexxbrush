@@ -202,6 +202,7 @@ export default function RegisterPage() {
             />
             <button
               type="button"
+              onPointerDown={(e) => e.preventDefault()}
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-0 top-3 text-white/20 hover:text-white/50 transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
