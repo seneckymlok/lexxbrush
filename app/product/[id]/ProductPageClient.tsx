@@ -188,22 +188,20 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           )}
 
           {/* Add to Cart */}
-          <MagneticButton as="div">
-            <button
-              onClick={handleAddToCart}
-              disabled={product.isSold}
-              aria-label={product.isSold ? "Sold out" : `Add ${product.name[locale as Locale]} to cart`}
-              className={`mt-8 w-full md:w-auto px-10 py-4 text-sm font-bold rounded-full transition-all duration-400 ${
-                product.isSold
-                  ? "bg-concrete-light text-text-dim cursor-not-allowed font-[family-name:var(--font-display)] tracking-[0.15em] uppercase"
-                  : added
-                    ? "bg-cyan text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(0,229,255,0.3)]"
-                    : "btn-brand"
-              }`}
-            >
-              {product.isSold ? t("product.sold") : added ? "Added!" : t("product.addToCart")}
-            </button>
-          </MagneticButton>
+          <button
+            onClick={handleAddToCart}
+            disabled={product.isSold}
+            aria-label={product.isSold ? "Sold out" : `Add ${product.name[locale as Locale]} to cart`}
+            className={`mt-8 w-full md:w-auto px-10 py-4 text-sm font-bold rounded-full transition-all duration-400 ${
+              product.isSold
+                ? "bg-concrete-light text-text-dim cursor-not-allowed font-[family-name:var(--font-display)] tracking-[0.15em] uppercase"
+                : added
+                  ? "bg-cyan text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+                  : "btn-brand"
+            }`}
+          >
+            {product.isSold ? t("product.sold") : added ? "Added!" : t("product.addToCart")}
+          </button>
 
           {/* Details — editorial strip */}
           <div className="mt-10 pt-6 border-t border-white/5">

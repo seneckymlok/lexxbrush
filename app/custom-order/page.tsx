@@ -185,15 +185,13 @@ export default function CustomOrderPage() {
             </div>
 
             <div className="form-reveal pt-4">
-              <MagneticButton as="div" className="w-full md:w-auto">
-                <button
-                  type="submit"
-                  disabled={status === "sending"}
-                  className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
-                >
-                  {status === "sending" ? "..." : t("custom.submit")}
-                </button>
-              </MagneticButton>
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
+              >
+                {status === "sending" ? "..." : t("custom.submit")}
+              </button>
             </div>
 
             {status === "success" && (
