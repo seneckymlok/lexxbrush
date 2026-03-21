@@ -166,9 +166,14 @@ export default function EditProductPage() {
               const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
               const selectedSizes = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
               const toggleSize = (size: string) => {
-                const updated = selectedSizes.includes(size)
-                  ? selectedSizes.filter(s => s !== size)
-                  : [...selectedSizes, size];
+                let updated;
+                if (size === "One Size") {
+                  updated = selectedSizes.includes("One Size") ? [] : ["One Size"];
+                } else {
+                  updated = selectedSizes.includes(size)
+                    ? selectedSizes.filter(s => s !== size)
+                    : [...selectedSizes.filter(s => s !== "One Size"), size];
+                }
                 setForm({ ...form, sizes: updated.join(", ") });
               };
               return (
