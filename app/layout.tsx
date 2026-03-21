@@ -37,11 +37,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Lexxbrush — Hand-Airbrushed Wearable Art",
+    default: "Lexxbrush",
     template: "%s | Lexxbrush",
   },
   description:
-    "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand — hoodies, tees, backpacks and custom orders. One-of-a-kind wearable art.",
+    "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand. Hoodies, tees, backpacks and custom orders. One of a kind wearable art.",
   keywords: [
     "44lexx",
     "lexxbrush",
