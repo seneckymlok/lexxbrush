@@ -50,7 +50,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
         {/* Image Container */}
         <div
           ref={innerRef}
-          className="relative aspect-square overflow-hidden rounded-lg bg-concrete-light card-glow card-3d"
+          className="relative aspect-square overflow-hidden rounded-lg bg-concrete-light card-glow card-3d isolate will-change-transform"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
