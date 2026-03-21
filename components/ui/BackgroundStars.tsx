@@ -25,20 +25,20 @@ export function BackgroundStars() {
     // Pre-calculate centers to save DOM reads, update on resize
     let starCenters = Array.from(wrappers).map((el) => {
       const rect = el.getBoundingClientRect();
-      return { el, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      return { el, x: rect.left + window.scrollX + rect.width / 2, y: rect.top + window.scrollY + rect.height / 2 };
     });
 
     const handleResize = () => {
       starCenters = Array.from(wrappers).map((el) => {
         const rect = el.getBoundingClientRect();
-        return { el, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        return { el, x: rect.left + window.scrollX + rect.width / 2, y: rect.top + window.scrollY + rect.height / 2 };
       });
     };
     window.addEventListener("resize", handleResize);
 
     const handleMouseMove = (e: MouseEvent) => {
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
+      const mouseX = e.pageX;
+      const mouseY = e.pageY;
       const maxDist = 200; // proximity radius
 
       starCenters.forEach(({ el, x, y }) => {
@@ -78,7 +78,7 @@ export function BackgroundStars() {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 z-[30] pointer-events-none overflow-hidden mix-blend-screen"
+      className="absolute inset-0 z-[30] pointer-events-none overflow-hidden mix-blend-screen"
       aria-hidden="true"
     >
       {/* Precision placed stars, acting as a global static framework */}
