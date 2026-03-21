@@ -1,21 +1,15 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, cloneElement, isValidElement } from "react";
 
 interface MagneticButtonProps {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactElement;
   strength?: number;
-  as?: "button" | "a" | "div";
-  [key: string]: any;
 }
 
 export function MagneticButton({
   children,
-  className = "",
   strength = 0.06,
-  as: Tag = "button",
-  ...rest
 }: MagneticButtonProps) {
   const ref = useRef<HTMLElement>(null);
 
@@ -28,6 +22,7 @@ export function MagneticButton({
       const y = e.clientY - rect.top - rect.height / 2;
 
       ref.current.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+      ref.current.style.transition = "transform 0.15s ease-out";
     },
     [strength]
   );
@@ -35,17 +30,14 @@ export function MagneticButton({
   const handleMouseLeave = useCallback(() => {
     if (!ref.current) return;
     ref.current.style.transform = "translate(0, 0)";
+    ref.current.style.transition = "transform 0.25s ease-out";
   }, []);
 
-  return (
-    <Tag
-      ref={ref as any}
-      className={`transition-transform duration-200 ease-out ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      {...rest}
-    >
-      {children}
-    </Tag>
-  );
+  if (!isValidElement(children)) return children;
+
+  return cloneElement(children as React.ReactElement<any>, {
+    ref,
+    onMouseMove: handleMouseMove,
+    onMouseLeave: handleMouseLeave,
+  });
 }

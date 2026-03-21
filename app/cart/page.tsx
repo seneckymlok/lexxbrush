@@ -92,12 +92,14 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <Link
-                href="/checkout"
-                className="block w-full py-4 btn-brand text-sm font-bold rounded-full text-center"
-              >
-                {t("cart.checkout")}
-              </Link>
+              <MagneticButton>
+                <Link
+                  href="/checkout"
+                  className="block w-full py-4 btn-brand text-sm font-bold rounded-full text-center"
+                >
+                  {t("cart.checkout")}
+                </Link>
+              </MagneticButton>
 
               <Link
                 href="/"
