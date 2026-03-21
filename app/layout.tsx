@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { LayoutShell } from "@/components/layout/LayoutShell";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
@@ -140,9 +139,7 @@ export default function RootLayout({
         <LanguageProvider>
           <CartProvider>
             <ScrollProvider>
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
+              <LayoutShell>{children}</LayoutShell>
             </ScrollProvider>
           </CartProvider>
         </LanguageProvider>
