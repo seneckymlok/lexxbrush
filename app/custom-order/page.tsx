@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import { supabase } from "@/lib/supabase";
 
 export default function CustomOrderPage() {
@@ -184,13 +185,15 @@ export default function CustomOrderPage() {
             </div>
 
             <div className="form-reveal pt-4">
-              <button
-                type="submit"
-                disabled={status === "sending"}
-                className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
-              >
-                {status === "sending" ? "..." : t("custom.submit")}
-              </button>
+              <MagneticButton as="div" strength={0.25} className="w-full md:w-auto inline-block">
+                <button
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
+                >
+                  {status === "sending" ? "..." : t("custom.submit")}
+                </button>
+              </MagneticButton>
             </div>
 
             {status === "success" && (

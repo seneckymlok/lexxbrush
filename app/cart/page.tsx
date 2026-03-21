@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import type { Locale } from "@/lib/translations";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 
 export default function CartPage() {
   const { locale, t } = useLanguage();
@@ -91,12 +92,14 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <Link
-                href="/checkout"
-                className="block w-full py-4 btn-brand text-sm font-bold rounded-full text-center"
-              >
-                {t("cart.checkout")}
-              </Link>
+              <MagneticButton as="div" strength={0.2} className="w-full">
+                <Link
+                  href="/checkout"
+                  className="block w-full py-4 btn-brand text-sm font-bold rounded-full text-center"
+                >
+                  {t("cart.checkout")}
+                </Link>
+              </MagneticButton>
 
               <Link
                 href="/"

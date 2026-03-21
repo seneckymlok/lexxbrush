@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import type { Locale } from "@/lib/translations";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 
 const COUNTRIES = [
   { code: "SK", name: "Slovakia" },
@@ -242,6 +243,7 @@ export default function CheckoutPage() {
 
               {/* Submit — visible on desktop */}
               <div className="hidden md:block">
+              <MagneticButton as="div" strength={0.2} className="w-full">
                 <button
                   type="submit"
                   disabled={submitting}
@@ -249,6 +251,7 @@ export default function CheckoutPage() {
                 >
                   {submitting ? t("checkout.processing") : t("checkout.pay")}
                 </button>
+              </MagneticButton>
                 <Link
                   href="/cart"
                   className="block text-center mt-4 text-sm text-chrome hover:text-cyan transition-colors duration-300"
