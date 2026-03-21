@@ -137,8 +137,11 @@
 
   /* Product card glow */
   .card-glow {
-    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     border: 1px solid transparent;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: radial-gradient(white, black);
   }
 
   .card-glow:hover {
@@ -147,7 +150,6 @@
       0 0 20px rgba(123, 47, 190, 0.08),
       0 0 40px rgba(255, 105, 180, 0.04),
       0 8px 32px rgba(0, 0, 0, 0.4);
-    transform: translateY(-4px);
   }
 
   /* Logo subtle hover */
