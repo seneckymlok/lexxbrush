@@ -138,7 +138,7 @@ export default function ContactPage() {
             </form>
 
             {/* Company Info */}
-            <div className="form-reveal space-y-10">
+            <div className="form-reveal space-y-10 text-center md:text-left">
               <div>
                 <h2 className="font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.2em] uppercase text-chrome-bright mb-6">
                   {t("contact.companyInfo")}

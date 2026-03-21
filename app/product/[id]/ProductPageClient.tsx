@@ -207,7 +207,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
           {/* Details — editorial strip */}
           <div className="mt-10 pt-6 border-t border-white/5">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
               <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.handPainted")}</span>
               <span className="w-[1px] h-3 bg-white/10" aria-hidden="true" />
               <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.unique")}</span>
