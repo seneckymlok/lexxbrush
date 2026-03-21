@@ -201,8 +201,8 @@ export function Header() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Foundation: deep frosted glass */}
-        <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-3xl" />
+        {/* Foundation: solid opaque black */}
+        <div className="absolute inset-0 bg-[#050505] backdrop-blur-3xl" />
         
         {/* Texture: subtle noise injected */}
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay" />
@@ -220,21 +220,8 @@ export function Header() {
         {/* Dynamic Content Container */}
         <div className="relative h-full flex flex-col justify-between px-6 md:px-12 pt-28 pb-10">
 
-          {/* Subtitle / Brand Tagline */}
-          <div
-            className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"
-            }`}
-            style={{ transitionDelay: mobileMenuOpen ? "300ms" : "0ms" }}
-          >
-            <p className="font-[family-name:var(--font-accent)] text-xs md:text-sm italic text-chrome tracking-[0.2em] uppercase">
-              {t("shop.oneOfAKind") || "Hand-painted Wearable Art"}
-            </p>
-            <div className="w-12 h-[1px] bg-white/20 mt-4" />
-          </div>
-
           {/* Master Navigation Links */}
-          <nav className="flex flex-col flex-1 justify-center gap-2 md:gap-4 my-8">
+          <nav className="flex flex-col flex-1 justify-center gap-2 md:gap-4 my-8 md:mt-16">
             {NAV_LINKS.map((link, i) => (
               <div key={link.href} className="overflow-hidden">
                 <Link
@@ -255,12 +242,12 @@ export function Header() {
                   </span>
 
                   {/* High-impact Typographic Link */}
-                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.8rem,13vw,6rem)] leading-[0.9] font-black tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 transition-all duration-500 group-hover:from-cyan group-hover:to-pink">
+                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.5rem,11.5vw,5.5rem)] leading-[0.95] font-black tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 transition-all duration-500 group-hover:from-cyan group-hover:to-pink pb-2 pr-4 break-words">
                     {t(link.key)}
                     
                     {/* Floating Cart Indicator */}
                     {link.href === "/cart" && totalItems > 0 && (
-                      <span className="absolute -top-1 -right-4 md:-right-6 text-pink text-sm md:text-lg font-bold font-sans">
+                      <span className="absolute -top-1 -right-3 md:-right-6 text-pink text-sm md:text-lg font-bold font-sans">
                         •
                       </span>
                     )}
