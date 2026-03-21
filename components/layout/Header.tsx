@@ -110,13 +110,13 @@ export function Header() {
           <div className="hidden md:flex items-center gap-8">
             <Link
               href="/"
-              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-white transition-colors duration-200"
+              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
             >
               {t("nav.shop")}
             </Link>
             <Link
               href="/custom-order"
-              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-white transition-colors duration-200"
+              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
             >
               {t("nav.custom")}
             </Link>
@@ -126,7 +126,7 @@ export function Header() {
             {/* Cart */}
             <Link
               href="/cart"
-              className="relative text-chrome-light hover:text-white transition-colors duration-200"
+              className="relative text-chrome-light hover:text-cyan transition-colors duration-200"
             >
               <BagIcon />
               {totalItems > 0 && (
