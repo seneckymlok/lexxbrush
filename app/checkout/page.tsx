@@ -186,6 +186,7 @@ export default function CheckoutPage() {
                       value={form.address2}
                       onChange={(e) => update("address2", e.target.value)}
                       className={inputClass}
+                      placeholder={t("checkout.address2")}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
