@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, successUrl, cancelUrl } = await req.json();
+    const { items, customer, successUrl, cancelUrl } = await req.json();
     const supabase = createAdminClient();
 
     // Validate products and prices against database
@@ -42,15 +42,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No available products in cart" }, { status: 400 });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    // Build session config — pre-fill customer data if provided
+    const sessionConfig: any = {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      shipping_address_collection: {
-        allowed_countries: ["SK", "CZ", "DE", "AT", "PL", "HU", "US", "GB"],
-      },
       success_url: successUrl || `${req.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${req.nextUrl.origin}/checkout/cancel`,
+      cancel_url: cancelUrl || `${req.nextUrl.origin}/checkout`,
       metadata: {
         product_ids: JSON.stringify(productIds),
         items: JSON.stringify(
@@ -63,7 +61,28 @@ export async function POST(req: NextRequest) {
           }))
         ),
       },
-    });
+    };
+
+    if (customer?.email) {
+      sessionConfig.customer_email = customer.email;
+    }
+
+    if (customer?.name && customer?.address) {
+      // Pre-fill shipping in metadata for the webhook to use
+      sessionConfig.metadata.customer_name = customer.name;
+      sessionConfig.metadata.shipping_address = JSON.stringify(customer.address);
+
+      // Let Stripe confirm the address (still collect for verification)
+      sessionConfig.shipping_address_collection = {
+        allowed_countries: ["SK", "CZ", "DE", "AT", "PL", "HU", "US", "GB", "FR", "IT", "ES", "NL", "BE"],
+      };
+    } else {
+      sessionConfig.shipping_address_collection = {
+        allowed_countries: ["SK", "CZ", "DE", "AT", "PL", "HU", "US", "GB", "FR", "IT", "ES", "NL", "BE"],
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
   } catch (error: any) {

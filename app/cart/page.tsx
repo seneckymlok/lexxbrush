@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
@@ -13,7 +13,6 @@ export default function CartPage() {
   const { locale, t } = useLanguage();
   const { items, removeItem, totalPrice } = useCart();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [checkingOut, setCheckingOut] = useState(false);
 
   useGSAP(
     () => {
@@ -28,35 +27,6 @@ export default function CartPage() {
     },
     { scope: containerRef, dependencies: [items.length] }
   );
-
-  async function handleCheckout() {
-    setCheckingOut(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            productId: item.product.id,
-            quantity: item.quantity,
-            size: item.size,
-          })),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error || "Something went wrong. Please try again.");
-        setCheckingOut(false);
-      }
-    } catch (err) {
-      alert("Connection error. Please try again.");
-      setCheckingOut(false);
-    }
-  }
 
   return (
     <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-18 pb-12 md:pt-24 md:pb-24">
@@ -121,13 +91,12 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <button
-                onClick={handleCheckout}
-                disabled={checkingOut}
-                className="w-full py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
+              <Link
+                href="/checkout"
+                className="block w-full py-4 btn-brand text-sm font-bold rounded-full text-center"
               >
-                {checkingOut ? "Redirecting to payment..." : t("cart.checkout")}
-              </button>
+                {t("cart.checkout")}
+              </Link>
 
               <Link
                 href="/"
