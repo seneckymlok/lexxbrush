@@ -310,7 +310,7 @@
 
   /* Divider marquee — slower than product marquee */
   .animate-divider-marquee {
-    animation: divider-marquee 25s linear infinite;
+    animation: divider-marquee 35s linear infinite;
   }
 
   /* Enhanced card hover with 3D perspective */
