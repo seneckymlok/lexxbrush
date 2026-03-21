@@ -68,12 +68,12 @@ export default function ContactPage() {
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-24 pb-16 md:pt-32 md:pb-24">
         <div className="max-w-4xl mx-auto" ref={formRef}>
           {/* Title */}
-          <div className="form-reveal text-center md:text-left mb-16">
+          <div className="form-reveal text-center mb-16">
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
               {t("contact.title")}
             </h1>
-            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6 mx-auto md:mx-0" />
-            <p className="text-chrome leading-relaxed max-w-md mx-auto md:mx-0">
+            <div className="w-10 h-[1px] bg-white/10 mt-4 mb-6 mx-auto" />
+            <p className="text-chrome leading-relaxed max-w-md mx-auto">
               {t("contact.subtitle")}
             </p>
           </div>
