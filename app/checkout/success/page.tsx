@@ -11,7 +11,12 @@ function SuccessContent() {
   return (
     <div className="page-enter min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <div className="text-5xl mb-6">🎉</div>
+        <div className="mb-6 flex justify-center">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-chrome-light">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+        </div>
         <h1 className="text-2xl font-bold text-white mb-3">Order Confirmed!</h1>
         <p className="text-white/50 text-sm leading-relaxed mb-8">
           Thanks for your order. You&apos;ll receive a confirmation email shortly.
