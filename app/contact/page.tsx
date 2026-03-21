@@ -86,6 +86,7 @@ export default function ContactPage() {
                   {t("contact.name")}
                 </label>
                 <input id="contact-name" name="name" type="text" autoComplete="name" required value={form.name}
+                  placeholder={t("contact.namePlaceholder")}
                   onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClasses} />
               </div>
 
@@ -94,6 +95,7 @@ export default function ContactPage() {
                   {t("contact.email")}
                 </label>
                 <input id="contact-email" name="email" type="email" autoComplete="email" inputMode="email" required value={form.email}
+                  placeholder={t("contact.emailPlaceholder")}
                   onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClasses} />
               </div>
 
@@ -102,6 +104,7 @@ export default function ContactPage() {
                   {t("contact.subject")}
                 </label>
                 <input id="contact-subject" name="subject" type="text" value={form.subject}
+                  placeholder={t("contact.subjectPlaceholder")}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })} className={inputClasses} />
               </div>
 
@@ -110,6 +113,7 @@ export default function ContactPage() {
                   {t("contact.message")}
                 </label>
                 <textarea id="contact-message" name="message" required rows={5} value={form.message}
+                  placeholder={t("contact.messagePlaceholder")}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   className="w-full bg-transparent border border-steel focus:border-cyan outline-none rounded-lg p-4 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300 resize-none" />
               </div>

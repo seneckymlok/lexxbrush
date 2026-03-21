@@ -136,7 +136,7 @@ export default function CheckoutPage() {
                       value={form.email}
                       onChange={(e) => update("email", e.target.value)}
                       className={inputClass}
-                      placeholder="you@example.com"
+                      placeholder={t("checkout.emailPlaceholder")}
                     />
                   </div>
                   <div>
@@ -150,6 +150,7 @@ export default function CheckoutPage() {
                       value={form.name}
                       onChange={(e) => update("name", e.target.value)}
                       className={inputClass}
+                      placeholder={t("checkout.namePlaceholder")}
                     />
                   </div>
                 </div>
@@ -172,6 +173,7 @@ export default function CheckoutPage() {
                       value={form.address}
                       onChange={(e) => update("address", e.target.value)}
                       className={inputClass}
+                      placeholder={t("checkout.addressPlaceholder")}
                     />
                   </div>
                   <div>
@@ -198,6 +200,7 @@ export default function CheckoutPage() {
                         value={form.city}
                         onChange={(e) => update("city", e.target.value)}
                         className={inputClass}
+                        placeholder={t("checkout.cityPlaceholder")}
                       />
                     </div>
                     <div>
@@ -212,6 +215,7 @@ export default function CheckoutPage() {
                         value={form.postalCode}
                         onChange={(e) => update("postalCode", e.target.value)}
                         className={inputClass}
+                        placeholder={t("checkout.postalCodePlaceholder")}
                       />
                     </div>
                   </div>

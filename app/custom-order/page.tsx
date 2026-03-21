@@ -129,6 +129,7 @@ export default function CustomOrderPage() {
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder={t("custom.namePlaceholder")}
                 className={inputClasses}
               />
             </div>
@@ -146,6 +147,7 @@ export default function CustomOrderPage() {
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder={t("custom.emailPlaceholder")}
                 className={inputClasses}
               />
             </div>
@@ -172,7 +174,7 @@ export default function CustomOrderPage() {
                 type="text"
                 value={form.budget}
                 onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                placeholder="€100 - €300"
+                placeholder={t("custom.budgetPlaceholder")}
                 className={inputClasses}
               />
             </div>
