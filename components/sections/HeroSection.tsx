@@ -6,6 +6,49 @@ import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { Product } from "@/lib/products";
 
+function AirbrushStar({ className = "" }: { className?: string }) {
+  return (
+    <svg 
+      viewBox="0 0 100 100" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <defs>
+        <filter id="blur-ring-heavy" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="6" />
+        </filter>
+        <filter id="blur-ring-light" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+        <filter id="blur-cross" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" />
+        </filter>
+      </defs>
+
+      {/* Fuzzy concentric rings background */}
+      <circle cx="50" cy="50" r="16" stroke="currentColor" strokeWidth="4" opacity="0.4" filter="url(#blur-ring-heavy)" />
+      <circle cx="50" cy="50" r="28" stroke="currentColor" strokeWidth="3" opacity="0.3" filter="url(#blur-ring-light)" />
+      
+      {/* Blurred cross layer */}
+      <g fill="currentColor" opacity="0.6" filter="url(#blur-cross)">
+        <path d="M50 10 L54 50 L50 90 L46 50 Z" />
+        <path d="M10 50 L50 46 L90 50 L50 54 Z" />
+      </g>
+      
+      {/* Sharp inner core cross */}
+      <g fill="currentColor" opacity="0.9">
+        <path d="M50 12 L52 50 L50 88 L48 50 Z" />
+        <path d="M12 50 L50 48 L88 50 L50 52 Z" />
+      </g>
+      
+      {/* Darker/brighter center dot */}
+      <circle cx="50" cy="50" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
 interface HeroSectionProps {
   products: Product[];
 }
@@ -161,12 +204,15 @@ export function HeroSection({ products }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Spray dots — full palette */}
-      <div className="spray-dot absolute top-[20%] right-[12%]" />
-      <div className="spray-dot absolute top-[35%] right-[8%] opacity-20 w-[3px] h-[3px] bg-violet" />
-      <div className="spray-dot absolute bottom-[30%] left-[6%] opacity-15 w-[2px] h-[2px] bg-lime" />
-      <div className="spray-dot absolute top-[60%] left-[15%] opacity-10 bg-cyan w-[3px] h-[3px]" />
-      <div className="spray-dot absolute top-[45%] right-[18%] opacity-12 bg-amber w-[2px] h-[2px]" />
+      {/* Hand-airbrushed star elements — matching provided reference */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" data-animate>
+        <AirbrushStar className="absolute top-[20%] right-[12%] w-24 h-24 text-white opacity-[0.25] rotate-[15deg] mix-blend-screen" />
+        <AirbrushStar className="absolute top-[35%] right-[8%] w-16 h-16 text-pink opacity-[0.35] -rotate-[10deg] mix-blend-screen animate-pulse" />
+        <AirbrushStar className="absolute bottom-[20%] left-[4%] w-20 h-20 text-lime opacity-[0.3] rotate-[5deg] mix-blend-screen" />
+        <AirbrushStar className="absolute top-[60%] left-[12%] w-14 h-14 text-cyan opacity-[0.4] rotate-[25deg] mix-blend-screen" />
+        <AirbrushStar className="absolute top-[45%] right-[18%] w-12 h-12 text-amber opacity-[0.3] -rotate-[15deg] mix-blend-screen" />
+        <AirbrushStar className="absolute top-[10%] left-[20%] w-10 h-10 text-violet opacity-[0.4] rotate-[45deg] mix-blend-screen" />
+      </div>
     </section>
   );
 }
