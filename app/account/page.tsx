@@ -66,9 +66,6 @@ export default function AccountPage() {
       <div className="mb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <p className="font-[family-name:var(--font-accent)] text-sm italic text-chrome mb-2">
-              {t("auth.welcomeBack")}
-            </p>
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-bold uppercase tracking-[0.04em] text-white">
               {t("auth.account")}
             </h1>
