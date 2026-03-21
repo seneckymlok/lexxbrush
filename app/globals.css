@@ -93,36 +93,46 @@
     z-index: 1;
   }
 
-  /* Chrome gradient text */
+  /* Chrome gradient text — tinted chrome matching the logo's metallic finish */
   .chrome-text {
     background: linear-gradient(
       180deg,
-      #999 0%,
-      #fff 25%,
-      #888 50%,
-      #ddd 75%,
-      #999 100%
+      #8a8a8a 0%,
+      #c8c8c8 15%,
+      #ffffff 28%,
+      #b0a8b0 42%,
+      #d8d0d8 58%,
+      #f0eef0 72%,
+      #a0a0a0 88%,
+      #8a8a8a 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) drop-shadow(0 -1px 0 rgba(255,255,255,0.05));
   }
 
-  /* Chrome shimmer animation */
+  /* Chrome shimmer — animated chrome with a warm sweeping highlight */
   .chrome-shimmer {
     background: linear-gradient(
       110deg,
-      #666 0%,
-      #aaa 20%,
+      #777 0%,
+      #aaa 15%,
+      #ddd 25%,
       #fff 30%,
-      #aaa 40%,
-      #666 100%
+      #f0e8f0 35%,
+      #aaa 45%,
+      #888 60%,
+      #aaa 80%,
+      #777 100%
     );
-    background-size: 200% 100%;
+    background-size: 250% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmer 3s ease-in-out infinite;
+    animation: shimmer 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   }
 
   /* Product card glow */
