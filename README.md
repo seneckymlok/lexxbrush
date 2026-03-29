@@ -1,6 +1,6 @@
 # Lexxbrush
 
-**Hand-airbrushed wearable art — every piece is unique.**
+**Hand-airbrushed wearable art — every piece is unique**
 
 Lexxbrush is a premium streetwear brand based in Slovakia, creating one-of-a-kind, hand-airbrushed garments. Each piece is painted entirely by hand, making every item a unique work of wearable art.
 
