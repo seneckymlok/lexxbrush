@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getProduct, getProducts } from "@/lib/products";
 import { ProductPageClient } from "./ProductPageClient";
 
+export const revalidate = 60;
+
 interface Props {
   params: Promise<{ id: string }>;
 }
