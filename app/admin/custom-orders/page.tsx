@@ -60,9 +60,9 @@ export default function AdminCustomOrdersPage() {
           {orders.map((order) => {
             const isNew = order.status === "new";
             return (
-              <div key={order.id} className={`bg-white/[0.02] border rounded-xl overflow-hidden ${isNew ? "border-pink-500/20" : "border-white/5"}`}>
+              <div key={order.id} className={`bg-white/[0.02] border rounded-xl overflow-hidden ${isNew ? "border-plum/20" : "border-white/5"}`}>
                 <button onClick={() => setExpandedId(expandedId === order.id ? null : order.id)} className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
-                  {isNew && <div className="w-2 h-2 rounded-full bg-pink-400 flex-shrink-0" />}
+                  {isNew && <div className="w-2 h-2 rounded-full bg-plum flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white/70">{order.name}</p>
                     <p className="text-xs text-white/30 mt-0.5">{order.email} · {order.garment}{order.budget && ` · ${order.budget}`}</p>

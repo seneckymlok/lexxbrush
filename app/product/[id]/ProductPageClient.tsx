@@ -122,7 +122,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
       {/* Back button */}
       <button
         onClick={() => router.push("/")}
-        className="inline-flex items-center gap-2 text-sm text-chrome hover:text-cyan transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase mb-8"
+        className="inline-flex items-center gap-2 text-sm text-chrome hover:text-sage transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase mb-8"
         aria-label="Back to shop"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -160,16 +160,16 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               }}
               className={`absolute top-4 left-4 z-20 w-11 h-11 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 ${
                 product && isFavorite(product.id)
-                  ? "bg-void/40 text-pink"
-                  : "bg-black/20 border border-white/10 text-white hover:text-pink hover:bg-black/40"
+                  ? "bg-void/40 text-plum"
+                  : "bg-black/20 border border-white/10 text-white hover:text-plum hover:bg-black/40"
               }`}
               aria-label={product && isFavorite(product.id) ? "Remove from favorites" : "Add to favorites"}
             >
               <svg width="22" height="22" viewBox="0 0 24 24">
                 <path
                   d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z"
-                  fill={product && isFavorite(product.id) ? "var(--color-pink)" : "none"}
-                  stroke={product && isFavorite(product.id) ? "var(--color-pink)" : "currentColor"}
+                  fill={product && isFavorite(product.id) ? "var(--color-plum)" : "none"}
+                  stroke={product && isFavorite(product.id) ? "var(--color-plum)" : "currentColor"}
                   strokeWidth={product && isFavorite(product.id) ? "0" : "1.5"}
                   strokeLinejoin="round"
                   className="transition-all duration-400"
@@ -214,7 +214,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   aria-label={`View image ${i + 1}`}
                   className={`w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all duration-300 relative ${
                     activeImage === i
-                      ? "border-pink opacity-100 shadow-[0_0_10px_rgba(255,105,180,0.2)]"
+                      ? "border-plum opacity-100 shadow-[0_0_10px_rgba(123,91,167,0.2)]"
                       : "border-transparent opacity-50 hover:opacity-80"
                   }`}
                 >
@@ -287,7 +287,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                 product.isSold
                   ? "bg-concrete-light text-text-dim cursor-not-allowed font-[family-name:var(--font-display)] tracking-[0.15em] uppercase"
                   : added
-                    ? "bg-cyan text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+                    ? "bg-sage text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(138,171,158,0.3)]"
                     : "btn-brand"
               }`}
             >

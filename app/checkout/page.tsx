@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
@@ -9,22 +9,8 @@ import { useCart } from "@/components/providers/CartProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import type { Locale } from "@/lib/translations";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-
-const COUNTRIES = [
-  { code: "SK", name: "Slovakia" },
-  { code: "CZ", name: "Czech Republic" },
-  { code: "DE", name: "Germany" },
-  { code: "AT", name: "Austria" },
-  { code: "PL", name: "Poland" },
-  { code: "HU", name: "Hungary" },
-  { code: "FR", name: "France" },
-  { code: "IT", name: "Italy" },
-  { code: "ES", name: "Spain" },
-  { code: "NL", name: "Netherlands" },
-  { code: "BE", name: "Belgium" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "US", name: "United States" },
-];
+import { PACKETA_COUNTRIES } from "@/lib/packeta";
+import PacketaWidget from "@/components/checkout/PacketaWidget";
 
 export default function CheckoutPage() {
   const { locale, t } = useLanguage();
@@ -33,48 +19,59 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const [form, setForm] = useState({
-    email: "",
-    name: "",
-    address: "",
-    address2: "",
-    city: "",
-    postalCode: "",
-    country: "SK",
-  });
-  const [saveProfile, setSaveProfile] = useState(false);
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("SK");
+  const [deliveryType, setDeliveryType] = useState<"pickup" | "home_delivery">("pickup");
+  const [selectedPoint, setSelectedPoint] = useState<PacketaPoint | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<(PacketaHDAddress & { carrierId: number }) | null>(null);
 
   useEffect(() => {
     if (!user) return;
-    setForm(prev => ({ ...prev, email: user.email || prev.email }));
+    setEmail(user.email || "");
 
     const fetchProfile = async () => {
       const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
       if (data) {
-        setForm(prev => ({
-          ...prev,
-          name: data.full_name || prev.name,
-          address: data.address || prev.address,
-          address2: data.address2 || prev.address2,
-          city: data.city || prev.city,
-          postalCode: data.postal_code || prev.postalCode,
-          country: data.country || prev.country,
-        }));
+        setName(data.full_name || "");
+        if (data.country) setCountry(data.country);
       }
     };
     fetchProfile();
   }, [user]);
 
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  // Reset selection when switching delivery type or country
+  useEffect(() => {
+    setSelectedPoint(null);
+    setSelectedAddress(null);
+  }, [deliveryType, country]);
+
+  const handlePointSelect = useCallback((point: PacketaPoint | null) => {
+    setSelectedPoint(point);
+  }, []);
+
+  const handleAddressSelect = useCallback((address: (PacketaHDAddress & { carrierId: number }) | null) => {
+    setSelectedAddress(address);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (items.length === 0) return;
-    
-    if (!e.currentTarget.checkValidity()) {
-      setError(t("auth.fillAllFields") || "Please fill out all required fields correctly.");
+
+    // Validate contact fields
+    if (!email || !name) {
+      setError(t("auth.fillAllFields") || "Please fill out all required fields.");
+      return;
+    }
+
+    // Validate delivery selection
+    if (deliveryType === "pickup" && !selectedPoint) {
+      setError(t("checkout.noDeliverySelected"));
+      return;
+    }
+    if (deliveryType === "home_delivery" && !selectedAddress) {
+      setError(t("checkout.noDeliverySelected"));
       return;
     }
 
@@ -82,28 +79,43 @@ export default function CheckoutPage() {
     setError("");
 
     try {
+      const delivery: PacketaDelivery = {
+        type: deliveryType,
+        country,
+      };
+
+      if (deliveryType === "pickup" && selectedPoint) {
+        delivery.point = {
+          id: selectedPoint.id,
+          name: selectedPoint.name,
+          street: selectedPoint.street,
+          city: selectedPoint.city,
+          zip: selectedPoint.zip,
+          country: selectedPoint.country,
+          carrierId: selectedPoint.carrierId,
+          carrierPickupPointId: selectedPoint.carrierPickupPointId,
+          gps: selectedPoint.gps,
+        };
+      } else if (deliveryType === "home_delivery" && selectedAddress) {
+        delivery.address = selectedAddress;
+      }
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user?.id,
-          saveProfile,
           items: items.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
             size: item.size,
           })),
           customer: {
-            email: form.email,
-            name: form.name,
-            address: {
-              line1: form.address,
-              line2: form.address2 || undefined,
-              city: form.city,
-              postal_code: form.postalCode,
-              country: form.country,
-            },
+            email,
+            name,
+            phone: phone || undefined,
           },
+          delivery,
         }),
       });
 
@@ -166,8 +178,8 @@ export default function CheckoutPage() {
                       autoComplete="email"
                       inputMode="email"
                       required
-                      value={form.email}
-                      onChange={(e) => update("email", e.target.value)}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className={inputClass}
                       placeholder={t("checkout.emailPlaceholder")}
                     />
@@ -180,79 +192,35 @@ export default function CheckoutPage() {
                       type="text"
                       autoComplete="name"
                       required
-                      value={form.name}
-                      onChange={(e) => update("name", e.target.value)}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       className={inputClass}
                       placeholder={t("checkout.namePlaceholder")}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className={labelClass}>{t("checkout.phone")}</label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      autoComplete="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className={inputClass}
+                      placeholder={t("checkout.phonePlaceholder")}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Shipping */}
+              {/* Delivery */}
               <div>
                 <h2 className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-bright mb-6">
                   {t("checkout.shipping")}
                 </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="address" className={labelClass}>{t("checkout.address")}</label>
-                    <input
-                      id="address"
-                      name="address"
-                      type="text"
-                      autoComplete="address-line1"
-                      required
-                      value={form.address}
-                      onChange={(e) => update("address", e.target.value)}
-                      className={inputClass}
-                      placeholder={t("checkout.addressPlaceholder")}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="address2" className={labelClass}>{t("checkout.address2")}</label>
-                    <input
-                      id="address2"
-                      name="address2"
-                      type="text"
-                      autoComplete="address-line2"
-                      value={form.address2}
-                      onChange={(e) => update("address2", e.target.value)}
-                      className={inputClass}
-                      placeholder={t("checkout.address2")}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="city" className={labelClass}>{t("checkout.city")}</label>
-                      <input
-                        id="city"
-                        name="city"
-                        type="text"
-                        autoComplete="address-level2"
-                        required
-                        value={form.city}
-                        onChange={(e) => update("city", e.target.value)}
-                        className={inputClass}
-                        placeholder={t("checkout.cityPlaceholder")}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="postalCode" className={labelClass}>{t("checkout.postalCode")}</label>
-                      <input
-                        id="postalCode"
-                        name="postalCode"
-                        type="text"
-                        autoComplete="postal-code"
-                        inputMode="numeric"
-                        required
-                        value={form.postalCode}
-                        onChange={(e) => update("postalCode", e.target.value)}
-                        className={inputClass}
-                        placeholder={t("checkout.postalCodePlaceholder")}
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-5">
+                  {/* Country selector */}
                   <div>
                     <label htmlFor="country" className={labelClass}>{t("checkout.country")}</label>
                     <select
@@ -260,32 +228,57 @@ export default function CheckoutPage() {
                       name="country"
                       autoComplete="country"
                       required
-                      value={form.country}
-                      onChange={(e) => update("country", e.target.value)}
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
                       className={inputClass}
                     >
-                      {COUNTRIES.map((c) => (
+                      {PACKETA_COUNTRIES.map((c) => (
                         <option key={c.code} value={c.code}>
-                          {c.name}
+                          {locale === "sk" ? c.nameSk : c.name}
                         </option>
                       ))}
                     </select>
                   </div>
-                  
-                  {user && (
-                    <div className="flex items-center gap-3 pt-2">
-                      <input
-                        type="checkbox"
-                        id="saveProfile"
-                        checked={saveProfile}
-                        onChange={(e) => setSaveProfile(e.target.checked)}
-                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-chrome focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                      />
-                      <label htmlFor="saveProfile" className="text-sm text-chrome hover:text-white cursor-pointer transition-colors">
-                        {t("checkout.saveAddress")}
-                      </label>
+
+                  {/* Delivery type toggle */}
+                  <div>
+                    <label className={labelClass}>{t("checkout.deliveryMethod")}</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryType("pickup")}
+                        className={`py-3 px-4 rounded-lg text-sm font-[family-name:var(--font-display)] font-bold tracking-wide uppercase border transition-all duration-300 ${
+                          deliveryType === "pickup"
+                            ? "bg-white/10 border-white/30 text-white"
+                            : "bg-white/5 border-white/10 text-chrome hover:border-white/20 hover:text-white/80"
+                        }`}
+                      >
+                        {t("checkout.pickupPoint")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryType("home_delivery")}
+                        className={`py-3 px-4 rounded-lg text-sm font-[family-name:var(--font-display)] font-bold tracking-wide uppercase border transition-all duration-300 ${
+                          deliveryType === "home_delivery"
+                            ? "bg-white/10 border-white/30 text-white"
+                            : "bg-white/5 border-white/10 text-chrome hover:border-white/20 hover:text-white/80"
+                        }`}
+                      >
+                        {t("checkout.homeDelivery")}
+                      </button>
                     </div>
-                  )}
+                  </div>
+
+                  {/* Packeta widget */}
+                  <PacketaWidget
+                    country={country}
+                    language={locale}
+                    deliveryType={deliveryType}
+                    selectedPoint={selectedPoint}
+                    selectedAddress={selectedAddress}
+                    onPointSelect={handlePointSelect}
+                    onAddressSelect={handleAddressSelect}
+                  />
                 </div>
               </div>
 
@@ -307,7 +300,7 @@ export default function CheckoutPage() {
               </MagneticButton>
                 <Link
                   href="/cart"
-                  className="block text-center mt-4 text-sm text-chrome hover:text-cyan transition-colors duration-300"
+                  className="block text-center mt-4 text-sm text-chrome hover:text-sage transition-colors duration-300"
                 >
                   {t("checkout.backToCart")}
                 </Link>
@@ -371,7 +364,7 @@ export default function CheckoutPage() {
                   </button>
                   <Link
                     href="/cart"
-                    className="block text-center mt-4 text-sm text-chrome hover:text-cyan transition-colors duration-300"
+                    className="block text-center mt-4 text-sm text-chrome hover:text-sage transition-colors duration-300"
                   >
                     {t("checkout.backToCart")}
                   </Link>

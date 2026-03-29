@@ -71,7 +71,7 @@ export default function CustomOrderPage() {
   };
 
   const inputClasses =
-    "w-full bg-transparent border-b border-steel focus:border-pink outline-none py-3 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300";
+    "w-full bg-transparent border-b border-steel focus:border-plum outline-none py-3 text-text placeholder:text-text-dim font-[family-name:var(--font-body)] text-sm transition-colors duration-300";
 
   return (
     <div className="page-enter relative min-h-screen overflow-hidden">
@@ -216,7 +216,7 @@ export default function CustomOrderPage() {
             </div>
 
             {status === "success" && (
-              <p className="form-reveal text-cyan/80 text-sm">{t("custom.success")}</p>
+              <p className="form-reveal text-sage/80 text-sm">{t("custom.success")}</p>
             )}
 
             {status === "error" && (

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { getTrackingUrl } from "@/lib/packeta";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -198,11 +199,13 @@ export async function PATCH(req: NextRequest) {
   // If this was an order status update to "shipped", dispatch the Resend email
   if (table === "orders" && data.status === "shipped") {
     try {
-      // Fetch the customer email for this order to send the notification
-      const { data: orderData } = await admin.from("orders").select("customer_email").eq("id", id).single();
-      
+      // Fetch order data for shipping notification
+      const { data: orderData } = await admin.from("orders").select("customer_email, packeta_packet_id").eq("id", id).single();
+
       if (orderData?.customer_email) {
-        const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu"}/account`;
+        const trackingUrl = orderData.packeta_packet_id
+          ? getTrackingUrl(orderData.packeta_packet_id)
+          : `${process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu"}/account`;
         const emailHtml = buildShippingEmailHtml(id, trackingUrl);
 
         await resend.emails.send({

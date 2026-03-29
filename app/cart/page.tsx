@@ -64,7 +64,7 @@ export default function CartPage() {
                       {item.product.name[locale as Locale]}
                     </h3>
                     {item.size && (
-                      <p className="mt-1 text-xs text-cyan">{t("cart.size")}: {item.size}</p>
+                      <p className="mt-1 text-xs text-sage">{t("cart.size")}: {item.size}</p>
                     )}
                     <p className="mt-1 text-sm font-medium text-white">
                       &euro;{item.product.price}
@@ -73,7 +73,7 @@ export default function CartPage() {
                   </div>
                   <button
                     onClick={() => removeItem(item.product.id, item.size)}
-                    className="flex-shrink-0 text-xs text-chrome hover:text-pink-hot transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase"
+                    className="flex-shrink-0 text-xs text-chrome hover:text-plum-hot transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase"
                   >
                     {t("cart.remove")}
                   </button>
@@ -103,7 +103,7 @@ export default function CartPage() {
 
               <Link
                 href="/"
-                className="block text-center mt-4 text-sm text-chrome hover:text-cyan transition-colors duration-300"
+                className="block text-center mt-4 text-sm text-chrome hover:text-sage transition-colors duration-300"
               >
                 {t("cart.continueShopping")}
               </Link>

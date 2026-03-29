@@ -12,16 +12,20 @@ const content = {
         heading: "Shipping",
         subsections: [
           {
+            heading: "Shipping Provider",
+            text: `All orders are shipped via Packeta, a leading European delivery service. At checkout, you can choose between:\n\n• Pickup Point — collect your order from thousands of Packeta pickup points and Z-BOXes across Europe\n• Home Delivery — delivered directly to your door`,
+          },
+          {
             heading: "Shipping Zones",
-            text: `We currently ship across the European Union. For shipping inquiries outside the EU, please contact us at info@lexxbrush.eu.`,
+            text: `We currently ship to: Slovakia, Czech Republic, Germany, Austria, Poland, and Hungary.\n\nFor shipping inquiries to other countries, please contact us at info@lexxbrush.eu.`,
           },
           {
             heading: "Delivery Times",
-            text: `• Slovakia: 2–4 business days\n• EU countries: 5–10 business days\n\nPlease note that delivery times are estimates and may vary due to carrier delays, customs processing, or peak seasons.`,
+            text: `• Slovakia: 2–4 business days\n• Czech Republic: 2–4 business days\n• Other EU countries (DE, AT, PL, HU): 5–10 business days\n\nPlease note that delivery times are estimates and may vary due to carrier delays or peak seasons.`,
           },
           {
             heading: "Shipping Costs",
-            text: `Shipping costs are calculated at checkout based on your location and order size. The total shipping cost is displayed before you confirm your order.`,
+            text: `Shipping costs are calculated at checkout based on your location and the delivery method you choose. The total shipping cost is displayed before you confirm your order.`,
           },
           {
             heading: "Order Processing",
@@ -29,7 +33,7 @@ const content = {
           },
           {
             heading: "Tracking",
-            text: `Once your order is shipped, you will receive a confirmation email with tracking information (when available from the carrier).`,
+            text: `Once your order is shipped, you will receive a confirmation email with a Packeta tracking link. You can track your parcel in real time at tracking.packeta.com.`,
           },
         ],
       },
@@ -68,16 +72,20 @@ const content = {
         heading: "Doprava",
         subsections: [
           {
+            heading: "Prepravca",
+            text: `Všetky objednávky doručujeme prostredníctvom Packeta, poprednej európskej doručovacej služby. Pri pokladni si môžete vybrať:\n\n• Odberné miesto — vyzdvihnite si objednávku z tisícok Packeta odberných miest a Z-BOXov po celej Európe\n• Doručenie na adresu — doručenie priamo k vašim dverám`,
+          },
+          {
             heading: "Oblasti doručenia",
-            text: `Momentálne doručujeme po celej Európskej únii. Pre otázky o doručení mimo EÚ nás kontaktujte na info@lexxbrush.eu.`,
+            text: `Momentálne doručujeme do: Slovensko, Česko, Nemecko, Rakúsko, Poľsko a Maďarsko.\n\nPre otázky o doručení do iných krajín nás kontaktujte na info@lexxbrush.eu.`,
           },
           {
             heading: "Dodacie lehoty",
-            text: `• Slovensko: 2–4 pracovné dni\n• Krajiny EÚ: 5–10 pracovných dní\n\nUpozorňujeme, že dodacie lehoty sú orientačné a môžu sa líšiť v dôsledku meškania prepravcu, colného konania alebo špičkového obdobia.`,
+            text: `• Slovensko: 2–4 pracovné dni\n• Česko: 2–4 pracovné dni\n• Ostatné krajiny EÚ (DE, AT, PL, HU): 5–10 pracovných dní\n\nUpozorňujeme, že dodacie lehoty sú orientačné a môžu sa líšiť v dôsledku meškania prepravcu alebo špičkového obdobia.`,
           },
           {
             heading: "Náklady na dopravu",
-            text: `Náklady na dopravu sa vypočítavajú pri pokladni na základe vašej polohy a veľkosti objednávky. Celkové náklady na dopravu sú zobrazené pred potvrdením objednávky.`,
+            text: `Náklady na dopravu sa vypočítavajú pri pokladni na základe vašej polohy a zvoleného spôsobu doručenia. Celkové náklady na dopravu sú zobrazené pred potvrdením objednávky.`,
           },
           {
             heading: "Spracovanie objednávky",
@@ -85,7 +93,7 @@ const content = {
           },
           {
             heading: "Sledovanie",
-            text: `Po odoslaní objednávky dostanete potvrdzujúci e-mail s informáciami o sledovaní (ak sú dostupné od prepravcu).`,
+            text: `Po odoslaní objednávky dostanete potvrdzujúci e-mail s odkazom na sledovanie Packeta. Svoju zásielku môžete sledovať v reálnom čase na tracking.packeta.com.`,
           },
         ],
       },

@@ -123,8 +123,8 @@ export function ProductGrid({ products }: ProductGridProps) {
               onClick={() => setActiveCategory(cat.id)}
               className={`px-4 py-2 text-xs font-[family-name:var(--font-display)] font-medium tracking-[0.12em] uppercase rounded-full border transition-all duration-300 ${
                 activeCategory === cat.id
-                  ? "bg-gradient-to-r from-pink-hot to-pink text-white border-pink/30 shadow-[0_0_15px_rgba(255,20,147,0.2)]"
-                  : "bg-transparent text-chrome border-steel hover:border-pink/40 hover:text-chrome-bright"
+                  ? "bg-gradient-to-r from-plum-hot to-plum text-white border-plum/30 shadow-[0_0_15px_rgba(106,75,150,0.2)]"
+                  : "bg-transparent text-chrome border-steel hover:border-plum/40 hover:text-chrome-bright"
               }`}
             >
               {cat.label[locale as Locale]}

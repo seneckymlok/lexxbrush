@@ -104,7 +104,7 @@ function StatCard({ label, value, sub, highlight }: { label: string; value: stri
   return (
     <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-4">
       <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">{label}</p>
-      <p className={`text-2xl font-semibold ${highlight ? "text-pink-400" : "text-white"}`}>{value}</p>
+      <p className={`text-2xl font-semibold ${highlight ? "text-plum" : "text-white"}`}>{value}</p>
       <p className="text-[11px] text-white/20 mt-1">{sub}</p>
     </div>
   );

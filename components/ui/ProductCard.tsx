@@ -27,8 +27,8 @@ function FavoriteIcon({ active }: { active: boolean }) {
       {/* Spray paint splatter — organic asterisk shape */}
       <path
         d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z"
-        fill={active ? "var(--color-pink)" : "none"}
-        stroke={active ? "var(--color-pink)" : "currentColor"}
+        fill={active ? "var(--color-plum)" : "none"}
+        stroke={active ? "var(--color-plum)" : "currentColor"}
         strokeWidth={active ? "0" : "1.5"}
         strokeLinejoin="round"
         className="transition-all duration-400"
@@ -118,7 +118,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
             onClick={handleFavClick}
             className={`absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 ${
               isFav
-                ? "bg-void/40 backdrop-blur-sm text-pink"
+                ? "bg-void/40 backdrop-blur-sm text-plum"
                 : "bg-void/20 backdrop-blur-sm text-white/50 opacity-0 group-hover:opacity-100 hover:text-white"
             }`}
             aria-label={isFav ? "Remove from favorites" : "Add to favorites"}

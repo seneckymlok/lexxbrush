@@ -292,7 +292,7 @@ export default function EditProductPage() {
             <div className="flex flex-wrap gap-3 mb-3">
               {newPreviews.map((src, i) => (
                 <div key={`new-${i}`} className="relative">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-white/5 border border-dashed border-cyan/30">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-white/5 border border-dashed border-sage/30">
                     <img src={src} alt="" className="w-full h-full object-cover" />
                   </div>
                   <button
@@ -302,7 +302,7 @@ export default function EditProductPage() {
                   >
                     ×
                   </button>
-                  <span className="absolute -top-1.5 -left-1.5 px-1.5 py-0.5 bg-cyan/80 text-[9px] text-white font-bold rounded">
+                  <span className="absolute -top-1.5 -left-1.5 px-1.5 py-0.5 bg-sage/80 text-[9px] text-white font-bold rounded">
                     New
                   </span>
                 </div>

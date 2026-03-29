@@ -49,25 +49,25 @@ export function Footer() {
             <div className="flex flex-wrap justify-center md:justify-start gap-6">
               <Link
                 href="/"
-                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-pink transition-colors duration-300"
+                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-plum transition-colors duration-300"
               >
                 {t("nav.shop")}
               </Link>
               <Link
                 href="/custom-order"
-                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-pink transition-colors duration-300"
+                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-plum transition-colors duration-300"
               >
                 {t("nav.custom")}
               </Link>
               <Link
                 href="/contact"
-                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-pink transition-colors duration-300"
+                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-plum transition-colors duration-300"
               >
                 {t("nav.contact")}
               </Link>
               <Link
                 href="/cart"
-                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-pink transition-colors duration-300"
+                className="text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim hover:text-plum transition-colors duration-300"
               >
                 {t("nav.cart")}
               </Link>

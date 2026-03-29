@@ -136,7 +136,7 @@ export default function ContactPage() {
               </div>
 
               {status === "success" && (
-                <p className="form-reveal text-cyan/80 text-sm">{t("contact.success")}</p>
+                <p className="form-reveal text-sage/80 text-sm">{t("contact.success")}</p>
               )}
               {status === "error" && (
                 <p className="form-reveal text-red-400/80 text-sm">{errorMsg}</p>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                 <h2 className="font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.2em] uppercase text-chrome-bright mb-4">
                   Email
                 </h2>
-                <a href="mailto:info@lexxbrush.eu" className="text-sm text-chrome hover:text-cyan transition-colors duration-300">
+                <a href="mailto:info@lexxbrush.eu" className="text-sm text-chrome hover:text-sage transition-colors duration-300">
                   info@lexxbrush.eu
                 </a>
               </div>

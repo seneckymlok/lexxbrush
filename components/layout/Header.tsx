@@ -38,14 +38,14 @@ function MenuIcon({ open }: { open: boolean }) {
       <span
         className={`absolute block h-[2px] w-6 rounded-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           open
-            ? "rotate-45 bg-pink"
+            ? "rotate-45 bg-plum"
             : "translate-y-[-4px] bg-chrome-light"
         }`}
       />
       <span
         className={`absolute block h-[2px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           open
-            ? "-rotate-45 w-6 bg-pink"
+            ? "-rotate-45 w-6 bg-plum"
             : "translate-y-[4px] w-6 bg-chrome-light"
         }`}
       />
@@ -122,19 +122,19 @@ export function Header() {
           <div className="hidden md:flex items-center gap-8">
             <Link
               href="/"
-              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
+              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.shop")}
             </Link>
             <Link
               href="/custom-order"
-              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
+              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.custom")}
             </Link>
             <Link
               href="/contact"
-              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-cyan transition-colors duration-200"
+              className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.contact")}
             </Link>
@@ -144,7 +144,7 @@ export function Header() {
             {/* Account */}
             <Link
               href={user ? "/account" : "/login"}
-              className="text-chrome-light hover:text-cyan transition-colors duration-200"
+              className="text-chrome-light hover:text-sage transition-colors duration-200"
               aria-label="Account"
             >
               <UserIcon />
@@ -153,11 +153,11 @@ export function Header() {
             {/* Cart */}
             <Link
               href="/cart"
-              className="relative text-chrome-light hover:text-cyan transition-colors duration-200"
+              className="relative text-chrome-light hover:text-sage transition-colors duration-200"
             >
               <BagIcon />
               {totalItems > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-pink text-void text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-plum text-void text-[9px] font-bold rounded-full flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -173,7 +173,7 @@ export function Header() {
             <Link href="/cart" className="relative text-chrome-light" onClick={closeMenu}>
               <BagIcon size={18} />
               {totalItems > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-pink text-void text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-plum text-void text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
                   {totalItems}
                 </span>
               )}
@@ -248,17 +248,17 @@ export function Header() {
                   }}
                 >
                   {/* Numbering */}
-                  <span className="font-[family-name:var(--font-accent)] text-xs md:text-sm italic text-white/30 tabular-nums mt-3 md:mt-5 transition-colors duration-300 group-hover:text-cyan">
+                  <span className="font-[family-name:var(--font-accent)] text-xs md:text-sm italic text-white/30 tabular-nums mt-3 md:mt-5 transition-colors duration-300 group-hover:text-sage">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
                   {/* High-impact Typographic Link matching Collection Title */}
-                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.5rem,11.5vw,5.5rem)] leading-[0.95] font-extrabold tracking-normal uppercase chrome-text transition-colors duration-500 group-hover:text-cyan pb-2 pt-3 pr-4 break-words">
+                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.5rem,11.5vw,5.5rem)] leading-[0.95] font-extrabold tracking-normal uppercase chrome-text transition-colors duration-500 group-hover:text-sage pb-2 pt-3 pr-4 break-words">
                     {t(link.key)}
                     
                     {/* Floating Cart Indicator */}
                     {link.href === "/cart" && totalItems > 0 && (
-                      <span className="absolute -top-1 -right-3 md:-right-6 text-pink text-sm md:text-lg font-bold font-sans">
+                      <span className="absolute -top-1 -right-3 md:-right-6 text-plum text-sm md:text-lg font-bold font-sans">
                         •
                       </span>
                     )}
@@ -288,8 +288,8 @@ export function Header() {
               <span className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.2em] uppercase text-white/30 group-hover:text-white/50 transition-colors">
                 Follow Us
               </span>
-              <span className="font-[family-name:var(--font-body)] text-sm tracking-wide text-white group-hover:text-pink transition-colors flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60 transition-all group-hover:opacity-100 group-hover:text-pink">
+              <span className="font-[family-name:var(--font-body)] text-sm tracking-wide text-white group-hover:text-plum transition-colors flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60 transition-all group-hover:opacity-100 group-hover:text-plum">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                   <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />

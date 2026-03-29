@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, customer, successUrl, cancelUrl, userId, saveProfile } = await req.json();
+    const { items, customer, delivery, successUrl, cancelUrl, userId } = await req.json();
     const supabase = createAdminClient();
 
     // Validate products and prices against database
@@ -42,7 +42,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No available products in cart" }, { status: 400 });
     }
 
-    // Build session config — pre-fill customer data if provided
+    // Build compact delivery data for Stripe metadata (500 char limit per value)
+    const deliveryData = delivery?.type === "pickup" && delivery.point
+      ? {
+          type: "pickup" as const,
+          country: delivery.country,
+          point: {
+            id: delivery.point.id,
+            name: delivery.point.name,
+            street: delivery.point.street,
+            city: delivery.point.city,
+            zip: delivery.point.zip,
+            country: delivery.point.country,
+            carrierId: delivery.point.carrierId,
+            carrierPickupPointId: delivery.point.carrierPickupPointId,
+          },
+        }
+      : delivery?.type === "home_delivery" && delivery.address
+      ? {
+          type: "home_delivery" as const,
+          country: delivery.country,
+          address: delivery.address,
+        }
+      : null;
+
+    // Build session config
     const sessionConfig: any = {
       mode: "payment",
       payment_method_types: ["card"],
@@ -64,35 +88,21 @@ export async function POST(req: NextRequest) {
 
     if (userId) {
       sessionConfig.metadata.user_id = userId;
-
-      if (saveProfile && customer?.name && customer?.address) {
-        await supabase.from("profiles").upsert({
-          id: userId,
-          full_name: customer.name,
-          address: customer.address.line1,
-          address2: customer.address.line2 || null,
-          city: customer.address.city,
-          postal_code: customer.address.postal_code,
-          country: customer.address.country,
-          updated_at: new Date().toISOString(),
-        });
-      }
     }
 
     if (customer?.email) {
       sessionConfig.customer_email = customer.email;
     }
 
-    if (customer?.name && customer?.address) {
-      // We already collected shipping — store in metadata, don't ask again
+    if (customer?.name) {
       sessionConfig.metadata.customer_name = customer.name;
-      sessionConfig.metadata.shipping_address = JSON.stringify(customer.address);
-      // No shipping_address_collection → Stripe shows payment only
-    } else {
-      // Fallback: let Stripe collect shipping if no customer data
-      sessionConfig.shipping_address_collection = {
-        allowed_countries: ["SK", "CZ", "DE", "AT", "PL", "HU", "US", "GB", "FR", "IT", "ES", "NL", "BE"],
-      };
+    }
+    if (customer?.phone) {
+      sessionConfig.metadata.customer_phone = customer.phone;
+    }
+    if (deliveryData) {
+      sessionConfig.metadata.delivery_type = deliveryData.type;
+      sessionConfig.metadata.delivery_data = JSON.stringify(deliveryData).slice(0, 500);
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
