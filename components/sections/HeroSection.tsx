@@ -85,10 +85,10 @@ export function HeroSection({ products }: HeroSectionProps) {
     <section
       ref={containerRef}
       className="relative overflow-hidden hero-art-bg flex flex-col"
-      style={{ minHeight: "100svh" }}
+      style={{ height: "100svh" }}
     >
-      {/* Logo + tagline — upper portion */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center px-6 md:px-10 pt-24 md:pt-28 pb-6">
+      {/* Logo + tagline — fills remaining space above products */}
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 text-center px-6 md:px-10 pt-14 md:pt-16 pb-3">
         <Image
           ref={logoRef}
           data-animate
@@ -98,14 +98,15 @@ export function HeroSection({ products }: HeroSectionProps) {
           height={370}
           priority
           fetchPriority="high"
-          sizes="(max-width: 767px) 260px, (max-width: 1023px) 380px, 520px"
-          className="w-[260px] md:w-[380px] lg:w-[520px] h-auto logo-glow select-none"
+          sizes="(max-width: 767px) 200px, (max-width: 1023px) 260px, 340px"
+          className="w-[200px] md:w-[260px] lg:w-[340px] h-auto logo-glow select-none"
+          style={{ maxHeight: "28vh" }}
         />
 
         <p
           ref={taglineRef}
           data-animate
-          className="mt-4 md:mt-5 font-[family-name:var(--font-display)] text-[10px] md:text-xs tracking-[0.4em] uppercase text-chrome"
+          className="mt-3 font-[family-name:var(--font-display)] text-[9px] md:text-[10px] tracking-[0.4em] uppercase text-chrome"
         >
           {t("hero.tagline")}
         </p>
@@ -115,15 +116,16 @@ export function HeroSection({ products }: HeroSectionProps) {
       <div
         ref={rowRef}
         data-animate
-        className="relative z-10 px-4 md:px-8 pb-5 md:pb-7"
+        className="relative z-10 flex-shrink-0 px-4 md:px-8 pb-4 md:pb-6"
       >
         {rowProducts.length > 0 && (
-          <div className="grid grid-cols-4 gap-3 md:gap-4 max-w-[1440px] mx-auto">
+          <div className="grid grid-cols-4 gap-2 md:gap-3 max-w-[1440px] mx-auto">
             {rowProducts.map((product) => (
               <Link
                 key={product.id}
                 href={`/product/${product.id}`}
-                className="group relative aspect-square rounded-xl overflow-hidden bg-concrete-light border border-white/5"
+                className="group relative rounded-xl overflow-hidden bg-concrete-light border border-white/5"
+                style={{ height: "clamp(100px, 24vh, 220px)" }}
               >
                 <Image
                   src={product.images[0]}
@@ -144,9 +146,9 @@ export function HeroSection({ products }: HeroSectionProps) {
           </div>
         )}
 
-        {/* View all link */}
-        <div className="flex justify-center mt-3">
-          <span className="font-[family-name:var(--font-display)] text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-text-dim">
+        {/* Scroll hint */}
+        <div className="flex justify-center mt-2">
+          <span className="font-[family-name:var(--font-display)] text-[8px] md:text-[9px] tracking-[0.3em] uppercase text-text-dim">
             scroll to see more
           </span>
         </div>
