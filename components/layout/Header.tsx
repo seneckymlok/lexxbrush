@@ -7,6 +7,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { SuitIcon } from "@/components/ui/SuitIcon";
 
 /** Shopping bag with a subtle paint drip — recognizable but branded */
 function BagIcon({ size = 20 }: { size?: number }) {
@@ -207,25 +208,43 @@ export function Header() {
         {/* Subtle radial light to anchor the brand */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.03] via-transparent to-transparent" />
         
-        {/* Texture: high-end noise overlay, very subtle */}
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.15] mix-blend-overlay" />
-
-        {/* Character Art Backdrop — matching project vision */}
-        <div 
-          className={`absolute -right-20 -top-5 pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${
-            mobileMenuOpen ? "opacity-[0.15] translate-x-0" : "opacity-0 translate-x-12"
+        {/* Brand artwork backdrop */}
+        <div
+          className={`absolute inset-0 pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${
+            mobileMenuOpen ? "opacity-[0.12]" : "opacity-0"
           }`}
           style={{ transitionDelay: mobileMenuOpen ? "200ms" : "0ms" }}
         >
           <Image
-            src="/characters/typecek3(png).webp"
+            src="/hero-bg.jpg"
             alt=""
-            width={600}
-            height={600}
-            className="rotate-[-5deg]"
+            fill
+            className="object-cover"
             aria-hidden="true"
             priority={false}
           />
+        </div>
+
+        {/* Floating suit icons in mobile menu */}
+        <div
+          className={`absolute inset-0 pointer-events-none z-[1] transition-opacity duration-1000 ${
+            mobileMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ transitionDelay: mobileMenuOpen ? "400ms" : "0ms" }}
+          aria-hidden="true"
+        >
+          <div className="absolute top-[15%] right-[10%]">
+            <SuitIcon suit="heart" className="w-12 h-12 opacity-[0.2]" />
+          </div>
+          <div className="absolute bottom-[25%] left-[8%]">
+            <SuitIcon suit="spade" className="w-10 h-10 opacity-[0.15]" />
+          </div>
+          <div className="absolute top-[50%] right-[5%]">
+            <SuitIcon suit="diamond" className="w-8 h-8 opacity-[0.12]" />
+          </div>
+          <div className="absolute bottom-[45%] left-[15%]">
+            <SuitIcon suit="club" className="w-9 h-9 opacity-[0.1]" />
+          </div>
         </div>
 
         {/* Dynamic Content Container */}

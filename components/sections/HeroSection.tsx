@@ -4,8 +4,8 @@ import { useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { SuitIcon } from "@/components/ui/SuitIcon";
 import type { Product } from "@/lib/products";
-import { AirbrushStar } from "@/components/ui/AirbrushStar";
 
 interface HeroSectionProps {
   products: Product[];
@@ -18,7 +18,7 @@ export function HeroSection({ products }: HeroSectionProps) {
   const taglineRef = useRef<HTMLParagraphElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
+  const suitsRef = useRef<HTMLDivElement>(null);
 
   const reveal = useCallback((el: HTMLElement) => {
     el.removeAttribute("data-animate");
@@ -26,7 +26,7 @@ export function HeroSection({ products }: HeroSectionProps) {
   }, []);
 
   useEffect(() => {
-    const els = [logoRef.current, glowRef.current, taglineRef.current, lineRef.current, marqueeRef.current];
+    const els = [logoRef.current, taglineRef.current, lineRef.current, marqueeRef.current, suitsRef.current];
     if (!containerRef.current || els.some(el => !el)) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -34,7 +34,6 @@ export function HeroSection({ products }: HeroSectionProps) {
       return;
     }
 
-    // Dynamic import GSAP only when needed for animation
     let cancelled = false;
     (async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -45,29 +44,25 @@ export function HeroSection({ products }: HeroSectionProps) {
 
       if (cancelled) return;
 
-      // Skip intro animation on return visits (only animate on first load)
       const hasAnimated = sessionStorage.getItem("hero-animated");
       if (hasAnimated) {
         els.forEach(el => { if (el) { reveal(el); el.style.opacity = "1"; } });
       } else {
-        // 1. Set GSAP initial state (opacity:0) while still hidden
         gsap.set(logoRef.current!, { opacity: 0, scale: 1.15 });
-        gsap.set(glowRef.current!, { opacity: 0, scale: 0.5 });
+        gsap.set(suitsRef.current!, { opacity: 0 });
         gsap.set(taglineRef.current!, { opacity: 0, y: 15 });
         gsap.set(lineRef.current!, { opacity: 0, scaleX: 0 });
         gsap.set(marqueeRef.current!, { opacity: 0, y: 30 });
 
-        // 2. NOW remove data-animate — elements become visible but opacity is 0, so no flash
         els.forEach(el => { if (el) reveal(el); });
 
-        // 3. Animate in
         const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
         tl.to(logoRef.current, {
           scale: 1, opacity: 1, duration: 0.8, delay: 0.1,
         })
-          .to(glowRef.current, { opacity: 1, scale: 1, duration: 1 }, "-=0.6")
-          .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.3")
+          .to(suitsRef.current, { opacity: 1, duration: 1.2 }, "-=0.4")
+          .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.6")
           .to(lineRef.current, { opacity: 1, scaleX: 1, transformOrigin: "center center", duration: 0.4 }, "-=0.2")
           .to(marqueeRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.2");
 
@@ -87,6 +82,20 @@ export function HeroSection({ products }: HeroSectionProps) {
           },
         }
       );
+
+      // Parallax suits on scroll — move slower than logo
+      gsap.fromTo(
+        suitsRef.current,
+        { yPercent: 0 },
+        {
+          yPercent: 10, ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top", end: "bottom top", scrub: true,
+          },
+        }
+      );
     })();
 
     return () => {
@@ -97,17 +106,50 @@ export function HeroSection({ products }: HeroSectionProps) {
   const marqueeItems = [...products, ...products, ...products, ...products];
 
   return (
-    <section ref={containerRef} className="relative overflow-hidden concrete-bg">
-      {/* Radial glow behind logo */}
+    <section ref={containerRef} className="relative overflow-hidden hero-art-bg min-h-[85vh] md:min-h-[90vh] flex flex-col">
+      {/* Floating suit icons — brand identity scattered across the hero */}
       <div
-        ref={glowRef}
+        ref={suitsRef}
         data-animate
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] md:w-[900px] md:h-[500px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(255,105,180,0.06) 0%, rgba(255,255,255,0.02) 40%, transparent 70%)" }}
-      />
+        className="absolute inset-0 pointer-events-none z-[2]"
+      >
+        {/* Heart — top left */}
+        <div className="absolute top-[12%] left-[8%] suit-float-1">
+          <SuitIcon suit="heart" className="w-14 h-14 md:w-20 md:h-20 opacity-[0.25]" />
+        </div>
+
+        {/* Diamond — top right */}
+        <div className="absolute top-[18%] right-[10%] suit-float-2">
+          <SuitIcon suit="diamond" className="w-10 h-10 md:w-16 md:h-16 opacity-[0.2]" />
+        </div>
+
+        {/* Club — mid left */}
+        <div className="absolute top-[55%] left-[5%] suit-float-3">
+          <SuitIcon suit="club" className="w-12 h-12 md:w-18 md:h-18 opacity-[0.2]" />
+        </div>
+
+        {/* Spade — mid right */}
+        <div className="absolute top-[45%] right-[6%] suit-float-4">
+          <SuitIcon suit="spade" className="w-16 h-16 md:w-22 md:h-22 opacity-[0.22]" />
+        </div>
+
+        {/* Small accent suits */}
+        <div className="absolute top-[35%] left-[22%] suit-float-4 hidden md:block">
+          <SuitIcon suit="spade" className="w-8 h-8 opacity-[0.12]" />
+        </div>
+        <div className="absolute top-[65%] right-[18%] suit-float-1 hidden md:block">
+          <SuitIcon suit="heart" className="w-10 h-10 opacity-[0.15]" />
+        </div>
+        <div className="absolute bottom-[25%] left-[15%] suit-float-2 hidden lg:block">
+          <SuitIcon suit="diamond" className="w-7 h-7 opacity-[0.1]" />
+        </div>
+        <div className="absolute top-[25%] right-[25%] suit-float-3 hidden lg:block">
+          <SuitIcon suit="club" className="w-9 h-9 opacity-[0.12]" />
+        </div>
+      </div>
 
       {/* Hero Content */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-[1440px] mx-auto px-6 md:px-10 pt-24 md:pt-32 pb-8 md:pb-12">
+      <div className="relative z-10 flex flex-col items-center text-center max-w-[1440px] mx-auto px-6 md:px-10 pt-28 md:pt-36 pb-8 md:pb-12 flex-1 justify-center">
         <Image
           ref={logoRef}
           data-animate
@@ -117,8 +159,8 @@ export function HeroSection({ products }: HeroSectionProps) {
           height={309}
           priority
           fetchPriority="high"
-          sizes="(max-width: 767px) 280px, (max-width: 1023px) 450px, 550px"
-          className="w-[280px] md:w-[450px] lg:w-[550px] h-auto logo-glow"
+          sizes="(max-width: 767px) 300px, (max-width: 1023px) 480px, 600px"
+          className="w-[300px] md:w-[480px] lg:w-[600px] h-auto logo-glow"
         />
 
         <p
@@ -132,16 +174,24 @@ export function HeroSection({ products }: HeroSectionProps) {
         <div
           ref={lineRef}
           data-animate
-          className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-5 mb-4"
+          className="w-16 h-[1px] bg-gradient-to-r from-transparent via-suit-heart/40 to-transparent mt-5 mb-4"
         />
 
         <p className="text-xs md:text-sm text-text-dim max-w-xs leading-relaxed">
           {t("hero.subtitle")}
         </p>
+
+        {/* Suit row — small inline brand marks */}
+        <div className="flex items-center gap-3 mt-6">
+          <SuitIcon suit="heart" className="w-5 h-5 opacity-60" glow={false} />
+          <SuitIcon suit="diamond" className="w-5 h-5 opacity-60" glow={false} />
+          <SuitIcon suit="club" className="w-5 h-5 opacity-60" glow={false} />
+          <SuitIcon suit="spade" className="w-5 h-5 opacity-60" glow={false} />
+        </div>
       </div>
 
       {/* Marquee Strip */}
-      <div ref={marqueeRef} data-animate className="relative z-10 pb-6 overflow-hidden">
+      <div ref={marqueeRef} data-animate className="relative z-10 pb-6 overflow-hidden mt-auto">
         <div className="animate-marquee flex gap-3 md:gap-4 w-max">
           {marqueeItems.map((product, i) => (
             <Link
@@ -160,25 +210,6 @@ export function HeroSection({ products }: HeroSectionProps) {
             </Link>
           ))}
         </div>
-      </div>
-
-      {/* Hand-airbrushed star elements — subtle, neutral, organically imperfect */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Top-left cluster: framing the logo */}
-        <AirbrushStar variant={2} className="absolute top-[15%] left-[12%] w-10 h-10 text-white/50 opacity-[0.15] rotate-[10deg] mix-blend-screen scale-x-110" />
-        <AirbrushStar variant={3} className="absolute top-[28%] left-[6%] w-6 h-6 text-white/40 opacity-[0.1] -rotate-[15deg] mix-blend-screen" />
-        
-        {/* Top-right floating high */}
-        <AirbrushStar variant={1} className="absolute top-[18%] right-[16%] w-12 h-12 text-white/60 opacity-[0.12] -rotate-[5deg] mix-blend-screen scale-y-110" />
-        
-        {/* Mid-right offset */}
-        <AirbrushStar variant={3} className="absolute top-[45%] right-[8%] w-8 h-8 text-white/50 opacity-[0.15] rotate-[35deg] mix-blend-screen" />
-        
-        {/* Bottom-left framing near marquee */}
-        <AirbrushStar variant={1} className="absolute bottom-[28%] left-[18%] w-9 h-9 text-white/40 opacity-[0.1] rotate-[20deg] mix-blend-screen" />
-        
-        {/* Extreme bottom-right */}
-        <AirbrushStar variant={2} className="absolute bottom-[22%] right-[12%] w-7 h-7 text-white/60 opacity-[0.15] -rotate-[30deg] mix-blend-screen scale-x-125" />
       </div>
     </section>
   );

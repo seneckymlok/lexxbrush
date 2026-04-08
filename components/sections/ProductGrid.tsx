@@ -2,9 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import Image from "next/image";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { AirbrushStar } from "@/components/ui/AirbrushStar";
+import { SuitIcon } from "@/components/ui/SuitIcon";
 import { getProductsByCategory, categories } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
@@ -22,7 +21,6 @@ export function ProductGrid({ products }: ProductGridProps) {
 
   const filteredProducts = getProductsByCategory(products, activeCategory);
 
-  // Dynamic GSAP import for animations
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!titleRef.current) return;
@@ -50,7 +48,6 @@ export function ProductGrid({ products }: ProductGridProps) {
     return () => { cancelled = true; };
   }, []);
 
-  // Animate cards on category switch
   const animateCards = useCallback(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!gridRef.current) return;
@@ -67,7 +64,6 @@ export function ProductGrid({ products }: ProductGridProps) {
     });
   }, []);
 
-  // Trigger card animation on category change
   useEffect(() => {
     if (filteredProducts.length > 0) {
       const timer = requestAnimationFrame(() => animateCards());
@@ -77,42 +73,35 @@ export function ProductGrid({ products }: ProductGridProps) {
 
   return (
     <section ref={sectionRef} className="concrete-bg max-w-[1440px] mx-auto px-6 md:px-10 py-16 md:py-24 relative overflow-hidden">
-      {/* Character art — left edge */}
-      <Image
-        src="/characters/typecek1(png).webp"
-        alt=""
-        aria-hidden="true"
-        width={640}
-        height={854}
-        loading="lazy"
-        sizes="(max-width: 767px) 90px, (max-width: 1023px) 160px, 280px"
-        className="overflow-art overflow-art-left select-none"
-      />
-      {/* Character art — right edge */}
-      <Image
-        src="/characters/typecek2(png).webp"
-        alt=""
-        aria-hidden="true"
-        width={640}
-        height={854}
-        loading="lazy"
-        sizes="(max-width: 767px) 100px, (max-width: 1023px) 180px, 320px"
-        className="overflow-art overflow-art-right select-none"
-      />
-      
-      {/* Subtle organic stars for background texture */}
+      {/* Suit icons as background decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <AirbrushStar variant={1} className="absolute top-[30%] -left-[5%] w-16 h-16 text-white/30 opacity-[0.08] rotate-[15deg] mix-blend-screen scale-x-125" />
-        <AirbrushStar variant={2} className="absolute bottom-[20%] -right-[8%] w-20 h-20 text-white/40 opacity-[0.1] -rotate-[10deg] mix-blend-screen scale-y-110" />
+        <div className="absolute top-[8%] -left-[3%] suit-float-2">
+          <SuitIcon suit="heart" className="w-20 h-20 md:w-28 md:h-28 opacity-[0.06]" />
+        </div>
+        <div className="absolute bottom-[15%] -right-[5%] suit-float-3">
+          <SuitIcon suit="spade" className="w-24 h-24 md:w-36 md:h-36 opacity-[0.05]" />
+        </div>
+        <div className="absolute top-[45%] -right-[2%] suit-float-1 hidden md:block">
+          <SuitIcon suit="diamond" className="w-16 h-16 opacity-[0.04]" />
+        </div>
+        <div className="absolute bottom-[40%] -left-[4%] suit-float-4 hidden md:block">
+          <SuitIcon suit="club" className="w-18 h-18 opacity-[0.05]" />
+        </div>
       </div>
 
       {/* Section Header */}
       <div ref={titleRef} className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
         <div className="text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+            <SuitIcon suit="heart" className="w-4 h-4 opacity-60" glow={false} />
+            <SuitIcon suit="diamond" className="w-4 h-4 opacity-60" glow={false} />
+            <SuitIcon suit="club" className="w-4 h-4 opacity-60" glow={false} />
+            <SuitIcon suit="spade" className="w-4 h-4 opacity-60" glow={false} />
+          </div>
           <h2 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
             {t("shop.title")}
           </h2>
-          <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-3 mx-auto md:mx-0" />
+          <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-suit-heart/30 to-transparent mt-3 mx-auto md:mx-0" />
         </div>
 
         {/* Category Filter */}

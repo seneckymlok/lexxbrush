@@ -3,24 +3,22 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { SuitIcon } from "@/components/ui/SuitIcon";
 
 export function Footer() {
   const { t } = useLanguage();
 
   return (
     <footer className="relative bg-void border-t border-white/5 overflow-hidden">
-      {/* Character art bleeding from right */}
-      <Image
-        src="/characters/typecek1(png).webp"
-        alt=""
-        aria-hidden="true"
-        width={640}
-        height={854}
-        loading="lazy"
-        sizes="200px"
-        className="hidden lg:block absolute right-[-40px] top-1/2 -translate-y-1/2 w-[200px] opacity-[0.06] pointer-events-none select-none"
-        style={{ filter: "brightness(1.3) contrast(1.2)" }}
-      />
+      {/* Suit icons as subtle background decoration */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute right-[5%] top-[15%]">
+          <SuitIcon suit="spade" className="w-24 h-24 md:w-32 md:h-32 opacity-[0.03]" />
+        </div>
+        <div className="absolute left-[8%] bottom-[10%] hidden md:block">
+          <SuitIcon suit="heart" className="w-20 h-20 opacity-[0.03]" />
+        </div>
+      </div>
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10">
         {/* Main Footer */}
@@ -41,6 +39,13 @@ export function Footer() {
               Hand-airbrushed wearable art.<br />
               Every piece painted entirely by hand.
             </p>
+            {/* Suit marks below brand description */}
+            <div className="flex items-center gap-2 mt-3">
+              <SuitIcon suit="heart" className="w-3.5 h-3.5 opacity-40" glow={false} />
+              <SuitIcon suit="diamond" className="w-3.5 h-3.5 opacity-40" glow={false} />
+              <SuitIcon suit="club" className="w-3.5 h-3.5 opacity-40" glow={false} />
+              <SuitIcon suit="spade" className="w-3.5 h-3.5 opacity-40" glow={false} />
+            </div>
           </div>
 
           {/* Nav + Social */}

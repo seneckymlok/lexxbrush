@@ -24,6 +24,11 @@
   --color-violet: #7B2FBE;
   --color-amber: #FFAA00;
   --color-white: #FFFFFF;
+  /* Suit brand colors */
+  --color-suit-heart: #9B30FF;
+  --color-suit-diamond: #00E5CC;
+  --color-suit-club: #E8E030;
+  --color-suit-spade: #2060FF;
 }
 
 @layer base {
@@ -380,6 +385,65 @@
     }
   }
 
+  /* Hero background with artwork */
+  .hero-art-bg {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-art-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/hero-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.18;
+    z-index: 0;
+  }
+
+  .hero-art-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 10, 0.3) 0%,
+      rgba(10, 10, 10, 0.1) 30%,
+      rgba(10, 10, 10, 0.4) 70%,
+      rgba(10, 10, 10, 0.95) 100%
+    );
+    z-index: 1;
+  }
+
+  /* Suit icon floating animations */
+  .suit-float-1 {
+    animation: suit-drift-1 20s ease-in-out infinite;
+  }
+  .suit-float-2 {
+    animation: suit-drift-2 25s ease-in-out infinite;
+  }
+  .suit-float-3 {
+    animation: suit-drift-3 18s ease-in-out infinite;
+  }
+  .suit-float-4 {
+    animation: suit-drift-4 22s ease-in-out infinite;
+  }
+
+  /* Divider with suit icons */
+  .suit-divider {
+    position: relative;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(155, 48, 255, 0.05) 25%,
+      rgba(0, 229, 204, 0.05) 50%,
+      rgba(32, 96, 255, 0.05) 75%,
+      transparent 100%
+    );
+  }
+
   /* Divider marquee — slower than product marquee */
   .animate-divider-marquee {
     animation: divider-marquee 35s linear infinite;
@@ -462,6 +526,31 @@
   50% { opacity: 0.25; scale: 1.1; filter: brightness(1.2); }
 }
 
+@keyframes suit-drift-1 {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  33% { translate: 12px -8px; rotate: 5deg; }
+  66% { translate: -8px 12px; rotate: -3deg; }
+}
+
+@keyframes suit-drift-2 {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  25% { translate: -10px -15px; rotate: -4deg; }
+  50% { translate: 8px 5px; rotate: 6deg; }
+  75% { translate: -5px 10px; rotate: -2deg; }
+}
+
+@keyframes suit-drift-3 {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  40% { translate: 15px 8px; rotate: 8deg; }
+  70% { translate: -12px -6px; rotate: -5deg; }
+}
+
+@keyframes suit-drift-4 {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  30% { translate: -8px 15px; rotate: -6deg; }
+  60% { translate: 10px -10px; rotate: 4deg; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee { animation: none !important; }
   .animate-divider-marquee { animation: none !important; }
@@ -469,5 +558,6 @@
   .card-glow:hover { transform: none !important; }
   .card-3d { transition: none !important; }
   .page-enter { animation: none !important; opacity: 1; transform: none; }
+  .suit-float-1, .suit-float-2, .suit-float-3, .suit-float-4 { animation: none !important; }
 }
 
