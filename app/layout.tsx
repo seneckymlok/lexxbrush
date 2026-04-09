@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, DM_Sans, Instrument_Serif } from "next/font/google";
+import { Bebas_Neue, DM_Sans, Instrument_Serif, Gluten } from "next/font/google";
+import Image from "next/image";
 import "./globals.css";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
@@ -26,6 +27,13 @@ const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin", "latin-ext"],
   variable: "--font-instrument",
+  display: "swap",
+});
+
+const gluten = Gluten({
+  weight: ["400", "700"],
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-gluten",
   display: "swap",
 });
 
@@ -117,7 +125,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`antialiased ${bebasNeue.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" className={`antialiased ${bebasNeue.variable} ${dmSans.variable} ${instrumentSerif.variable} ${gluten.variable}`}>
       <head>
         {/* Critical: hide animated elements before ANY content paints */}
         <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}` }} />
