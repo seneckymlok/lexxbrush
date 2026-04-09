@@ -385,9 +385,36 @@
     }
   }
 
-  /* Hero — no local background, uses global fixed artwork layer */
+  /* Hero background with artwork */
   .hero-art-bg {
     position: relative;
+    overflow: hidden;
+  }
+
+  .hero-art-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/hero-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.18;
+    z-index: 0;
+  }
+
+  .hero-art-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 10, 0.3) 0%,
+      rgba(10, 10, 10, 0.1) 30%,
+      rgba(10, 10, 10, 0.4) 70%,
+      rgba(10, 10, 10, 0.95) 100%
+    );
+    z-index: 1;
   }
 
   /* Suit icon floating animations */

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, DM_Sans, Instrument_Serif } from "next/font/google";
-import Image from "next/image";
 import "./globals.css";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
@@ -147,26 +146,6 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-void text-text">
-        {/* Fixed brand artwork — persists on scroll, sits behind all content */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-            opacity: 0.15,
-          }}
-        >
-          <Image
-            src="/hero-bg.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            style={{ objectFit: "contain" }}
-          />
-        </div>
         <BackgroundStars />
         <LanguageProvider>
           <AuthProvider>
