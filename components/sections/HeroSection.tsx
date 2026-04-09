@@ -44,7 +44,7 @@ export function HeroSection({ products: _ }: HeroSectionProps) {
   }, [reveal]);
 
   return (
-    <section className="relative hero-art-bg flex flex-col items-center justify-center text-center px-6 pt-24 md:pt-28 pb-8 md:pb-10">
+    <section className="relative hero-art-bg flex flex-col items-center justify-center text-center px-6 pt-24 md:pt-28 pb-4 md:pb-6">
       <Image
         ref={logoRef}
         data-animate

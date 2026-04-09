@@ -72,7 +72,7 @@ export function ProductGrid({ products }: ProductGridProps) {
   }, [activeCategory, animateCards, filteredProducts.length]);
 
   return (
-    <section ref={sectionRef} className="concrete-bg max-w-[1440px] mx-auto px-6 md:px-10 py-16 md:py-24 relative overflow-hidden">
+    <section ref={sectionRef} className="concrete-bg max-w-[1440px] mx-auto px-6 md:px-10 pt-6 md:pt-8 pb-16 md:pb-24 relative overflow-hidden">
       {/* Suit icons as background decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute top-[8%] -left-[3%] suit-float-2">
