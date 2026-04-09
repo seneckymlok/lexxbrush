@@ -70,12 +70,7 @@ export default function ContactPage() {
 
   return (
     <div className="page-enter relative min-h-screen">
-      {/* Background */}
-      <div className="absolute inset-0 z-0" style={{
-        background: "linear-gradient(180deg, var(--color-void) 0%, rgba(10,10,10,0.97) 50%, var(--color-void) 100%)",
-      }} />
-
-      <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-24 pb-16 md:pt-32 md:pb-24">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 pt-24 pb-16 md:pt-32 md:pb-24">
         <div className="max-w-3xl mx-auto" ref={formRef}>
           {/* Title */}
           <div className="form-reveal text-center md:text-left mb-16">

@@ -75,25 +75,6 @@ export default function CustomOrderPage() {
 
   return (
     <div className="page-enter relative min-h-screen overflow-hidden">
-      {/* Atmospheric background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: "url('/stuff/644491434_1610689800260372_6637764847606399635_n.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.04,
-          filter: "grayscale(100%)",
-        }}
-      />
-
-      {/* Dark gradient overlay */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background: "linear-gradient(180deg, var(--color-void) 0%, rgba(10,10,10,0.95) 30%, rgba(10,10,10,0.98) 70%, var(--color-void) 100%)",
-        }}
-      />
 
       {/* Character art — right side */}
       <img
@@ -114,7 +95,7 @@ export default function CustomOrderPage() {
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-12 md:pt-26 md:pb-24">
+      <div className="relative max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-12 md:pt-26 md:pb-24">
         <div className="max-w-2xl mx-auto" ref={formRef}>
           <div className="form-reveal text-center md:text-left">
             <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">

@@ -3,23 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { SuitIcon } from "@/components/ui/SuitIcon";
-
-export function Footer() {
+export function Footer({ isInnerPage = false }: { isInnerPage?: boolean }) {
   const { t } = useLanguage();
 
-  return (
-    <footer className="relative border-t border-white/10 overflow-hidden" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 60%, transparent 100%)" }}>
-      {/* Suit icons as subtle background decoration */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute right-[5%] top-[15%]">
-          <SuitIcon suit="spade" className="w-24 h-24 md:w-32 md:h-32 opacity-[0.03]" />
-        </div>
-        <div className="absolute left-[8%] bottom-[10%] hidden md:block">
-          <SuitIcon suit="heart" className="w-20 h-20 opacity-[0.03]" />
-        </div>
-      </div>
+  const footerBg = isInnerPage
+    ? "linear-gradient(to top, rgba(5,5,5,0.97) 0%, rgba(5,5,5,0.78) 50%, rgba(5,5,5,0.52) 100%)"
+    : "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 60%, transparent 100%)";
 
+  return (
+    <footer className="relative border-t border-white/10 overflow-hidden" style={{ background: footerBg }}>
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10">
         {/* Main Footer */}
         <div className="py-12 md:py-16 flex flex-col items-center text-center md:text-left md:flex-row md:items-center md:justify-between gap-8">
@@ -27,7 +19,7 @@ export function Footer() {
           <div className="flex-shrink-0 flex flex-col items-center md:items-start">
             <Link href="/" className="inline-block">
               <Image
-                src="/logo.png"
+                src="/text lexxbrush.png"
                 alt="Lexxbrush"
                 width={200}
                 height={112}
@@ -39,13 +31,6 @@ export function Footer() {
               Hand-airbrushed wearable art.<br />
               Every piece painted entirely by hand.
             </p>
-            {/* Suit marks below brand description */}
-            <div className="flex items-center gap-2 mt-3">
-              <SuitIcon suit="heart" className="w-3.5 h-3.5 opacity-40" glow={false} />
-              <SuitIcon suit="diamond" className="w-3.5 h-3.5 opacity-40" glow={false} />
-              <SuitIcon suit="club" className="w-3.5 h-3.5 opacity-40" glow={false} />
-              <SuitIcon suit="spade" className="w-3.5 h-3.5 opacity-40" glow={false} />
-            </div>
           </div>
 
           {/* Nav + Social */}

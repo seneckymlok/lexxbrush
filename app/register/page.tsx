@@ -75,7 +75,6 @@ export default function RegisterPage() {
   if (emailSent) {
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
-        <div className="absolute inset-0 concrete-bg" />
 
         <div className="relative z-10 w-full max-w-[420px] text-center">
           {/* Animated envelope */}

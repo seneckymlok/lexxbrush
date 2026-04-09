@@ -6,6 +6,7 @@
   --font-accent: var(--font-gluten), "Gluten", sans-serif;
   --font-brand: var(--font-gluten), "Gluten", sans-serif;
 
+  /* ── DARK NEUTRALS ── */
   --color-void: #0A0A0A;
   --color-concrete: #111111;
   --color-concrete-light: #1A1A1A;
@@ -18,18 +19,39 @@
   --color-text: #F0F0F0;
   --color-text-muted: #777777;
   --color-text-dim: #555555;
-  --color-plum: #7B5BA7;
-  --color-plum-hot: #6A4B96;
-  --color-sage: #8AAB9E;
-  --color-lime: #39FF14;
-  --color-violet: #7B2FBE;
-  --color-amber: #FFAA00;
   --color-white: #FFFFFF;
-  /* Suit brand colors */
-  --color-suit-heart: #9B30FF;
-  --color-suit-diamond: #00E5CC;
-  --color-suit-club: #E8E030;
-  --color-suit-spade: #2060FF;
+
+  /* ── SUIT COLORS (from airbrushed originals) ── */
+  --color-suit-heart:   #8800CC;   /* deep violet-purple  */
+  --color-suit-diamond: #00DDEE;   /* electric cyan       */
+  --color-suit-spade:   #1A2EE6;   /* cobalt blue         */
+  --color-suit-club:    #EEFF00;   /* electric yellow     */
+
+  /* ── SEMANTIC USAGE ALIASES ── */
+  /* Primary CTA / brand accent = Heart (purple) */
+  --color-accent:       #8800CC;
+  --color-accent-mid:   #6600AA;   /* darker press/active state  */
+  --color-accent-glow:  rgba(136, 0, 204, 0.25);
+
+  /* Interactive highlight / hover glow = Diamond (cyan) */
+  --color-highlight:    #00DDEE;
+  --color-highlight-glow: rgba(0, 221, 238, 0.2);
+
+  /* Secondary accent = Spade (blue) */
+  --color-secondary:    #1A2EE6;
+  --color-secondary-glow: rgba(26, 46, 230, 0.2);
+
+  /* Attention / badges / alerts = Club (yellow) */
+  --color-attention:    #EEFF00;
+  --color-attention-dim: rgba(238, 255, 0, 0.15);
+
+  /* Legacy aliases kept for compatibility */
+  --color-plum:         #8800CC;
+  --color-plum-hot:     #6600AA;
+  --color-sage:         #00DDEE;
+  --color-lime:         #EEFF00;
+  --color-violet:       #1A2EE6;
+  --color-amber:        #EEFF00;
 }
 
 @layer base {
@@ -59,8 +81,8 @@
   }
 
   ::selection {
-    background-color: var(--color-plum);
-    color: var(--color-void);
+    background-color: var(--color-accent);
+    color: var(--color-white);
   }
 
   /* Prevent Chrome autofill blue background */
@@ -88,7 +110,7 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-chrome);
+    background: var(--color-highlight);
   }
 }
 
@@ -162,10 +184,10 @@
 
   @media (hover: hover) {
     .card-glow:hover {
-      border-color: rgba(123, 91, 167, 0.2);
+      border-color: rgba(0, 221, 238, 0.2);
       box-shadow:
-        0 0 20px rgba(123, 91, 167, 0.08),
-        0 0 40px rgba(123, 91, 167, 0.04),
+        0 0 20px rgba(0, 221, 238, 0.08),
+        0 0 40px rgba(0, 221, 238, 0.04),
         0 8px 32px rgba(0, 0, 0, 0.4);
     }
   }
@@ -187,7 +209,7 @@
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: var(--color-plum);
+    background: var(--color-accent);
     opacity: 0.4;
     filter: blur(0.5px);
   }
@@ -206,37 +228,38 @@
     animation: fadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
-  /* Stencil badge — colored */
+  /* Stencil badge — "new" = club yellow attention color */
   .stencil-badge {
-    border: 1px solid rgba(138, 171, 158, 0.4);
-    color: var(--color-sage);
+    border: 1px solid rgba(238, 255, 0, 0.35);
+    color: var(--color-attention);
     font-family: var(--font-display);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(138, 171, 158, 0.3);
+    text-shadow: 0 0 8px rgba(238, 255, 0, 0.25);
   }
 
+  /* Sold badge = heart purple */
   .badge-sold {
-    border: 1px solid rgba(106, 75, 150, 0.5);
-    color: var(--color-plum-hot);
+    border: 1px solid rgba(136, 0, 204, 0.5);
+    color: var(--color-accent);
     font-family: var(--font-display);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(106, 75, 150, 0.3);
+    text-shadow: 0 0 8px rgba(136, 0, 204, 0.3);
   }
 
-  /* Brand CTA button — deep gradient with prismatic shimmer */
+  /* Brand CTA button — heart purple with prismatic shimmer */
   .btn-brand {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, hsl(330, 65%, 38%) 0%, hsl(280, 50%, 25%) 100%);
+    background: linear-gradient(135deg, #8800CC 0%, #550088 100%);
     color: var(--color-white);
     font-family: var(--font-display);
     letter-spacing: 0.15em;
     text-transform: uppercase;
     transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 12px rgba(136, 0, 204, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(136, 0, 204, 0.3);
   }
 
   /* Shimmer sweep — light that travels across the button */
@@ -262,11 +285,11 @@
   @media (hover: hover) {
     .btn-brand:hover {
       transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(136, 0, 204, 0.5);
       box-shadow:
-        0 8px 30px rgba(160, 50, 110, 0.2),
-        0 0 60px rgba(100, 30, 160, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        0 8px 30px rgba(136, 0, 204, 0.35),
+        0 0 60px rgba(0, 221, 238, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .btn-brand:hover::before {
@@ -316,9 +339,9 @@
 
   @media (hover: hover) {
     .btn-outline:hover {
-      border-color: var(--color-plum);
+      border-color: var(--color-highlight);
       color: var(--color-white);
-      box-shadow: 0 0 15px rgba(123, 91, 167, 0.1);
+      box-shadow: 0 0 15px rgba(0, 221, 238, 0.15);
     }
   }
 
@@ -431,15 +454,16 @@
     animation: suit-drift-4 22s ease-in-out infinite;
   }
 
-  /* Divider with suit icons */
+  /* Divider — subtle 4-suit spectrum */
   .suit-divider {
     position: relative;
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(155, 48, 255, 0.05) 25%,
-      rgba(0, 229, 204, 0.05) 50%,
-      rgba(32, 96, 255, 0.05) 75%,
+      rgba(136, 0, 204, 0.05) 20%,
+      rgba(0, 221, 238, 0.05) 40%,
+      rgba(26, 46, 230, 0.05) 60%,
+      rgba(238, 255, 0, 0.04) 80%,
       transparent 100%
     );
   }

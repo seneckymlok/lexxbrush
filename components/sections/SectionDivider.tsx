@@ -1,13 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { SuitIcon } from "@/components/ui/SuitIcon";
-import type { SuitType } from "@/components/ui/SuitIcon";
-
 const DIVIDER_TEXT =
   "EVERY PIECE IS UNIQUE \u2022 HAND-AIRBRUSHED \u2022 MADE BY HAND \u2022 ONE OF A KIND \u2022 ";
-
-const SUIT_SEQUENCE: SuitType[] = ["heart", "diamond", "club", "spade"];
 
 export function SectionDivider() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,26 +81,6 @@ export function SectionDivider() {
         </div>
       </div>
 
-      {/* Suit icons scattered along the divider */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ transform: "skewY(1.5deg)" }}>
-        {SUIT_SEQUENCE.map((suit, i) => (
-          <div
-            key={suit}
-            className={`absolute ${
-              i === 0 ? "-top-[15%] left-[15%]" :
-              i === 1 ? "bottom-[5%] left-[40%]" :
-              i === 2 ? "-top-[10%] right-[35%]" :
-              "bottom-[0%] right-[12%]"
-            }`}
-          >
-            <SuitIcon
-              suit={suit}
-              className="w-6 h-6 md:w-8 md:h-8 opacity-[0.15] mix-blend-screen"
-              glow={false}
-            />
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

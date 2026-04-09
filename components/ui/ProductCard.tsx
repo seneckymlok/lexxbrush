@@ -101,7 +101,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2 pointer-events-none">
             {product.isOneOfAKind && (
-              <span className="stencil-badge inline-block px-2.5 py-1 bg-void/60 backdrop-blur-sm text-[10px] rounded-full">
+              <span className="font-[family-name:var(--font-display)] text-xs tracking-[0.15em] uppercase text-[#EEFF00] drop-shadow-[0_0_6px_rgba(238,255,0,0.5)]">
                 {t("shop.oneOfAKind")}
               </span>
             )}

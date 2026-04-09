@@ -154,9 +154,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col text-text">
-        {/* Fixed brand artwork — persists on scroll, sits behind all content */}
+        {/* Fixed brand artwork — desktop */}
         <div
           aria-hidden="true"
+          className="hidden md:block"
           style={{
             position: "fixed",
             inset: 0,
@@ -167,6 +168,27 @@ export default function RootLayout({
         >
           <Image
             src="/hero-bg.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: "cover" }}
+          />
+        </div>
+        {/* Fixed brand artwork — mobile */}
+        <div
+          aria-hidden="true"
+          className="block md:hidden"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+            opacity: 0.25,
+          }}
+        >
+          <Image
+            src="/mobile-bg.jpg"
             alt=""
             fill
             priority

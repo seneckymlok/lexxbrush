@@ -7,7 +7,6 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
-import { SuitIcon } from "@/components/ui/SuitIcon";
 
 /** Shopping bag with a subtle paint drip — recognizable but branded */
 function BagIcon({ size = 20 }: { size?: number }) {
@@ -108,7 +107,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="relative group z-10" onClick={closeMenu}>
             <Image
-              src="/logo.png"
+              src="/text lexxbrush.png"
               alt="Lexxbrush"
               width={200}
               height={112}
@@ -158,7 +157,7 @@ export function Header() {
             >
               <BagIcon />
               {totalItems > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-plum text-void text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 text-[11px] font-extrabold text-[#8800CC] drop-shadow-[0_0_5px_rgba(136,0,204,0.7)] leading-none">
                   {totalItems}
                 </span>
               )}
@@ -174,7 +173,7 @@ export function Header() {
             <Link href="/cart" className="relative text-chrome-light" onClick={closeMenu}>
               <BagIcon size={18} />
               {totalItems > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 w-4 h-4 bg-plum text-void text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 text-[11px] font-extrabold text-[#8800CC] drop-shadow-[0_0_5px_rgba(136,0,204,0.7)] leading-none">
                   {totalItems}
                 </span>
               )}
@@ -223,28 +222,6 @@ export function Header() {
             aria-hidden="true"
             priority={false}
           />
-        </div>
-
-        {/* Floating suit icons in mobile menu */}
-        <div
-          className={`absolute inset-0 pointer-events-none z-[1] transition-opacity duration-1000 ${
-            mobileMenuOpen ? "opacity-100" : "opacity-0"
-          }`}
-          style={{ transitionDelay: mobileMenuOpen ? "400ms" : "0ms" }}
-          aria-hidden="true"
-        >
-          <div className="absolute top-[15%] right-[10%]">
-            <SuitIcon suit="heart" className="w-12 h-12 opacity-[0.2]" />
-          </div>
-          <div className="absolute bottom-[25%] left-[8%]">
-            <SuitIcon suit="spade" className="w-10 h-10 opacity-[0.15]" />
-          </div>
-          <div className="absolute top-[50%] right-[5%]">
-            <SuitIcon suit="diamond" className="w-8 h-8 opacity-[0.12]" />
-          </div>
-          <div className="absolute bottom-[45%] left-[15%]">
-            <SuitIcon suit="club" className="w-9 h-9 opacity-[0.1]" />
-          </div>
         </div>
 
         {/* Dynamic Content Container */}

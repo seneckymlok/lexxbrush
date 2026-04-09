@@ -75,9 +75,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
-      {/* Background texture */}
-      <div className="absolute inset-0 concrete-bg" />
-
       {/* Subtle character art */}
       <div className="absolute right-0 top-20 opacity-[0.03] pointer-events-none select-none">
         <Image
