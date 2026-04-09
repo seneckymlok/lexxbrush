@@ -9,7 +9,7 @@ export function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="relative bg-void border-t border-white/5 overflow-hidden">
+    <footer className="relative border-t border-white/5 overflow-hidden">
       {/* Suit icons as subtle background decoration */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute right-[5%] top-[15%]">

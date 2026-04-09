@@ -33,7 +33,7 @@
 
 @layer base {
   html {
-    background-color: var(--color-void);
+    background-color: #050505;
     color: var(--color-text);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -92,10 +92,9 @@
 }
 
 @layer components {
-  /* Concrete noise texture */
+  /* Concrete noise texture — no solid bg, lets fixed artwork show through */
   .concrete-bg {
     position: relative;
-    background-color: var(--color-void);
   }
 
   .concrete-bg::before {
