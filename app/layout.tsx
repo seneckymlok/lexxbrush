@@ -146,6 +146,20 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-void text-text">
+        {/* Fixed brand artwork — persists on scroll, sits behind all content */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 0,
+            backgroundImage: "url('/hero-bg.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.12,
+            pointerEvents: "none",
+          }}
+        />
         <BackgroundStars />
         <LanguageProvider>
           <AuthProvider>
