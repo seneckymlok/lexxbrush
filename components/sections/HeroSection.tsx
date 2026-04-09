@@ -2,7 +2,6 @@
 
 import { useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { Product } from "@/lib/products";
 
 interface HeroSectionProps {
@@ -10,9 +9,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ products: _ }: HeroSectionProps) {
-  const { t } = useLanguage();
   const logoRef = useRef<HTMLImageElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
 
   const reveal = useCallback((el: HTMLElement) => {
     el.removeAttribute("data-animate");
@@ -20,11 +17,10 @@ export function HeroSection({ products: _ }: HeroSectionProps) {
   }, []);
 
   useEffect(() => {
-    const els = [logoRef.current, taglineRef.current];
-    if (els.some(el => !el)) return;
+    if (!logoRef.current) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      els.forEach(el => { if (el) { reveal(el); el.style.opacity = "1"; } });
+      reveal(logoRef.current); logoRef.current.style.opacity = "1";
       return;
     }
 
@@ -35,16 +31,11 @@ export function HeroSection({ products: _ }: HeroSectionProps) {
 
       const hasAnimated = sessionStorage.getItem("hero-animated");
       if (hasAnimated) {
-        els.forEach(el => { if (el) { reveal(el); el.style.opacity = "1"; } });
+        reveal(logoRef.current!); logoRef.current!.style.opacity = "1";
       } else {
         gsap.set(logoRef.current!, { opacity: 0, scale: 1.06 });
-        gsap.set(taglineRef.current!, { opacity: 0, y: 10 });
-        els.forEach(el => { if (el) reveal(el); });
-
-        gsap.timeline({ defaults: { ease: "power4.out" } })
-          .to(logoRef.current, { scale: 1, opacity: 1, duration: 0.8, delay: 0.1 })
-          .to(taglineRef.current, { y: 0, opacity: 1, duration: 0.5 }, "-=0.4");
-
+        reveal(logoRef.current!);
+        gsap.to(logoRef.current, { scale: 1, opacity: 1, duration: 0.9, delay: 0.1, ease: "power4.out" });
         sessionStorage.setItem("hero-animated", "1");
       }
     })();
@@ -58,21 +49,14 @@ export function HeroSection({ products: _ }: HeroSectionProps) {
         ref={logoRef}
         data-animate
         src="/logo-new.png"
-        alt="Lexxbrush — Hand-Airbrushed Wearable Art"
+        alt="Lexxbrush"
         width={520}
         height={370}
         priority
         fetchPriority="high"
-        sizes="(max-width: 767px) 180px, (max-width: 1023px) 240px, 300px"
-        className="w-[180px] md:w-[240px] lg:w-[300px] h-auto logo-glow select-none"
+        sizes="(max-width: 767px) 320px, (max-width: 1023px) 480px, 600px"
+        className="w-[320px] md:w-[480px] lg:w-[600px] h-auto logo-glow select-none"
       />
-      <p
-        ref={taglineRef}
-        data-animate
-        className="mt-3 font-[family-name:var(--font-display)] text-[9px] md:text-[10px] tracking-[0.4em] uppercase text-chrome"
-      >
-        {t("hero.tagline")}
-      </p>
     </section>
   );
 }
