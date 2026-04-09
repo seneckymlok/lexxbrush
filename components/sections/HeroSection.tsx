@@ -54,8 +54,8 @@ export function HeroSection({ products: _ }: HeroSectionProps) {
         height={370}
         priority
         fetchPriority="high"
-        sizes="(max-width: 767px) 320px, (max-width: 1023px) 480px, 600px"
-        className="w-[320px] md:w-[480px] lg:w-[600px] h-auto logo-glow select-none"
+        sizes="(max-width: 767px) 220px, (max-width: 1023px) 320px, 420px"
+        className="w-[220px] md:w-[320px] lg:w-[420px] h-auto logo-glow select-none"
       />
     </section>
   );
