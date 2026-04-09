@@ -57,7 +57,7 @@ export function HeroSection({ products: _ }: HeroSectionProps) {
       <Image
         ref={logoRef}
         data-animate
-        src="/logo-ghost.png"
+        src="/logo-new.png"
         alt="Lexxbrush — Hand-Airbrushed Wearable Art"
         width={520}
         height={370}
