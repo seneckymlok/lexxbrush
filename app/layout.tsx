@@ -164,6 +164,8 @@ export default function RootLayout({
             zIndex: 0,
             pointerEvents: "none",
             opacity: 0.25,
+            transform: "translateZ(0)",
+            willChange: "transform",
           }}
         >
           <Image
@@ -185,6 +187,8 @@ export default function RootLayout({
             zIndex: 0,
             pointerEvents: "none",
             opacity: 0.25,
+            transform: "translateZ(0)",
+            willChange: "transform",
           }}
         >
           <Image
