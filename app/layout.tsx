@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, DM_Sans, Instrument_Serif, Gluten } from "next/font/google";
-import Image from "next/image";
 import "./globals.css";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
@@ -154,52 +153,6 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col text-text">
-        {/* Fixed brand artwork — desktop */}
-        <div
-          aria-hidden="true"
-          className="hidden md:block"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-            opacity: 0.25,
-            transform: "translateZ(0)",
-            willChange: "transform",
-          }}
-        >
-          <Image
-            src="/hero-bg.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            style={{ objectFit: "cover" }}
-          />
-        </div>
-        {/* Fixed brand artwork — mobile */}
-        <div
-          aria-hidden="true"
-          className="block md:hidden"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-            opacity: 0.25,
-            transform: "translateZ(0)",
-            willChange: "transform",
-          }}
-        >
-          <Image
-            src="/mobile-bg.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            style={{ objectFit: "cover" }}
-          />
-        </div>
         <BackgroundStars />
         <LanguageProvider>
           <AuthProvider>
