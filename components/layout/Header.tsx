@@ -119,32 +119,34 @@ export function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-stretch h-full gap-8">
             <Link
               href="/"
-              className="inline-flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.shop")}
             </Link>
             <Link
               href="/custom-order"
-              className="inline-flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.custom")}
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.contact")}
             </Link>
 
-            <LanguageSwitcher />
+            <div className="flex items-center">
+              <LanguageSwitcher />
+            </div>
 
             {/* Account */}
             <Link
               href={user ? "/account" : "/login"}
-              className="inline-flex items-center text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center text-chrome-light hover:text-sage transition-colors duration-200"
               aria-label="Account"
             >
               <UserIcon />
@@ -153,7 +155,7 @@ export function Header() {
             {/* Cart */}
             <Link
               href="/cart"
-              className="relative inline-flex items-center text-chrome-light hover:text-sage transition-colors duration-200"
+              className="relative flex items-center text-chrome-light hover:text-sage transition-colors duration-200"
             >
               <BagIcon />
               {totalItems > 0 && (
@@ -224,19 +226,18 @@ export function Header() {
           />
         </div>
 
-        {/* Character art — bottom right */}
+        {/* Character art — full right panel */}
         <div
-          className={`absolute bottom-0 right-0 w-[220px] pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${
-            mobileMenuOpen ? "opacity-[0.13]" : "opacity-0"
+          className={`absolute top-0 right-0 w-[65%] h-full pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${
+            mobileMenuOpen ? "opacity-[0.18]" : "opacity-0"
           }`}
-          style={{ transitionDelay: mobileMenuOpen ? "300ms" : "0ms" }}
+          style={{ transitionDelay: mobileMenuOpen ? "250ms" : "0ms" }}
         >
           <Image
             src="/characters/typecek3(png).webp"
             alt=""
-            width={220}
-            height={320}
-            className="w-full h-auto object-contain"
+            fill
+            className="object-contain object-top"
             aria-hidden="true"
           />
         </div>
