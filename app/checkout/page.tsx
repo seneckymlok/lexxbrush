@@ -29,14 +29,9 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!user) return;
-    setEmail(user.email || "");
-
     const fetchProfile = async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-      if (data) {
-        setName(data.full_name || "");
-        if (data.country) setCountry(data.country);
-      }
+      const { data } = await supabase.from("profiles").select("country").eq("id", user.id).single();
+      if (data?.country) setCountry(data.country);
     };
     fetchProfile();
   }, [user]);
@@ -159,7 +154,7 @@ export default function CheckoutPage() {
         </h1>
         <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-12" />
 
-        <form onSubmit={handleSubmit} autoComplete="on" noValidate>
+        <form onSubmit={handleSubmit} autoComplete="off" noValidate>
           <div className="grid md:grid-cols-[1fr_340px] gap-12 md:gap-16">
             {/* Left — Form */}
             <div className="space-y-10">
@@ -175,7 +170,7 @@ export default function CheckoutPage() {
                       id="email"
                       name="email"
                       type="email"
-                      autoComplete="email"
+                      autoComplete="off"
                       inputMode="email"
                       required
                       value={email}
@@ -190,7 +185,7 @@ export default function CheckoutPage() {
                       id="name"
                       name="name"
                       type="text"
-                      autoComplete="name"
+                      autoComplete="off"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
