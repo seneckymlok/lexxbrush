@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.png",
+        url: "/logo-new.png",
         width: 1200,
         height: 675,
         alt: "Lexxbrush — Hand-Airbrushed Wearable Art",
@@ -100,7 +100,7 @@ export const metadata: Metadata = {
     title: "Lexxbrush — Hand-Airbrushed Wearable Art",
     description:
       "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand.",
-    images: ["/logo.png"],
+    images: ["/logo-new.png"],
   },
   alternates: {
     canonical: baseUrl,
