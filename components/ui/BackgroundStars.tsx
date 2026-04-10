@@ -78,7 +78,7 @@ export function BackgroundStars() {
   return (
     <div 
       ref={containerRef} 
-      className="absolute inset-0 z-[30] pointer-events-none overflow-hidden mix-blend-screen"
+      className="absolute inset-0 z-[5] pointer-events-none overflow-hidden mix-blend-screen"
       aria-hidden="true"
     >
       {/* Precision placed stars, acting as a global static framework */}

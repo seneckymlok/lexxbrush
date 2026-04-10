@@ -119,34 +119,32 @@ export function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-stretch h-full gap-8">
+          <div className="hidden md:flex items-center gap-6">
             <Link
               href="/"
-              className="flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
+              className="py-2 px-1 font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.shop")}
             </Link>
             <Link
               href="/custom-order"
-              className="flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
+              className="py-2 px-1 font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.custom")}
             </Link>
             <Link
               href="/contact"
-              className="flex items-center font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
+              className="py-2 px-1 font-[family-name:var(--font-display)] text-sm tracking-[0.1em] uppercase text-chrome-light hover:text-sage transition-colors duration-200"
             >
               {t("nav.contact")}
             </Link>
 
-            <div className="flex items-center">
-              <LanguageSwitcher />
-            </div>
+            <LanguageSwitcher />
 
             {/* Account */}
             <Link
               href={user ? "/account" : "/login"}
-              className="flex items-center text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center justify-center w-9 h-9 text-chrome-light hover:text-sage transition-colors duration-200"
               aria-label="Account"
             >
               <UserIcon />
@@ -155,14 +153,16 @@ export function Header() {
             {/* Cart */}
             <Link
               href="/cart"
-              className="relative flex items-center text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center justify-center w-9 h-9 text-chrome-light hover:text-sage transition-colors duration-200"
             >
-              <BagIcon />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 text-[11px] font-extrabold text-[#8800CC] drop-shadow-[0_0_5px_rgba(136,0,204,0.7)] leading-none">
-                  {totalItems}
-                </span>
-              )}
+              <span className="relative">
+                <BagIcon />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 text-[11px] font-extrabold text-[#8800CC] drop-shadow-[0_0_5px_rgba(136,0,204,0.7)] leading-none">
+                    {totalItems}
+                  </span>
+                )}
+              </span>
             </Link>
           </div>
 
