@@ -154,7 +154,7 @@ export default function CheckoutPage() {
         </h1>
         <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-12" />
 
-        <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+        <form onSubmit={handleSubmit} autoComplete="on" noValidate>
           <div className="grid md:grid-cols-[1fr_340px] gap-12 md:gap-16">
             {/* Left — Form */}
             <div className="space-y-10">
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
                       id="email"
                       name="email"
                       type="email"
-                      autoComplete="off"
+                      autoComplete="email"
                       inputMode="email"
                       required
                       value={email}
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
                       id="name"
                       name="name"
                       type="text"
-                      autoComplete="off"
+                      autoComplete="name"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}

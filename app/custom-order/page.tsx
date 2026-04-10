@@ -116,7 +116,7 @@ export default function CustomOrderPage() {
                 id="custom-name"
                 name="name"
                 type="text"
-                autoComplete="off"
+                autoComplete="name"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -133,7 +133,7 @@ export default function CustomOrderPage() {
                 id="custom-email"
                 name="email"
                 type="email"
-                autoComplete="off"
+                autoComplete="email"
                 inputMode="email"
                 required
                 value={form.email}
