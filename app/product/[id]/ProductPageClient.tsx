@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -12,6 +12,7 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { getProduct } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
+import { hexToRgbString } from "@/lib/colorExtraction";
 
 interface Props {
   initialProduct: Product | undefined;
@@ -24,21 +25,94 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   const { addItem } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
 
-  const [product, setProduct] = useState<Product | undefined>(initialProduct);
-  const [loading, setLoading] = useState(!initialProduct);
-  const [selectedSize, setSelectedSize] = useState<string | undefined>(
-    initialProduct?.sizes?.[0]
-  );
-  const [added, setAdded] = useState(false);
+  const [product, setProduct]       = useState<Product | undefined>(initialProduct);
+  const [loading, setLoading]       = useState(!initialProduct);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(initialProduct?.sizes?.[0]);
+  const [added, setAdded]           = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
-  // Close lightbox on Escape key
+  // DOM targets
+  const imageRef         = useRef<HTMLDivElement>(null);      // GSAP clipPath + mousemove area
+  const heroImageWrapRef = useRef<HTMLDivElement>(null);      // parallax translate target
+  const titleRef         = useRef<HTMLHeadingElement>(null);  // shimmer target
+  const infoRef          = useRef<HTMLDivElement>(null);      // GSAP fade-up target
+
+  // Parallax animation handles
+  const rafRef     = useRef<number>(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Title shimmer ─────────────────────────────────────────────────────────
+  // Shared logic: remove the class, force a reflow so the browser registers
+  // the removal, then re-add it — animation restarts from the beginning.
+  const playTitleShimmer = useCallback(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    el.classList.remove("product-title-shimmer--animate");
+    void el.offsetWidth; // trigger reflow — required to restart CSS animation
+    el.classList.add("product-title-shimmer--animate");
+  }, []);
+
+  // Fire once on page load, timed so it lands after the GSAP clipPath reveal (1s)
+  // and the info fade-up (0.4s delay + 0.8s duration = 1.2s total), plus a breath.
+  useEffect(() => {
+    if (loading) return;
+    const timer = setTimeout(playTitleShimmer, 1350);
+    return () => clearTimeout(timer);
+  }, [loading, playTitleShimmer]);
+
+  // Replay on mouseenter
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    el.addEventListener("mouseenter", playTitleShimmer);
+    return () => el.removeEventListener("mouseenter", playTitleShimmer);
+  }, [playTitleShimmer]);
+
+  // ── Parallax on hero image ────────────────────────────────────────────────
+  // Stronger range than product cards (±10px / ±7px) — the image is much
+  // larger so the motion reads as more dramatic while staying proportional.
+  const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (!imageRef.current || !heroImageWrapRef.current) return;
+      const rect = imageRef.current.getBoundingClientRect();
+      const dx = (clientX - rect.left  - rect.width  / 2) / (rect.width  / 2);
+      const dy = (clientY - rect.top   - rect.height / 2) / (rect.height / 2);
+      // Image drifts opposite the cursor — reads as floating in front of the plane
+      heroImageWrapRef.current.style.transform =
+        `translate(${(-dx * 10).toFixed(2)}px, ${(-dy * 7).toFixed(2)}px)`;
+    });
+  }, []);
+
+  const handleImageMouseLeave = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (heroImageWrapRef.current) {
+      heroImageWrapRef.current.style.transition = "transform 0.7s cubic-bezier(0.23, 1, 0.32, 1)";
+      heroImageWrapRef.current.style.transform  = "translate(0, 0)";
+    }
+    timeoutRef.current = setTimeout(() => {
+      if (heroImageWrapRef.current) heroImageWrapRef.current.style.transition = "";
+    }, 700);
+  }, []);
+
+  // ── Cleanup ───────────────────────────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  // ── Lightbox keyboard handler + scroll lock ───────────────────────────────
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsLightboxOpen(false);
-      }
+      if (e.key === "Escape") setIsLightboxOpen(false);
     };
     if (isLightboxOpen) {
       window.addEventListener("keydown", handleKeyDown);
@@ -65,9 +139,6 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     if (product) setActiveImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
   };
 
-  const imageRef = useRef<HTMLDivElement>(null);
-  const infoRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (initialProduct) return;
     getProduct(productId).then((p) => {
@@ -80,12 +151,22 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   useGSAP(() => {
     if (loading || !product) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    gsap.fromTo(imageRef.current,
+    // clipPath on the image wrapper only — the halo (a sibling div) is never
+    // clipped, so its blur bleeds freely beyond the square boundary.
+    // onComplete clears the clipPath so drop-shadow renders without constraint.
+    gsap.fromTo(heroImageWrapRef.current,
       { clipPath: "inset(100% 0 0 0)" },
-      { clipPath: "inset(0% 0 0 0)", duration: 1, ease: "power4.inOut" }
+      {
+        clipPath: "inset(0% 0 0 0)",
+        duration: 1,
+        ease: "power4.inOut",
+        onComplete: () => {
+          if (heroImageWrapRef.current) {
+            heroImageWrapRef.current.style.clipPath = "none";
+          }
+        },
+      }
     );
-
     gsap.fromTo(infoRef.current,
       { y: 40, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.4 }
@@ -116,13 +197,27 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   };
 
   const hasMultipleImages = product.images.length > 1;
+  const isFav = isFavorite(product.id);
+
+  // Per-product accent. Falls back to brand purple when accent_color is null.
+  // Exposed as CSS vars so any descendant can opt in via `var(--product-accent)`
+  // or `rgba(var(--product-accent-rgb), 0.x)` for translucent glows.
+  const accent  = product.accentColor          || "#8800CC";
+  const accent2 = product.accentColorSecondary || "#0088FF";
+  const accentRgb = hexToRgbString(accent);
+  const accentStyle = {
+    "--product-accent":     accent,
+    "--product-accent-2":   accent2,
+    "--product-accent-rgb": accentRgb,
+  } as React.CSSProperties;
 
   return (
-    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16">
+    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16" style={accentStyle}>
+
       {/* Back button */}
       <button
         onClick={() => router.push("/")}
-        className="inline-flex items-center gap-2 text-sm text-chrome hover:text-sage transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase mb-8"
+        className="inline-flex items-center gap-2 text-sm text-chrome hover:text-white transition-colors duration-300 font-[family-name:var(--font-display)] tracking-wider uppercase mb-8"
         aria-label="Back to shop"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -133,50 +228,87 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-        {/* Image section */}
-        <div>
-          {/* Main image */}
-          <div 
-            ref={imageRef} 
-            className="aspect-square rounded-xl overflow-hidden bg-[url('/noise.png')] relative cursor-zoom-in group" 
-            style={{ clipPath: "inset(0 0 0 0)" }}
-            onClick={() => setIsLightboxOpen(true)}
-          >
-            <Image
-              src={product.images[activeImage]}
-              alt={product.name[locale as Locale]}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              priority
-            />
 
-            {/* Favorite — spray tag mark */}
+        {/* ── Image column ── */}
+        <div>
+          {/* Main image cell — mousemove area for parallax, click for lightbox */}
+          <div
+            ref={imageRef}
+            className="aspect-square relative cursor-zoom-in group"
+            onClick={() => setIsLightboxOpen(true)}
+            onMouseMove={handleImageMouseMove}
+            onMouseLeave={handleImageMouseLeave}
+          >
+            {/* ── Ambient color halo ──────────────────────────────────────────
+                Always present at 18% (atmospheric presence even at rest).
+                Blooms to 65% on hover — the shirt's palette floods the space.
+                Updates with activeImage so each angle has its own aura.
+                Negative scale (2×) + 80px blur = wide, soft spread.          */}
+            <div
+              className="absolute inset-0 z-0 pointer-events-none opacity-[0.18] group-hover:opacity-[0.65] transition-opacity duration-700"
+              aria-hidden="true"
+            >
+              <Image
+                src={product.images[activeImage]}
+                alt=""
+                fill
+                sizes="50vw"
+                className="object-contain scale-[2] blur-[80px] brightness-[0.65] saturate-[2.3]"
+              />
+            </div>
+
+            {/* ── Product image — parallax target ──────────────────────────────
+                Wrapped in its own div so JS translate (parallax) and the CSS
+                drop-shadow (product-float-hero) live on separate elements.
+                The ±10 / ±7px translate range is stronger than the grid cards
+                (±6 / ±4px) — proportional to the much larger display size.   */}
+            <div
+              ref={heroImageWrapRef}
+              className="absolute inset-0 z-10 will-change-transform"
+            >
+              <Image
+                src={product.images[activeImage]}
+                alt={product.name[locale as Locale]}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain product-float-hero"
+                priority
+              />
+            </div>
+
+            {/* ── Favorite — top-right, no chip, matches grid card language ──
+                Same heart icon, same positioning logic, same drop-shadow
+                for legibility. w-12 h-12 (vs grid's w-9 h-9) — larger target
+                on a larger image. Sits above halo (z-20) and image (z-10).   */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (product) toggleFavorite(product.id);
               }}
-              className={`absolute top-4 left-4 z-20 w-11 h-11 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 ${
-                product && isFavorite(product.id)
-                  ? "bg-void/40 text-plum"
-                  : "bg-black/20 border border-white/10 text-white hover:text-plum hover:bg-black/40"
+              className={`absolute top-4 right-4 z-20 w-12 h-12 flex items-center justify-center transition-all duration-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] ${
+                isFav ? "text-suit-heart" : "text-white/50 hover:text-white"
               }`}
-              aria-label={product && isFavorite(product.id) ? "Remove from favorites" : "Add to favorites"}
+              aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                className={`transition-all duration-300 ${isFav ? "scale-110" : "scale-100"}`}
+              >
                 <path
-                  d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z"
-                  fill={product && isFavorite(product.id) ? "var(--color-plum)" : "none"}
-                  stroke={product && isFavorite(product.id) ? "var(--color-plum)" : "currentColor"}
-                  strokeWidth={product && isFavorite(product.id) ? "0" : "1.5"}
+                  d="M12 21 C12 21 3 14 3 8.5 C3 5.4 5.4 3 8.5 3 C10.2 3 11.6 3.8 12 5 C12.4 3.8 13.8 3 15.5 3 C18.6 3 21 5.4 21 8.5 C21 14 12 21 12 21Z"
+                  fill={isFav ? "var(--color-suit-heart)" : "none"}
+                  stroke={isFav ? "var(--color-suit-heart)" : "currentColor"}
+                  strokeWidth={isFav ? "0" : "1.5"}
                   strokeLinejoin="round"
-                  className="transition-all duration-400"
+                  className="transition-all duration-300"
                 />
               </svg>
             </button>
-            
+
+            {/* Prev / next arrows — only when multiple images */}
             {hasMultipleImages && (
               <>
                 <button
@@ -184,21 +316,30 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-70 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black/50 z-10 hover:scale-105 active:scale-95"
                   aria-label="Previous image"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
                 </button>
                 <button
                   onClick={handleNextImage}
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-70 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black/50 z-10 hover:scale-105 active:scale-95"
                   aria-label="Next image"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </button>
               </>
             )}
 
-            {/* Zoom Hint Icon */}
-            <div className="absolute top-4 right-4 w-10 h-10 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+            {/* Zoom hint — bottom-right so it never conflicts with favorite (top-right) */}
+            <div className="absolute bottom-4 right-4 w-9 h-9 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
             </div>
           </div>
 
@@ -212,10 +353,10 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   role="tab"
                   aria-selected={activeImage === i}
                   aria-label={`View image ${i + 1}`}
-                  className={`w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all duration-300 relative ${
+                  className={`w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0 border transition-all duration-300 relative bg-white/[0.03] ${
                     activeImage === i
-                      ? "border-plum opacity-100 shadow-[0_0_10px_rgba(123,91,167,0.2)]"
-                      : "border-transparent opacity-50 hover:opacity-80"
+                      ? "border-white/40 opacity-100"
+                      : "border-white/10 opacity-55 hover:opacity-85 hover:border-white/20"
                   }`}
                 >
                   <Image
@@ -223,7 +364,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                     alt={`${product.name[locale as Locale]} - view ${i + 1}`}
                     fill
                     sizes="80px"
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </button>
               ))}
@@ -231,111 +372,156 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           )}
         </div>
 
-        {/* Product Info */}
+        {/* ── Info column ── */}
         <div ref={infoRef} className="flex flex-col justify-center py-4">
-          <div className="flex gap-2 mb-4">
+
+          {/* Badges — match grid card visual language */}
+          <div className="flex gap-3 mb-5">
             {product.isOneOfAKind && (
-              <span className="stencil-badge inline-block px-3 py-1 text-[10px] rounded-full">{t("product.oneOfAKind")}</span>
+              <span className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.15em] uppercase text-[#EEFF00] drop-shadow-[0_0_6px_rgba(238,255,0,0.5)]">
+                {t("product.oneOfAKind")}
+              </span>
             )}
             {product.isSold && (
-              <span className="badge-sold inline-block px-3 py-1 text-[10px] font-bold rounded-full">{t("product.sold")}</span>
+              <span className="badge-sold inline-block px-3 py-1 text-[10px] font-bold rounded-full">
+                {t("product.sold")}
+              </span>
             )}
           </div>
 
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
+          {/* Title — chrome shimmer plays on load + mouseenter.
+              cursor-default prevents the text cursor from showing on hover
+              (the mouseenter listener is on the element itself).           */}
+          <h1
+            ref={titleRef}
+            className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase product-title-shimmer cursor-default"
+          >
             {product.name[locale as Locale]}
           </h1>
 
-          <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-white">&euro;{product.price}</p>
+          <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-white">
+            &euro;{product.price}
+          </p>
 
-          <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent my-6" />
+          <div
+            className="w-10 h-[1px] my-6"
+            style={{
+              background:
+                "linear-gradient(to right, transparent, rgba(var(--product-accent-rgb), 0.55), transparent)",
+            }}
+          />
 
-          <p className="text-chrome-light leading-relaxed max-w-lg">{product.description[locale as Locale]}</p>
+          <p className="text-chrome-light leading-relaxed max-w-lg">
+            {product.description[locale as Locale]}
+          </p>
 
-          {/* Size Selector */}
+          {/* Size selector */}
           {product.sizes && (
             <fieldset className="mt-8">
-              <legend className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-3">{t("product.size")}</legend>
+              <legend className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-3">
+                {t("product.size")}
+              </legend>
               <div className="flex gap-2" role="radiogroup" aria-label="Select size">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    role="radio"
-                    aria-checked={selectedSize === size}
-                    aria-label={`Size ${size}`}
-                    className={`w-12 h-12 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-medium rounded-lg border transition-all duration-300 ${
-                      selectedSize === size
-                        ? "bg-white/15 text-white border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-                        : "bg-transparent text-chrome-dim border-white/10 hover:border-white/25 hover:text-chrome"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                {product.sizes.map((size) => {
+                  const active = selectedSize === size;
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      role="radio"
+                      aria-checked={active}
+                      aria-label={`Size ${size}`}
+                      className={`w-12 h-12 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-medium rounded-lg border transition-all duration-300 ${
+                        active
+                          ? "text-white"
+                          : "bg-transparent text-chrome-dim border-white/10 hover:border-white/25 hover:text-chrome"
+                      }`}
+                      style={
+                        active
+                          ? {
+                              background: "rgba(var(--product-accent-rgb), 0.14)",
+                              borderColor: "rgba(var(--product-accent-rgb), 0.55)",
+                              boxShadow: "0 0 18px rgba(var(--product-accent-rgb), 0.28)",
+                            }
+                          : undefined
+                      }
+                    >
+                      {size}
+                    </button>
+                  );
+                })}
               </div>
             </fieldset>
           )}
 
-          {/* Add to Cart */}
+          {/* Add to cart */}
           <MagneticButton>
             <button
               onClick={handleAddToCart}
               disabled={product.isSold}
               aria-label={product.isSold ? "Sold out" : `Add ${product.name[locale as Locale]} to cart`}
-              className={`mt-8 w-full md:w-auto px-10 py-4 text-sm font-bold rounded-full transition-all duration-400 ${
+              className={`mt-8 self-start inline-flex items-center justify-center min-w-[220px] px-10 py-4 text-sm font-bold rounded-full transition-all duration-400 ${
                 product.isSold
                   ? "bg-concrete-light text-text-dim cursor-not-allowed font-[family-name:var(--font-display)] tracking-[0.15em] uppercase"
                   : added
                     ? "bg-sage text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(138,171,158,0.3)]"
-                    : "btn-brand"
+                    : "btn-accent"
               }`}
             >
               {product.isSold ? t("product.sold") : added ? "Added!" : t("product.addToCart")}
             </button>
           </MagneticButton>
 
-          {/* Details — editorial strip */}
+          {/* Editorial strip */}
           <div className="mt-10 pt-6 border-t border-white/5">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.handPainted")}</span>
+            <div className="flex flex-wrap items-center justify-start gap-x-4 gap-y-2">
+              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">
+                {t("product.handPainted")}
+              </span>
               <span className="w-[1px] h-3 bg-white/10" aria-hidden="true" />
-              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.unique")}</span>
+              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">
+                {t("product.unique")}
+              </span>
               <span className="w-[1px] h-3 bg-white/10" aria-hidden="true" />
-              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">{t("product.madeByHand")}</span>
+              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">
+                {t("product.madeByHand")}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Lightbox Overlay */}
+      {/* ── Lightbox ── */}
       {isLightboxOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] bg-[#080808]/95 flex items-center justify-center backdrop-blur-xl animate-in fade-in duration-300"
           onClick={() => setIsLightboxOpen(false)}
         >
-          {/* Close button */}
-          <button 
+          {/* Close */}
+          <button
             onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
             className="fixed top-24 right-4 md:top-16 md:right-12 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
-            aria-label="Close"
+            aria-label="Close lightbox"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
-          
+
           {hasMultipleImages && (
-            <button 
+            <button
               onClick={handlePrevImage}
               className="fixed left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
               aria-label="Previous image"
             >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
             </button>
           )}
 
-          <div 
-            className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw] flex items-center justify-center -mt-12 md:mt-0"
-          >
+          <div className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw] flex items-center justify-center -mt-12 md:mt-0">
             <Image
               src={product.images[activeImage]}
               alt={`${product.name[locale as Locale]} - Zoomed`}
@@ -347,12 +533,14 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           </div>
 
           {hasMultipleImages && (
-            <button 
+            <button
               onClick={handleNextImage}
               className="fixed right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
               aria-label="Next image"
             >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </button>
           )}
         </div>

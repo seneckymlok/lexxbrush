@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import CustomSelect from "@/components/ui/CustomSelect";
+import { AccentColorField } from "@/components/admin/AccentColorField";
+import { extractAccentGradient } from "@/lib/colorExtraction";
 
 const CATEGORIES = ["tees", "hoodies", "pants", "bags", "accessories"];
 
@@ -24,7 +26,12 @@ export default function NewProductPage() {
     category: "tees",
     sizes: "",
     is_one_of_a_kind: true,
+    accent_color: "",
+    accent_color_secondary: "",
   });
+  // Tracks whether the admin has manually edited the colors — if so, we never
+  // auto-overwrite them when a new image is dropped.
+  const [accentTouched, setAccentTouched] = useState(false);
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -33,8 +40,20 @@ export default function NewProductPage() {
   function handleFileSelect(files: FileList | null) {
     if (!files) return;
     const newFiles = Array.from(files);
+    const wasEmpty = imageFiles.length === 0;
     setImageFiles((prev) => [...prev, ...newFiles]);
     setImagePreviews((prev) => [...prev, ...newFiles.map((f) => URL.createObjectURL(f))]);
+
+    // Auto-extract from the first image only when there was none before AND
+    // the admin hasn't manually picked a color yet. Fire-and-forget; if it
+    // fails the admin can still pick manually or hit "↻ Extract from image".
+    if (wasEmpty && !accentTouched && newFiles[0]) {
+      extractAccentGradient(newFiles[0])
+        .then(({ from, to }) => {
+          if (!accentTouched) setForm((f) => ({ ...f, accent_color: from, accent_color_secondary: to }));
+        })
+        .catch(() => { /* swallow — admin can extract manually */ });
+    }
   }
 
   function removeImage(index: number) {
@@ -105,6 +124,8 @@ export default function NewProductPage() {
             category: form.category,
             sizes: sizes.length > 0 ? sizes : null,
             is_one_of_a_kind: form.is_one_of_a_kind,
+            accent_color: form.accent_color || null,
+            accent_color_secondary: form.accent_color_secondary || null,
           },
         }),
       });
@@ -228,6 +249,21 @@ export default function NewProductPage() {
             <div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_one_of_a_kind ? "translate-x-5" : "translate-x-0"}`} />
           </button>
           <span className="text-sm text-white/50">One of a kind</span>
+        </div>
+
+        {/* Accent Color */}
+        <div>
+          <label className={labelClass}>Accent color</label>
+          <AccentColorField
+            from={form.accent_color}
+            to={form.accent_color_secondary}
+            onFromChange={(hex) => { setAccentTouched(true); setForm({ ...form, accent_color: hex }); }}
+            onToChange={(hex)   => { setAccentTouched(true); setForm({ ...form, accent_color_secondary: hex }); }}
+            source={imageFiles[0] || null}
+          />
+          <p className="text-[11px] text-white/30 mt-2">
+            Tints the product page (halo, button, accents). Auto-extracted from the first image — adjust to taste.
+          </p>
         </div>
 
         {/* Image Upload */}

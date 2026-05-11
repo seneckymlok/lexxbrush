@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import CustomSelect from "@/components/ui/CustomSelect";
+import { AccentColorField } from "@/components/admin/AccentColorField";
 
 const CATEGORIES = ["tees", "hoodies", "pants", "bags", "accessories"];
 
@@ -24,6 +25,8 @@ export default function EditProductPage() {
     name_en: "", name_sk: "", description_en: "", description_sk: "",
     price: "", category: "tees", sizes: "",
     is_one_of_a_kind: true, is_sold: false, images: [] as string[],
+    accent_color: "",
+    accent_color_secondary: "",
   });
 
   // New files to upload
@@ -42,6 +45,8 @@ export default function EditProductPage() {
             sizes: data.sizes?.join(", ") || "",
             is_one_of_a_kind: data.is_one_of_a_kind, is_sold: data.is_sold,
             images: data.images || [],
+            accent_color: data.accent_color || "",
+            accent_color_secondary: data.accent_color_secondary || "",
           });
         }
       })
@@ -130,6 +135,8 @@ export default function EditProductPage() {
             price: priceInCents, images: allImages,
             category: form.category, sizes: sizes.length > 0 ? sizes : null,
             is_one_of_a_kind: form.is_one_of_a_kind, is_sold: form.is_sold,
+            accent_color: form.accent_color || null,
+            accent_color_secondary: form.accent_color_secondary || null,
           },
         }),
       });
@@ -232,6 +239,21 @@ export default function EditProductPage() {
             <button type="button" onClick={() => setForm({ ...form, is_sold: !form.is_sold })} className={`w-10 h-5 rounded-full transition-colors ${form.is_sold ? "bg-red-500" : "bg-white/10"}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_sold ? "translate-x-5" : ""}`} /></button>
             <span className="text-sm text-white/50">Sold</span>
           </div>
+        </div>
+
+        {/* Accent Color */}
+        <div>
+          <label className={labelClass}>Accent color</label>
+          <AccentColorField
+            from={form.accent_color}
+            to={form.accent_color_secondary}
+            onFromChange={(hex) => setForm({ ...form, accent_color: hex })}
+            onToChange={(hex)   => setForm({ ...form, accent_color_secondary: hex })}
+            source={form.images[0] || newFiles[0] || null}
+          />
+          <p className="text-[11px] text-white/30 mt-2">
+            Tints the product page (halo, button, accents). Hit ↻ to re-extract from the current first image.
+          </p>
         </div>
 
         {/* Images section */}

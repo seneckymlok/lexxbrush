@@ -17,6 +17,10 @@ export interface Product {
   sizes?: string[];
   isOneOfAKind: boolean;
   isSold: boolean;
+  /** Gradient start hex — dominant accent extracted from first image. Falls back to brand purple. */
+  accentColor?: string;
+  /** Gradient end hex — hue-distant secondary accent. Falls back to a triadic shift of accentColor. */
+  accentColorSecondary?: string;
 }
 
 // Transform Supabase row to Product interface
@@ -32,6 +36,8 @@ function toProduct(row: any): Product {
     sizes: row.sizes || undefined,
     isOneOfAKind: row.is_one_of_a_kind,
     isSold: row.is_sold,
+    accentColor: row.accent_color || undefined,
+    accentColorSecondary: row.accent_color_secondary || undefined,
   };
 }
 

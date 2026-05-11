@@ -3,12 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-export function Footer({ isInnerPage = false }: { isInnerPage?: boolean }) {
+export function Footer() {
   const { t } = useLanguage();
 
-  const footerBg = isInnerPage
-    ? "linear-gradient(to top, rgba(5,5,5,0.97) 0%, rgba(5,5,5,0.78) 50%, rgba(5,5,5,0.52) 100%)"
-    : "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 60%, transparent 100%)";
+  const footerBg = "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 60%, transparent 100%)";
 
   return (
     <footer className="relative border-t border-white/10 overflow-hidden" style={{ background: footerBg }}>

@@ -56,8 +56,8 @@ export default function CartPage() {
                   key={`${item.product.id}-${item.size}`}
                   className="cart-item flex items-center gap-4 md:gap-6 py-6 border-b border-white/5"
                 >
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden bg-concrete-light flex-shrink-0 relative">
-                    <Image src={item.product.images[0]} alt={item.product.name[locale as Locale]} fill sizes="96px" className="object-cover" />
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden bg-white/[0.03] border border-white/5 flex-shrink-0 relative">
+                    <Image src={item.product.images[0]} alt={item.product.name[locale as Locale]} fill sizes="96px" className="object-contain" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-wide uppercase text-chrome-bright truncate">
@@ -92,14 +92,16 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <MagneticButton>
-                <Link
-                  href="/checkout"
-                  className="block w-full py-4 btn-brand text-sm font-bold rounded-full text-center"
-                >
-                  {t("cart.checkout")}
-                </Link>
-              </MagneticButton>
+              <div className="flex justify-center">
+                <MagneticButton>
+                  <Link
+                    href="/checkout"
+                    className="inline-flex items-center justify-center min-w-[220px] px-10 py-4 btn-brand text-sm font-bold rounded-full"
+                  >
+                    {t("cart.checkout")}
+                  </Link>
+                </MagneticButton>
+              </div>
 
               <Link
                 href="/"

@@ -24,7 +24,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       )}
       <Header />
       <main className="flex-1 relative z-[2]">{children}</main>
-      <Footer isInnerPage={isInnerPage} />
+      <Footer />
     </div>
   );
 }

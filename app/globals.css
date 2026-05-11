@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-gluten), "Gluten", sans-serif;
-  --font-body: var(--font-gluten), "Gluten", sans-serif;
-  --font-accent: var(--font-gluten), "Gluten", sans-serif;
-  --font-brand: var(--font-gluten), "Gluten", sans-serif;
+  --font-display: var(--font-syne), "Syne", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-accent: var(--font-inter), "Inter", sans-serif;
+  --font-brand: var(--font-syne), "Syne", sans-serif;
 
   /* ── DARK NEUTRALS ── */
   --color-void: #0A0A0A;
@@ -65,7 +65,7 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
     color: var(--color-text);
-    font-family: var(--font-brand);
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -187,6 +187,55 @@
     background-clip: text;
     animation: shimmer 4s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+
+  /* Product name shimmer — one-shot chrome sweep triggered by group hover.
+     At rest the gradient is parked off-screen left so text reads as flat #E0E0E0.
+     On hover the animation sweeps the bright peak across left-to-right in 550ms. */
+  .product-name-shimmer {
+    background: linear-gradient(
+      90deg,
+      #E0E0E0 0%,
+      #E0E0E0 30%,
+      #ffffff 50%,
+      #E0E0E0 70%,
+      #E0E0E0 100%
+    );
+    background-size: 300% auto;
+    background-position: -150% center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @media (hover: hover) {
+    .group:hover .product-name-shimmer {
+      animation: name-shimmer 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+  }
+
+  /* Product detail page title shimmer — richer chrome gradient matching chrome-text.
+     Parked at -150% at rest (flat chrome). JS adds --animate to replay on load
+     and on mouseenter. animation: forwards parks at 150% (also flat chrome). */
+  .product-title-shimmer {
+    background: linear-gradient(
+      90deg,
+      #909090 0%,
+      #c8c8c8 25%,
+      #ffffff 50%,
+      #c8c8c8 75%,
+      #909090 100%
+    );
+    background-size: 300% auto;
+    background-position: -150% center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+  }
+
+  .product-title-shimmer--animate {
+    animation: name-shimmer 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   /* Product card glow */
@@ -318,6 +367,69 @@
   }
 
   .btn-brand:active {
+    transform: translateY(0) scale(0.97);
+    transition: transform 0.1s;
+  }
+
+  /* ── Per-product accent CTA ────────────────────────────────────────────────
+     Same shape as .btn-brand but every color is driven by CSS variables set
+     on the page root (`--product-accent`, `--product-accent-rgb`). This lets
+     each product's "Add to cart" button take on its own signature color
+     while keeping the chrome shimmer and motion language identical.        */
+  .btn-accent {
+    --_accent:   var(--product-accent,   #8800CC);
+    --_accent2:  var(--product-accent-2, #0088FF);
+    --_rgb:      var(--product-accent-rgb, 136, 0, 204);
+
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--_accent) 0%, var(--_accent2) 100%);
+    color: var(--color-white);
+    font-family: var(--font-display);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow:
+      0 2px 16px rgba(var(--_rgb), 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(var(--_rgb), 0.3);
+  }
+
+  .btn-accent::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.06) 35%,
+      rgba(255, 220, 255, 0.12) 43%,
+      rgba(220, 230, 255, 0.18) 50%,
+      rgba(200, 255, 255, 0.12) 57%,
+      rgba(255, 255, 255, 0.06) 65%,
+      transparent 80%
+    );
+    translate: -120% 0;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  @media (hover: hover) {
+    .btn-accent:hover {
+      transform: translateY(-2px);
+      border-color: rgba(var(--_rgb), 0.5);
+      box-shadow:
+        0 8px 32px rgba(var(--_rgb), 0.42),
+        0 0 60px rgba(var(--_rgb), 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-accent:hover::before {
+      animation: shimmer-sweep 0.7s ease-out forwards;
+    }
+  }
+
+  .btn-accent:active {
     transform: translateY(0) scale(0.97);
     transition: transform 0.1s;
   }
@@ -472,11 +584,53 @@
     transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
                 box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  /* Floating product — transparent PNG with realistic two-layer shadow.
+     Close shadow defines surface contact, far shadow defines ambient depth.
+     Drop-shadow follows the actual silhouette of the PNG, not a bounding box. */
+  .product-float {
+    filter:
+      drop-shadow(0 6px 4px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 22px 18px rgba(0, 0, 0, 0.32));
+    transition:
+      filter 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, filter;
+    transform: translateZ(0);
+  }
+
+  @media (hover: hover) {
+    .group:hover .product-float {
+      filter:
+        brightness(1.07)
+        drop-shadow(0 10px 6px rgba(0, 0, 0, 0.42))
+        drop-shadow(0 38px 30px rgba(0, 0, 0, 0.36));
+      transform: translateY(-12px);
+    }
+  }
+
+  /* Hero variant for the product detail page — bigger image, bigger shadow,
+     stays in place (no lift) since the image is the focal point of the page. */
+  .product-float-hero {
+    filter:
+      drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 40px 32px rgba(0, 0, 0, 0.38))
+      drop-shadow(0 80px 60px rgba(0, 0, 0, 0.22));
+    transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: filter;
+    transform: translateZ(0);
+  }
 }
 
 @keyframes shimmer {
   0%, 100% { background-position: 200% center; }
   50% { background-position: -200% center; }
+}
+
+/* One-shot chrome sweep — plays once on card hover, then settles back to flat chrome */
+@keyframes name-shimmer {
+  0%   { background-position: -150% center; }
+  100% { background-position:  150% center; }
 }
 
 @keyframes marquee {
@@ -569,8 +723,12 @@
   .animate-marquee { animation: none !important; }
   .animate-divider-marquee { animation: none !important; }
   .chrome-shimmer { animation: none !important; }
+  .product-name-shimmer { animation: none !important; }
+  .product-title-shimmer--animate { animation: none !important; }
   .card-glow:hover { transform: none !important; }
   .card-3d { transition: none !important; }
+  .product-float { transition: none !important; }
+  .group:hover .product-float { transform: none !important; }
   .page-enter { animation: none !important; opacity: 1; transform: none; }
   .suit-float-1, .suit-float-2, .suit-float-3, .suit-float-4 { animation: none !important; }
 }

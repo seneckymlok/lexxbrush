@@ -71,37 +71,40 @@ export function ProductGrid({ products }: ProductGridProps) {
   }, [activeCategory, animateCards, filteredProducts.length]);
 
   return (
-    <section ref={sectionRef} className="max-w-[1440px] mx-auto px-6 md:px-10 pt-6 md:pt-8 pb-16 md:pb-24 relative overflow-hidden">
+    <section ref={sectionRef} className="max-w-[1440px] mx-auto px-6 md:px-10 pt-24 md:pt-28 pb-16 md:pb-24 relative overflow-hidden">
       {/* Section Header */}
-      <div ref={titleRef} className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+      <div ref={titleRef} className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8 mb-10 md:mb-14">
         <div className="text-center md:text-left">
           <h2 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase chrome-text">
             {t("shop.title")}
           </h2>
         </div>
 
-        {/* Category Filter */}
+        {/* Category Filter — refined pills, outline-led, no shouty fills */}
         <div className="flex flex-wrap justify-center md:justify-start gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 text-xs font-[family-name:var(--font-display)] font-medium tracking-[0.12em] uppercase rounded-full border transition-all duration-300 ${
-                activeCategory === cat.id
-                  ? "bg-[#8800CC] text-white border-[#8800CC]/50 shadow-[0_0_18px_rgba(136,0,204,0.35)]"
-                  : "bg-white/10 text-white/90 border-white/35 hover:border-[#00DDEE]/50 hover:text-white hover:shadow-[0_0_12px_rgba(0,221,238,0.15)]"
-              }`}
-            >
-              {cat.label[locale as Locale]}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-1.5 font-[family-name:var(--font-display)] text-[10px] md:text-[11px] font-medium tracking-[0.2em] uppercase rounded-full border transition-all duration-300 ${
+                  isActive
+                    ? "bg-white/10 text-white border-white"
+                    : "bg-transparent text-white/75 border-white/40 hover:text-white hover:border-white/70"
+                }`}
+              >
+                {cat.label[locale as Locale]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Product Grid */}
       <div
         ref={gridRef}
-        className="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
+        className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
       >
         {filteredProducts.map((product, index) => (
           <ProductCard key={product.id} product={product} index={index} />

@@ -284,15 +284,17 @@ export default function CheckoutPage() {
 
               {/* Submit — visible on desktop */}
               <div className="hidden md:block">
+              <div className="flex justify-center">
               <MagneticButton>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
+                  className="inline-flex items-center justify-center min-w-[260px] px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
                 >
                   {submitting ? t("checkout.processing") : t("checkout.pay")}
                 </button>
               </MagneticButton>
+              </div>
                 <Link
                   href="/cart"
                   className="block text-center mt-4 text-sm text-chrome hover:text-sage transition-colors duration-300"
@@ -315,13 +317,13 @@ export default function CheckoutPage() {
                       key={`${item.product.id}-${item.size}`}
                       className="flex items-center gap-3 py-4 border-b border-white/5"
                     >
-                      <div className="w-14 h-14 rounded-lg overflow-hidden bg-concrete-light flex-shrink-0 relative">
+                      <div className="w-14 h-14 rounded-lg overflow-hidden bg-white/[0.03] border border-white/5 flex-shrink-0 relative">
                         <Image
                           src={item.product.images[0]}
                           alt={item.product.name[locale as Locale]}
                           fill
                           sizes="56px"
-                          className="object-cover"
+                          className="object-contain"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -349,11 +351,11 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Submit — visible on mobile only */}
-                <div className="md:hidden mt-8">
+                <div className="md:hidden mt-8 flex justify-center">
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
+                    className="inline-flex items-center justify-center min-w-[260px] px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50"
                   >
                     {submitting ? t("checkout.processing") : t("checkout.pay")}
                   </button>
