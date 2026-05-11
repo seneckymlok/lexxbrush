@@ -225,6 +225,12 @@ export function Header() {
             ? "bg-void/80 backdrop-blur-lg border-b border-white/5"
             : "bg-transparent"
         }`}
+        style={{
+          // Bg fills from top: 0 (covers iOS status bar area cleanly when
+          // scrolled), but the nav content sits below the safe-area inset
+          // so it never gets clipped by the notch / Dynamic Island.
+          paddingTop: "env(safe-area-inset-top)",
+        }}
       >
         <nav className="relative max-w-[1440px] mx-auto px-5 md:px-10 flex items-center justify-between h-14 md:h-16">
           {/* Logo */}

@@ -26,7 +26,17 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
           />
         )}
         <Header />
-        <main className="flex-1 relative z-[2]">{children}</main>
+        <main
+          className="flex-1 relative z-[2]"
+          style={{
+            // Shift page content down by the same safe-area inset that the
+            // header now reserves at top, so content never scrolls under the
+            // notch-extended header. Zero on non-iOS, no visible effect.
+            paddingTop: "env(safe-area-inset-top)",
+          }}
+        >
+          {children}
+        </main>
         <Footer />
         <Intro />
       </div>

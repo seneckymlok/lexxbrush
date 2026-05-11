@@ -28,6 +28,10 @@ export const viewport: Viewport = {
   themeColor: "#0A0A0A",
   width: "device-width",
   initialScale: 1,
+  // Extend layout under the iOS status bar / notch so `env(safe-area-inset-*)`
+  // resolves to real values. Without this, the safe-area insets are all 0
+  // and our header would sit under the status bar.
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
