@@ -229,7 +229,10 @@ export function Header() {
           // Bg fills from top: 0 (covers iOS status bar area cleanly when
           // scrolled), but the nav content sits below the safe-area inset
           // so it never gets clipped by the notch / Dynamic Island.
-          paddingTop: "env(safe-area-inset-top)",
+          // `constant()` is the legacy iOS 11.0–11.1 syntax; `env()` is
+          // the modern one. `max()` falls back to 0 on non-notched devices.
+          paddingTop:
+            "max(env(safe-area-inset-top, 0px), constant(safe-area-inset-top, 0px), 0px)",
         }}
       >
         <nav className="relative max-w-[1440px] mx-auto px-5 md:px-10 flex items-center justify-between h-14 md:h-16">

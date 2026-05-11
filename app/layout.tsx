@@ -116,6 +116,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`antialiased ${syne.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
+        {/* Belt-and-suspenders: ensure viewport-fit=cover is set so iOS exposes
+            env(safe-area-inset-*) values for the notch-aware header padding. */}
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
         {/* Critical: hide animated elements before ANY content paints */}
         <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}html.intro-pending body{visibility:hidden}html.intro-pending [data-intro]{visibility:visible}` }} />
         {/* Synchronously decide whether the intro is about to play.

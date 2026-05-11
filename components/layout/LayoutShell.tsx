@@ -32,7 +32,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
             // Shift page content down by the same safe-area inset that the
             // header now reserves at top, so content never scrolls under the
             // notch-extended header. Zero on non-iOS, no visible effect.
-            paddingTop: "env(safe-area-inset-top)",
+            paddingTop:
+              "max(env(safe-area-inset-top, 0px), constant(safe-area-inset-top, 0px), 0px)",
           }}
         >
           {children}
