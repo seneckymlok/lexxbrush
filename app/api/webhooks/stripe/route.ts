@@ -2,6 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase";
 import { createPacket } from "@/lib/packeta";
+import {
+  sendOrderConfirmation,
+  type OrderEmailItem,
+  type OrderEmailDelivery,
+} from "@/lib/email/order-confirmation";
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function deliverySummary(deliveryType: string | null, data: any): OrderEmailDelivery | null {
+  if (!deliveryType || !data) return null;
+
+  if (deliveryType === "pickup" && data.point) {
+    const p = data.point;
+    return {
+      type: "pickup",
+      summary: `${p.name} — ${p.street}, ${p.zip} ${p.city}`,
+    };
+  }
+  if (deliveryType === "home_delivery" && data.address) {
+    const a = data.address;
+    return {
+      type: "home_delivery",
+      summary: `${a.street} ${a.houseNumber}, ${a.postcode} ${a.city}${a.country ? `, ${String(a.country).toUpperCase()}` : ""}`,
+    };
+  }
+  return null;
+}
+
+// ─── Webhook handler ─────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -63,6 +92,53 @@ export async function POST(req: NextRequest) {
             .from("products")
             .update({ is_sold: true })
             .eq("id", id);
+        }
+      }
+
+      // ── Confirmation email ──────────────────────────────────────────────
+      // Fetch the full product rows for the items so the email can show
+      // accurate names + the first product image. Falls back to the shorter
+      // metadata if a product can't be looked up.
+      if (order?.id && session.customer_details?.email) {
+        try {
+          const { data: productRows } = await supabase
+            .from("products")
+            .select("id, name_en, images, price")
+            .in("id", productIds);
+
+          const subtotalCents = (session.amount_total ?? 0) - (session.total_details?.amount_shipping ?? 0);
+          const shippingCents = session.total_details?.amount_shipping ?? 0;
+          const totalCents    = session.amount_total ?? 0;
+
+          // Stripe sends short product-id prefixes in metadata.items; map them
+          // back to the full product row via productIds (same order).
+          const emailItems: OrderEmailItem[] = items.map((it: any, i: number) => {
+            const fullId = productIds[i];
+            const product = productRows?.find((p) => p.id === fullId);
+            return {
+              name:       product?.name_en || it.n || "Lexxbrush piece",
+              quantity:   it.q || 1,
+              size:       it.s || null,
+              priceCents: product?.price ?? 0,
+              imageUrl:   product?.images?.[0] || null,
+            };
+          });
+
+          await sendOrderConfirmation({
+            orderId:       order.id,
+            reference:     order.id.slice(0, 8).toUpperCase(),
+            customerEmail: session.customer_details.email,
+            customerName:  customerName || undefined,
+            items:         emailItems,
+            subtotalCents,
+            shippingCents,
+            totalCents,
+            delivery:      deliverySummary(deliveryType, deliveryData),
+            siteUrl:       process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu",
+          });
+        } catch (emailErr) {
+          // Never fail the webhook for an email issue — the order is valid.
+          console.error("Order confirmation email failed:", emailErr);
         }
       }
 

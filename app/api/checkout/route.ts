@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase";
+import { stripeShippingOptions, type DeliveryType } from "@/lib/shipping";
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,6 +42,12 @@ export async function POST(req: NextRequest) {
     if (lineItems.length === 0) {
       return NextResponse.json({ error: "No available products in cart" }, { status: 400 });
     }
+
+    // Cart subtotal (cents) — used to evaluate the free-shipping threshold.
+    const subtotalCents = (lineItems as Array<{
+      price_data: { unit_amount: number };
+      quantity: number;
+    }>).reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0);
 
     // Build compact delivery data for Stripe metadata (500 char limit per value)
     const deliveryData = delivery?.type === "pickup" && delivery.point
@@ -103,6 +110,14 @@ export async function POST(req: NextRequest) {
     if (deliveryData) {
       sessionConfig.metadata.delivery_type = deliveryData.type;
       sessionConfig.metadata.delivery_data = JSON.stringify(deliveryData).slice(0, 500);
+
+      // Attach the single shipping rate that matches the delivery method
+      // the customer already picked on the checkout page. Free-shipping
+      // threshold is evaluated against the cart subtotal.
+      sessionConfig.shipping_options = stripeShippingOptions(
+        deliveryData.type as DeliveryType,
+        subtotalCents,
+      );
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
