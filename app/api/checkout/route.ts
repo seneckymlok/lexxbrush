@@ -5,8 +5,19 @@ import { stripeShippingOptions, type DeliveryType } from "@/lib/shipping";
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, customer, delivery, successUrl, cancelUrl, userId } = await req.json();
+    const { items, customer, delivery, successUrl, cancelUrl, userId, testToken } = await req.json();
     const supabase = createAdminClient();
+
+    // ── Test mode ────────────────────────────────────────────────────────
+    // When the caller passes `testToken` and it matches the server-side
+    // CHECKOUT_TEST_TOKEN env var, shipping is waived (€0) so live-key
+    // smoke tests don't burn real shipping fees. Cannot be brute-forced
+    // (token is compared as-is, server-only env). Has no effect for normal
+    // customers — they never know it exists.
+    const isTestMode =
+      !!testToken &&
+      !!process.env.CHECKOUT_TEST_TOKEN &&
+      testToken === process.env.CHECKOUT_TEST_TOKEN;
 
     // Validate products and prices against database
     const productIds = items.map((item: any) => item.productId);
@@ -111,13 +122,30 @@ export async function POST(req: NextRequest) {
       sessionConfig.metadata.delivery_type = deliveryData.type;
       sessionConfig.metadata.delivery_data = JSON.stringify(deliveryData).slice(0, 500);
 
-      // Attach the single shipping rate that matches the delivery method
-      // the customer already picked on the checkout page. Free-shipping
-      // threshold is evaluated against the cart subtotal.
-      sessionConfig.shipping_options = stripeShippingOptions(
-        deliveryData.type as DeliveryType,
-        subtotalCents,
-      );
+      if (isTestMode) {
+        // Test mode → expose a single free shipping rate so the order still
+        // captures the delivery method but doesn't charge anything for it.
+        sessionConfig.shipping_options = [
+          {
+            shipping_rate_data: {
+              type: "fixed_amount" as const,
+              fixed_amount: { amount: 0, currency: "eur" },
+              display_name: "TEST — Free shipping",
+              delivery_estimate: {
+                minimum: { unit: "business_day" as const, value: 1 },
+                maximum: { unit: "business_day" as const, value: 3 },
+              },
+            },
+          },
+        ];
+        sessionConfig.metadata.test_mode = "true";
+      } else {
+        // Normal flow: real shipping rate based on the delivery method.
+        sessionConfig.shipping_options = stripeShippingOptions(
+          deliveryData.type as DeliveryType,
+          subtotalCents,
+        );
+      }
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig);

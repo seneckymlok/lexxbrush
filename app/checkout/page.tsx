@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
@@ -16,6 +17,11 @@ export default function CheckoutPage() {
   const { locale, t } = useLanguage();
   const { items, totalPrice } = useCart();
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  // Test-mode token from URL (?test=<secret>). Forwarded verbatim to the
+  // checkout API, which validates it against CHECKOUT_TEST_TOKEN env.
+  // Never displayed in UI — admin-only feature.
+  const testToken = searchParams?.get("test") || null;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -111,6 +117,9 @@ export default function CheckoutPage() {
             phone: phone || undefined,
           },
           delivery,
+          // Only sent when present; validated server-side against the
+          // CHECKOUT_TEST_TOKEN env var. Silently ignored otherwise.
+          ...(testToken ? { testToken } : {}),
         }),
       });
 
