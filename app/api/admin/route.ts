@@ -1,8 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import { getTrackingUrl } from "@/lib/packeta";
+
+/**
+ * Invalidate Next.js cache for the public-facing surfaces that depend on
+ * product data, so admin mutations are visible on the live site immediately
+ * (instead of waiting for the 60s ISR window or a redeploy).
+ *
+ * Called on every products insert / update / delete. For updates we pass the
+ * product id so its detail page is invalidated specifically; the homepage is
+ * always invalidated.
+ */
+function revalidateProductSurfaces(productId?: string) {
+  // Homepage shows the product grid.
+  revalidatePath("/");
+  // Every product detail page is a separate cached entry, keyed by [id].
+  // Passing "page" tells Next.js to invalidate the dynamic segment.
+  revalidatePath("/product/[id]", "page");
+  // Belt-and-suspenders: also revalidate the specific id if known.
+  if (productId) {
+    revalidatePath(`/product/${productId}`);
+  }
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -181,6 +203,11 @@ export async function POST(req: NextRequest) {
 
   const { data: result, error } = await admin.from(table).insert(data).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+  if (table === "products" && result?.id) {
+    revalidateProductSurfaces(result.id);
+  }
+
   return NextResponse.json(result);
 }
 
@@ -195,6 +222,10 @@ export async function PATCH(req: NextRequest) {
 
   const { error } = await admin.from(table).update(data).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+  if (table === "products") {
+    revalidateProductSurfaces(id);
+  }
 
   // If this was an order status update to "shipped", dispatch the Resend email
   if (table === "orders" && data.status === "shipped") {
@@ -241,5 +272,10 @@ export async function DELETE(req: NextRequest) {
   const admin = createAdminClient();
   const { error } = await admin.from(table).delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+  if (table === "products") {
+    revalidateProductSurfaces(id);
+  }
+
   return NextResponse.json({ success: true });
 }
