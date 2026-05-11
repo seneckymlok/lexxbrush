@@ -82,7 +82,15 @@
     body::before {
       content: "";
       position: fixed;
-      inset: 0;
+      /* Lock to LARGE viewport height (max possible — address bar collapsed).
+         Using `inset: 0` would let the element resize when the mobile browser's
+         address bar shows/hides, causing `background-size: cover` to recompute
+         and the image to visibly "zoom". With `100lvh` the bg is always sized
+         for the largest viewport so it never resizes mid-scroll. */
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100lvh;
       z-index: -1;
       background-image:
         linear-gradient(rgba(5,5,5,0.75), rgba(5,5,5,0.75)),

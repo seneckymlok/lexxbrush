@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useCart, type CartItem } from "@/components/providers/CartProvider";
@@ -185,6 +186,7 @@ export function Header() {
   const { items, totalItems } = useCart();
   const { isFavorite } = useFavorites();
   const { user } = useAuth();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -193,6 +195,15 @@ export function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Auto-close the mobile menu on route change. The route-transition overlay
+  // intercepts link clicks in the capture phase and stops propagation, so the
+  // Link's own `onClick={closeMenu}` never fires. Watching pathname instead
+  // guarantees the menu always closes once navigation completes — no matter
+  // how the navigation was triggered.
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -211,7 +222,7 @@ export function Header() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled && !mobileMenuOpen
-            ? "bg-void/60 backdrop-blur-md border-b border-white/5"
+            ? "bg-void/80 backdrop-blur-lg border-b border-white/5"
             : "bg-transparent"
         }`}
       >
