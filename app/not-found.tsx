@@ -55,7 +55,8 @@ function SuitCard({
 }) {
   const [hovered, setHovered] = useState(false);
 
-  const linkProps = suit.external
+  const isExternal = "external" in suit && suit.external;
+  const linkProps = isExternal
     ? { target: "_blank", rel: "noopener noreferrer" }
     : {};
 
