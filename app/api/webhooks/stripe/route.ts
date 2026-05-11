@@ -33,24 +33,37 @@ function deliverySummary(deliveryType: string | null, data: any): OrderEmailDeli
 // ─── Webhook handler ─────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  console.log("[stripe-webhook] received POST", {
+    contentType: req.headers.get("content-type"),
+    hasSig: !!req.headers.get("stripe-signature"),
+  });
+
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
 
   if (!sig) {
+    console.error("[stripe-webhook] missing stripe-signature header");
     return NextResponse.json({ error: "No signature" }, { status: 400 });
+  }
+
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret || secret === "whsec_placeholder") {
+    console.error(
+      "[stripe-webhook] STRIPE_WEBHOOK_SECRET is missing or placeholder — webhook cannot verify. " +
+        "Set the real value from Stripe dashboard → Developers → Webhooks → your endpoint → Signing secret.",
+    );
+    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(body, sig, secret);
   } catch (err: any) {
-    console.error("Webhook signature verification failed:", err.message);
+    console.error("[stripe-webhook] signature verification failed:", err.message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
+
+  console.log("[stripe-webhook] verified event", { type: event.type, id: event.id });
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as any;
@@ -73,10 +86,17 @@ export async function POST(req: NextRequest) {
       // effects that need to be exercised end-to-end to validate the flow.
       const isTestMode = session.metadata?.test_mode === "true";
 
+      console.log("[stripe-webhook] processing checkout.session.completed", {
+        sessionId: session.id,
+        email: session.customer_details?.email,
+        amount: session.amount_total,
+        testMode: session.metadata?.test_mode === "true",
+      });
+
       // Create order in database with Packeta delivery info.
       // We still create the order row in test mode — that's how you verify
       // the pipeline works — but it's clearly tagged.
-      const { data: order } = await supabase.from("orders").insert({
+      const { data: order, error: insertError } = await supabase.from("orders").insert({
         stripe_session_id: session.id,
         user_id: session.metadata?.user_id || null,
         stripe_payment_intent: session.payment_intent,
@@ -87,6 +107,12 @@ export async function POST(req: NextRequest) {
         shipping_address: deliveryData || session.shipping_details?.address || null,
         delivery_type: deliveryType,
       }).select("id").single();
+
+      if (insertError) {
+        console.error("[stripe-webhook] orders insert FAILED:", insertError);
+      } else {
+        console.log("[stripe-webhook] order inserted", { orderId: order?.id });
+      }
 
       // Mark one-of-a-kind products as sold. Runs in test mode too —
       // the inventory lock is a real business effect we want to verify,
