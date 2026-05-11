@@ -67,10 +67,10 @@ export async function POST(req: NextRequest) {
       const customerPhone = session.metadata?.customer_phone || "";
 
       // Test-mode flag set by the checkout API when the admin test token
-      // matched. Suppresses side effects that cost real money or lock
-      // inventory: NO Packeta packet (it's billable on creation) and
-      // NO "mark one-of-a-kind as sold" (would lock a real product from
-      // future sale just because of a test purchase).
+      // matched. Suppresses ONLY the billable Packeta packet creation.
+      // The order row, the confirmation email, and the one-of-a-kind
+      // "mark as sold" inventory lock still fire — those are free side
+      // effects that need to be exercised end-to-end to validate the flow.
       const isTestMode = session.metadata?.test_mode === "true";
 
       // Create order in database with Packeta delivery info.
@@ -88,23 +88,21 @@ export async function POST(req: NextRequest) {
         delivery_type: deliveryType,
       }).select("id").single();
 
-      // Mark one-of-a-kind products as sold — REAL ORDERS ONLY.
-      // Skipping in test mode prevents a smoke test from making a real,
-      // available piece unbuyable.
-      if (!isTestMode) {
-        for (const id of productIds) {
-          const { data: product } = await supabase
-            .from("products")
-            .select("is_one_of_a_kind")
-            .eq("id", id)
-            .single();
+      // Mark one-of-a-kind products as sold. Runs in test mode too —
+      // the inventory lock is a real business effect we want to verify,
+      // and it costs nothing.
+      for (const id of productIds) {
+        const { data: product } = await supabase
+          .from("products")
+          .select("is_one_of_a_kind")
+          .eq("id", id)
+          .single();
 
-          if (product?.is_one_of_a_kind) {
-            await supabase
-              .from("products")
-              .update({ is_sold: true })
-              .eq("id", id);
-          }
+        if (product?.is_one_of_a_kind) {
+          await supabase
+            .from("products")
+            .update({ is_sold: true })
+            .eq("id", id);
         }
       }
 
