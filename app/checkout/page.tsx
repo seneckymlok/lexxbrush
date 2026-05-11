@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,7 +13,18 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { PACKETA_COUNTRIES } from "@/lib/packeta";
 import PacketaWidget from "@/components/checkout/PacketaWidget";
 
+// Default export is a thin Suspense wrapper. `useSearchParams` (used inside
+// CheckoutPageInner) requires a Suspense boundary above it during prerender
+// in Next.js 16 — without one, `next build` fails on this route.
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={null}>
+      <CheckoutPageInner />
+    </Suspense>
+  );
+}
+
+function CheckoutPageInner() {
   const { locale, t } = useLanguage();
   const { items, totalPrice } = useCart();
   const { user } = useAuth();
