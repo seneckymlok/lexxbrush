@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, DM_Sans, Instrument_Serif, Gluten } from "next/font/google";
+import { Syne, Inter } from "next/font/google";
 import "./globals.css";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 import { ScrollProvider } from "@/components/layout/ScrollProvider";
@@ -9,30 +9,16 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { BackgroundStars } from "@/components/ui/BackgroundStars";
 
-const bebasNeue = Bebas_Neue({
-  weight: "400",
+const syne = Syne({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-bebas",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-syne",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  weight: "400",
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-instrument",
-  display: "swap",
-});
-
-const gluten = Gluten({
-  weight: ["400", "700"],
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-gluten",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -124,7 +110,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`antialiased ${bebasNeue.variable} ${dmSans.variable} ${instrumentSerif.variable} ${gluten.variable}`}>
+    <html lang="en" className={`antialiased ${syne.variable} ${inter.variable}`}>
       <head>
         {/* Critical: hide animated elements before ANY content paints */}
         <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}` }} />

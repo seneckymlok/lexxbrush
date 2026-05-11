@@ -80,7 +80,7 @@ export default function AdminProductsPage() {
             <div key={product.id} className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-4 flex items-center gap-4 hover:bg-white/[0.03] transition-colors">
               <div className="w-14 h-14 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
                 {product.images?.[0] ? (
-                  <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
+                  <img src={product.images[0]} alt="" className="w-full h-full object-contain" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-white/10 text-xs">No img</div>
                 )}

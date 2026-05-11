@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -39,10 +39,22 @@ function FavoriteIcon({ active }: { active: boolean }) {
 export function ProductCard({ product, index }: ProductCardProps) {
   const { locale, t } = useLanguage();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
+
+  const cardRef      = useRef<HTMLDivElement>(null);
+  const imageWrapRef = useRef<HTMLDivElement>(null);
+  const infoRef      = useRef<HTMLDivElement>(null);
+  const rafRef       = useRef<number>(0);
+  const timeoutRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isFav = isFavorite(product.id);
+
+  // Cleanup on unmount — prevent RAF/timeout leaks
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleFavClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -50,27 +62,68 @@ export function ProductCard({ product, index }: ProductCardProps) {
     toggleFavorite(product.id);
   };
 
+  /**
+   * Parallax on mouse move.
+   *
+   * Image wrapper drifts OPPOSITE the cursor (max ±6x / ±4y px) — feels close,
+   * floating in front of the plane.
+   *
+   * Info block drifts WITH the cursor (max ±2x / ±1.5y px) — feels further back,
+   * reinforcing the illusion of depth between layers.
+   *
+   * RAF-batched so it never blocks paint or layout.
+   */
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const card = innerRef.current;
-    if (!card) return;
 
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    // Capture before RAF — React may recycle the synthetic event object
+    const clientX = e.clientX;
+    const clientY = e.clientY;
 
-    const rotateX = ((y - centerY) / centerY) * -3;
-    const rotateY = ((x - centerX) / centerX) * 3;
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (!cardRef.current || !imageWrapRef.current) return;
 
-    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      const rect = cardRef.current.getBoundingClientRect();
+      // Normalized offset from card center: -1 (left/top) → +1 (right/bottom)
+      const dx = (clientX - rect.left  - rect.width  / 2) / (rect.width  / 2);
+      const dy = (clientY - rect.top   - rect.height / 2) / (rect.height / 2);
+
+      imageWrapRef.current.style.transform =
+        `translate(${(-dx * 6).toFixed(2)}px, ${(-dy * 4).toFixed(2)}px)`;
+
+      if (infoRef.current) {
+        infoRef.current.style.transform =
+          `translate(${(dx * 2).toFixed(2)}px, ${(dy * 1.5).toFixed(2)}px)`;
+      }
+    });
   }, []);
 
+  /**
+   * Spring-back on mouse leave.
+   * Cubic-bezier(0.23, 1, 0.32, 1) = fast start, gradual ease-out ("elastic" feel).
+   * Inline transition is removed after animation completes so CSS takes back control.
+   */
   const handleMouseLeave = useCallback(() => {
-    const card = innerRef.current;
-    if (!card) return;
-    card.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)";
+    cancelAnimationFrame(rafRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    const spring = "transform 0.65s cubic-bezier(0.23, 1, 0.32, 1)";
+
+    if (imageWrapRef.current) {
+      imageWrapRef.current.style.transition = spring;
+      imageWrapRef.current.style.transform  = "translate(0, 0)";
+    }
+    if (infoRef.current) {
+      infoRef.current.style.transition = spring;
+      infoRef.current.style.transform  = "translate(0, 0)";
+    }
+
+    // Hand transition control back to CSS once spring completes
+    timeoutRef.current = setTimeout(() => {
+      if (imageWrapRef.current) imageWrapRef.current.style.transition = "";
+      if (infoRef.current)      infoRef.current.style.transition      = "";
+    }, 650);
   }, []);
 
   return (
@@ -78,28 +131,51 @@ export function ProductCard({ product, index }: ProductCardProps) {
       ref={cardRef}
       className="group card-perspective"
       style={{ animationDelay: `${index * 80}ms` }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       <Link href={`/product/${product.id}`} className="block">
-        {/* Image Container */}
-        <div
-          ref={innerRef}
-          className="relative aspect-square overflow-hidden rounded-lg bg-concrete-light card-glow card-3d isolate will-change-transform"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          <Image
-            src={product.images[0]}
-            alt={product.name[locale as Locale]}
-            fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-          />
 
-          {/* Dark overlay on hover */}
-          <div className="absolute inset-0 bg-void/0 group-hover:bg-void/20 transition-colors duration-500 pointer-events-none" />
+        {/* ── Cell — uniform square ── */}
+        <div className="relative aspect-square isolate">
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2 pointer-events-none">
+          {/* ── Ambient color halo ────────────────────────────────────────────
+              A scaled-up, heavily blurred duplicate of the product image
+              bleeds its actual color palette outward as atmospheric glow.
+              Invisible at rest, fades in on hover (700ms ease-out).
+              Decorative only — pointer-events disabled.                   */}
+          <div
+            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+            aria-hidden="true"
+          >
+            <Image
+              src={product.images[0]}
+              alt=""
+              fill
+              sizes="20vw"
+              className="object-contain scale-[1.55] blur-[38px] brightness-[0.62] saturate-[2.4]"
+            />
+          </div>
+
+          {/* ── Product image — parallax target ───────────────────────────────
+              Wrapped in its own div so the JS translate (parallax)
+              and the CSS translateY hover lift (product-float) live on
+              separate elements and compose naturally without conflict.    */}
+          <div
+            ref={imageWrapRef}
+            className="absolute inset-0 z-10 will-change-transform"
+          >
+            <Image
+              src={product.images[0]}
+              alt={product.name[locale as Locale]}
+              fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-contain product-float"
+            />
+          </div>
+
+          {/* ── Badges — anchored to cell, above halo + image ── */}
+          <div className="absolute top-2 left-2 md:top-3 md:left-3 flex flex-col gap-2 pointer-events-none z-20">
             {product.isOneOfAKind && (
               <span className="font-[family-name:var(--font-display)] text-[9px] md:text-xs tracking-[0.08em] md:tracking-[0.15em] uppercase text-[#EEFF00] drop-shadow-[0_0_6px_rgba(238,255,0,0.5)]">
                 {t("shop.oneOfAKind")}
@@ -112,36 +188,30 @@ export function ProductCard({ product, index }: ProductCardProps) {
             )}
           </div>
 
-          {/* Favorite button — spray tag */}
+          {/* ── Favorite — top-right, no chip, legibility shadow ── */}
           <button
             onClick={handleFavClick}
-            className={`absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 ${
+            className={`absolute top-2 right-2 md:top-3 md:right-3 z-20 w-9 h-9 flex items-center justify-center transition-all duration-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] ${
               isFav
-                ? "bg-void/40 backdrop-blur-sm text-suit-heart"
-                : "bg-void/20 backdrop-blur-sm text-white/50 opacity-0 group-hover:opacity-100 hover:text-white"
+                ? "text-suit-heart"
+                : "text-white/45 hover:text-white"
             }`}
             aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
           >
             <FavoriteIcon active={isFav} />
           </button>
-
-          {/* Quick view hint */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out pointer-events-none">
-            <span className="btn-brand inline-block px-4 py-2 text-xs font-medium rounded-full">
-              {t("shop.viewDetails")}
-            </span>
-          </div>
         </div>
 
-        {/* Info */}
-        <div className="mt-4 px-1">
-          <h3 className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-wide uppercase text-chrome-bright">
+        {/* ── Info — counter-parallax: drifts with cursor (further plane) ── */}
+        <div ref={infoRef} className="mt-4 px-1 will-change-transform">
+          <h3 className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-wide uppercase product-name-shimmer">
             {product.name[locale as Locale]}
           </h3>
           <p className="mt-1 font-[family-name:var(--font-body)] text-sm text-chrome">
             &euro;{product.price}
           </p>
         </div>
+
       </Link>
     </div>
   );

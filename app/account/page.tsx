@@ -231,13 +231,13 @@ export default function AccountPage() {
                       <div className="space-y-4">
                         {items?.map((item: any, idx: number) => (
                           <div key={idx} className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-white/[0.03] overflow-hidden relative flex-shrink-0">
+                            <div className="w-14 h-14 bg-white/[0.03] border border-white/5 rounded-lg overflow-hidden relative flex-shrink-0">
                               {item.product.images?.[0] ? (
                                 <Image
                                   src={item.product.images[0]}
                                   alt={item.product.name?.en || "Product"}
                                   fill
-                                  className="object-cover"
+                                  className="object-contain"
                                 />
                               ) : (
                                 <div className="w-full h-full bg-white/5" />
