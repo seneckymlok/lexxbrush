@@ -102,9 +102,19 @@
     }
   }
 
+  /* Belt-and-suspenders horizontal-scroll prevention.
+     Some mobile browsers (notably Chrome on Android) only honor `overflow-x: hidden`
+     reliably when it's on the root `<html>` element. Setting it on both kills any
+     stray horizontal scroll from scaled halos, blurred bleed-outs, or transforms
+     that would otherwise let the page swipe sideways and expose a black gutter. */
+  html, body {
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+    max-width: 100vw;
+  }
+
   body {
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
   html.lenis, html.lenis body {
