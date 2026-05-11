@@ -108,12 +108,11 @@ export default function AccountPage() {
         </div>
 
         {favorites.length === 0 ? (
-          <div className="border border-white/[0.06] py-16 text-center">
-            {/* Empty state star */}
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" className="mx-auto mb-4 text-white/10">
-              <path d="M12 2 L13.5 8.5 L20 7 L15 12 L20 17 L13.5 15.5 L12 22 L10.5 15.5 L4 17 L9 12 L4 7 L10.5 8.5 Z" />
-            </svg>
-            <p className="text-white/25 text-sm mb-6">{t("auth.noFavorites")}</p>
+          <div className="border border-white/[0.06] py-16 text-center flex flex-col items-center">
+            <div className="relative w-20 h-20 mb-5 drop-shadow-[0_0_16px_rgba(136,0,204,0.5)] opacity-50">
+              <Image src="/suits/heart.webp" alt="" fill className="object-contain" sizes="80px" />
+            </div>
+            <p className="text-white/25 text-sm mb-6 font-[family-name:var(--font-display)] tracking-[0.15em] uppercase">{t("auth.noFavorites")}</p>
             <button
               onClick={() => router.push("/")}
               className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white border-b border-white/20 hover:border-white/50 pb-px transition-all duration-300 font-[family-name:var(--font-display)] tracking-[0.1em] uppercase"

@@ -212,7 +212,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   } as React.CSSProperties;
 
   return (
-    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16" style={accentStyle}>
+    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 overflow-x-hidden" style={accentStyle}>
 
       {/* Back button */}
       <button
@@ -230,11 +230,11 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
 
         {/* ── Image column ── */}
-        <div>
+        <div className="-mx-6 lg:mx-0">
           {/* Main image cell — mousemove area for parallax, click for lightbox */}
           <div
             ref={imageRef}
-            className="aspect-square relative cursor-zoom-in group"
+            className="aspect-[4/5] lg:aspect-square relative cursor-zoom-in group"
             onClick={() => setIsLightboxOpen(true)}
             onMouseMove={handleImageMouseMove}
             onMouseLeave={handleImageMouseLeave}
@@ -286,26 +286,18 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                 e.stopPropagation();
                 if (product) toggleFavorite(product.id);
               }}
-              className={`absolute top-4 right-4 z-20 w-12 h-12 flex items-center justify-center transition-all duration-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] ${
-                isFav ? "text-suit-heart" : "text-white/50 hover:text-white"
-              }`}
+              className="absolute top-4 right-4 z-20 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110"
               aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                className={`transition-all duration-300 ${isFav ? "scale-110" : "scale-100"}`}
-              >
-                <path
-                  d="M12 21 C12 21 3 14 3 8.5 C3 5.4 5.4 3 8.5 3 C10.2 3 11.6 3.8 12 5 C12.4 3.8 13.8 3 15.5 3 C18.6 3 21 5.4 21 8.5 C21 14 12 21 12 21Z"
-                  fill={isFav ? "var(--color-suit-heart)" : "none"}
-                  stroke={isFav ? "var(--color-suit-heart)" : "currentColor"}
-                  strokeWidth={isFav ? "0" : "1.5"}
-                  strokeLinejoin="round"
-                  className="transition-all duration-300"
+              <div className={`relative w-10 h-10 transition-all duration-400 ${isFav ? "scale-110" : "scale-100"}`}>
+                <Image
+                  src={isFav ? "/suits/heart.webp" : "/suits/heart-unfilled.webp"}
+                  alt=""
+                  fill
+                  className={`object-contain transition-all duration-400 ${isFav ? "drop-shadow-[0_0_14px_rgba(136,0,204,0.9)]" : ""}`}
+                  sizes="40px"
                 />
-              </svg>
+              </div>
             </button>
 
             {/* Prev / next arrows — only when multiple images */}
@@ -345,7 +337,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
           {/* Thumbnail strip */}
           {hasMultipleImages && (
-            <div className="flex gap-2 mt-3" role="tablist" aria-label="Product images">
+            <div className="flex gap-2 mt-3 px-6 lg:px-0" role="tablist" aria-label="Product images">
               {product.images.map((img, i) => (
                 <button
                   key={i}
@@ -373,55 +365,69 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         </div>
 
         {/* ── Info column ── */}
-        <div ref={infoRef} className="flex flex-col justify-center py-4">
+        <div ref={infoRef} className="flex flex-col items-center lg:items-start text-center lg:text-left pt-2 pb-8 lg:py-4">
 
-          {/* Badges — match grid card visual language */}
-          <div className="flex gap-3 mb-5">
-            {product.isOneOfAKind && (
-              <span className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.15em] uppercase text-[#EEFF00] drop-shadow-[0_0_6px_rgba(238,255,0,0.5)]">
-                {t("product.oneOfAKind")}
-              </span>
-            )}
-            {product.isSold && (
-              <span className="badge-sold inline-block px-3 py-1 text-[10px] font-bold rounded-full">
-                {t("product.sold")}
-              </span>
-            )}
-          </div>
+          {/* Badge row — diamond = ONE OF ONE · spade = SOLD */}
+          {(product.isOneOfAKind || product.isSold) && (
+            <div className="flex items-center gap-3 mb-5">
+              {product.isOneOfAKind && (
+                <div
+                  className="relative w-12 h-12 drop-shadow-[0_0_10px_rgba(0,220,255,0.7)] flex-shrink-0"
+                  aria-label={t("product.oneOfAKind")}
+                >
+                  <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="48px" />
+                </div>
+              )}
+              {product.isSold && (
+                <div
+                  className="relative w-12 h-12 drop-shadow-[0_0_10px_rgba(30,80,255,0.7)] flex-shrink-0"
+                  aria-label={t("product.sold")}
+                >
+                  <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="48px" />
+                </div>
+              )}
+            </div>
+          )}
 
-          {/* Title — chrome shimmer plays on load + mouseenter.
-              cursor-default prevents the text cursor from showing on hover
-              (the mouseenter listener is on the element itself).           */}
+          {/* Title — clamp keeps it from overflowing on any phone width */}
           <h1
             ref={titleRef}
-            className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-extrabold tracking-tight uppercase product-title-shimmer cursor-default"
+            className="font-[family-name:var(--font-display)] text-[clamp(1rem,7vw,3.5rem)] lg:text-4xl font-extrabold tracking-tight uppercase product-title-shimmer cursor-default leading-[0.92] mb-5 w-full break-words"
           >
             {product.name[locale as Locale]}
           </h1>
 
-          <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold text-white">
-            &euro;{product.price}
-          </p>
+          {/* Price — split for typographic weight contrast */}
+          <div className="flex items-baseline gap-0.5 mb-7">
+            <span className="font-[family-name:var(--font-display)] text-xl font-bold text-white/60">
+              &euro;
+            </span>
+            <span className="font-[family-name:var(--font-display)] text-[clamp(2rem,7vw,2.75rem)] font-extrabold text-white leading-none">
+              {product.price}
+            </span>
+          </div>
 
+          {/* Full-width accent divider */}
           <div
-            className="w-10 h-[1px] my-6"
+            className="w-full h-px mb-7"
             style={{
               background:
-                "linear-gradient(to right, transparent, rgba(var(--product-accent-rgb), 0.55), transparent)",
+                "linear-gradient(to right, transparent, rgba(var(--product-accent-rgb), 0.6), transparent)",
             }}
           />
 
-          <p className="text-chrome-light leading-relaxed max-w-lg">
+          {/* Description */}
+          <p className="font-[family-name:var(--font-body)] text-sm text-chrome-light leading-relaxed mb-8 max-w-[30ch] lg:max-w-lg">
             {product.description[locale as Locale]}
           </p>
 
-          {/* Size selector */}
+          {/* Size selector — div/p instead of fieldset/legend (legend ignores text-center) */}
           {product.sizes && (
-            <fieldset className="mt-8">
-              <legend className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-3">
+            <div className="w-full mb-8" role="group" aria-label="Select size">
+              <p className="font-[family-name:var(--font-display)] text-[10px] font-bold tracking-[0.25em] uppercase text-chrome mb-3">
                 {t("product.size")}
-              </legend>
-              <div className="flex gap-2" role="radiogroup" aria-label="Select size">
+              </p>
+              <div className="flex gap-2.5 justify-center lg:justify-start flex-wrap">
                 {product.sizes.map((size) => {
                   const active = selectedSize === size;
                   return (
@@ -431,7 +437,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                       role="radio"
                       aria-checked={active}
                       aria-label={`Size ${size}`}
-                      className={`w-12 h-12 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-medium rounded-lg border transition-all duration-300 ${
+                      className={`w-14 h-14 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-semibold rounded-xl border transition-all duration-300 ${
                         active
                           ? "text-white"
                           : "bg-transparent text-chrome-dim border-white/10 hover:border-white/25 hover:text-chrome"
@@ -441,7 +447,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                           ? {
                               background: "rgba(var(--product-accent-rgb), 0.14)",
                               borderColor: "rgba(var(--product-accent-rgb), 0.55)",
-                              boxShadow: "0 0 18px rgba(var(--product-accent-rgb), 0.28)",
+                              boxShadow: "0 0 22px rgba(var(--product-accent-rgb), 0.32)",
                             }
                           : undefined
                       }
@@ -451,20 +457,20 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   );
                 })}
               </div>
-            </fieldset>
+            </div>
           )}
 
-          {/* Add to cart */}
+          {/* Add to cart — full width on mobile */}
           <MagneticButton>
             <button
               onClick={handleAddToCart}
               disabled={product.isSold}
               aria-label={product.isSold ? "Sold out" : `Add ${product.name[locale as Locale]} to cart`}
-              className={`mt-8 self-start inline-flex items-center justify-center min-w-[220px] px-10 py-4 text-sm font-bold rounded-full transition-all duration-400 ${
+              className={`w-full lg:w-auto inline-flex items-center justify-center px-10 py-[1.05rem] text-sm font-bold rounded-full transition-all duration-400 font-[family-name:var(--font-display)] tracking-[0.18em] uppercase ${
                 product.isSold
-                  ? "bg-concrete-light text-text-dim cursor-not-allowed font-[family-name:var(--font-display)] tracking-[0.15em] uppercase"
+                  ? "bg-concrete-light text-text-dim cursor-not-allowed"
                   : added
-                    ? "bg-sage text-void font-[family-name:var(--font-display)] tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(138,171,158,0.3)]"
+                    ? "bg-sage text-void shadow-[0_0_24px_rgba(138,171,158,0.35)]"
                     : "btn-accent"
               }`}
             >
@@ -473,17 +479,17 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           </MagneticButton>
 
           {/* Editorial strip */}
-          <div className="mt-10 pt-6 border-t border-white/5">
-            <div className="flex flex-wrap items-center justify-start gap-x-4 gap-y-2">
-              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">
+          <div className="mt-8 pt-6 border-t border-white/5 w-full">
+            <div className="flex items-center justify-center lg:justify-start gap-3 flex-nowrap">
+              <span className="text-[9px] font-[family-name:var(--font-display)] tracking-[0.22em] uppercase text-white/30 whitespace-nowrap">
                 {t("product.handPainted")}
               </span>
-              <span className="w-[1px] h-3 bg-white/10" aria-hidden="true" />
-              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">
+              <span className="w-px h-3 bg-white/10 flex-shrink-0" aria-hidden="true" />
+              <span className="text-[9px] font-[family-name:var(--font-display)] tracking-[0.22em] uppercase text-white/30 whitespace-nowrap">
                 {t("product.unique")}
               </span>
-              <span className="w-[1px] h-3 bg-white/10" aria-hidden="true" />
-              <span className="text-xs font-[family-name:var(--font-display)] tracking-[0.2em] uppercase text-chrome-light">
+              <span className="w-px h-3 bg-white/10 flex-shrink-0" aria-hidden="true" />
+              <span className="text-[9px] font-[family-name:var(--font-display)] tracking-[0.22em] uppercase text-white/30 whitespace-nowrap">
                 {t("product.madeByHand")}
               </span>
             </div>

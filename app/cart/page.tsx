@@ -38,8 +38,13 @@ export default function CartPage() {
         <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-12" />
 
         {items.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-chrome text-lg mb-6">{t("cart.empty")}</p>
+          <div className="text-center py-20 flex flex-col items-center">
+            <div className="relative w-24 h-24 mb-6 drop-shadow-[0_0_20px_rgba(30,80,255,0.5)] opacity-60">
+              <Image src="/suits/spade.webp" alt="" fill className="object-contain" sizes="96px" />
+            </div>
+            <p className="text-white/30 text-sm font-[family-name:var(--font-display)] tracking-[0.15em] uppercase mb-8">
+              {t("cart.empty")}
+            </p>
             <Link
               href="/"
               className="btn-outline inline-block px-8 py-3 text-sm font-bold rounded-full"
@@ -116,3 +121,4 @@ export default function CartPage() {
     </div>
   );
 }
+

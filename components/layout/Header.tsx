@@ -5,29 +5,140 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { useCart } from "@/components/providers/CartProvider";
+import { useCart, type CartItem } from "@/components/providers/CartProvider";
+import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import type { Product } from "@/lib/products";
 
-/** Shopping bag with a subtle paint drip — recognizable but branded */
-function BagIcon({ size = 20 }: { size?: number }) {
+// ─── Cart Hand ────────────────────────────────────────────────────────────────
+
+type SuitKey = "diamond" | "heart" | "club" | "spade";
+
+const SUIT_SRC: Record<SuitKey, string> = {
+  diamond: "/suits/diamond.webp",
+  heart:   "/suits/heart.webp",
+  club:    "/suits/club.webp",
+  spade:   "/suits/spade.webp",
+};
+
+/** Coloured drop-shadow for each suit */
+const SUIT_GLOW: Record<SuitKey, string> = {
+  diamond: "drop-shadow(0 0 5px rgba(0,220,255,0.85))",
+  heart:   "drop-shadow(0 0 5px rgba(136,0,204,0.85))",
+  club:    "drop-shadow(0 0 5px rgba(210,210,0,0.8))",
+  spade:   "drop-shadow(0 0 5px rgba(30,80,255,0.85))",
+};
+
+/** Pre-calculated fan positions — { x offset px, rotation deg } — per slot */
+const FAN_POS: Record<number, Array<{ x: number; rot: number }>> = {
+  1: [{ x:   0, rot:   0 }],
+  2: [{ x:  -8, rot: -16 }, { x:  8, rot:  16 }],
+  3: [{ x: -13, rot: -20 }, { x: 0, rot:   0 }, { x: 13, rot:  20 }],
+  4: [{ x: -18, rot: -24 }, { x: -6, rot: -8 }, { x: 6, rot:   8 }, { x: 18, rot:  24 }],
+};
+
+const SUIT_PRIORITY: SuitKey[] = ["diamond", "heart", "club", "spade"];
+
+function getSuit(product: Product, isFav: boolean): SuitKey {
+  if (product.isOneOfAKind) return "diamond";
+  if (isFav)                return "heart";
+  if (product.isSold)       return "spade";
+  return "club";
+}
+
+/**
+ * Derives which suits to render for the current cart:
+ * - 0 items  → ghost deck (all 4 at low opacity)
+ * - 1–3      → actual product suits, deduplicated, filled to match count
+ * - 4+       → full hand (all 4 suits, regardless of products)
+ */
+function resolveHand(
+  items: CartItem[],
+  isFavorite: (id: string) => boolean,
+): { suits: SuitKey[]; ghost: boolean } {
+  if (items.length === 0) {
+    return { suits: [...SUIT_PRIORITY], ghost: true };
+  }
+  if (items.length >= 4) {
+    return { suits: [...SUIT_PRIORITY], ghost: false };
+  }
+
+  const seen = new Set<SuitKey>();
+  const suits: SuitKey[] = [];
+
+  for (const item of items) {
+    const s = getSuit(item.product, isFavorite(item.product.id));
+    if (!seen.has(s)) { seen.add(s); suits.push(s); }
+  }
+  // Fill to items.length with any unseen suit (maintains visual card count)
+  for (const s of SUIT_PRIORITY) {
+    if (suits.length >= items.length) break;
+    if (!seen.has(s)) { seen.add(s); suits.push(s); }
+  }
+
+  return { suits, ghost: false };
+}
+
+function CartHand({
+  items,
+  isFavorite,
+  size = 20,
+}: {
+  items: CartItem[];
+  isFavorite: (id: string) => boolean;
+  size?: number;
+}) {
+  const { suits, ghost } = resolveHand(items, isFavorite);
+  const N     = suits.length;
+  const fan   = FAN_POS[Math.min(N, 4)];
+  // Container wide enough for the widest spread (4 cards × 18px offset + card width)
+  const W     = size + 36;
+  const H     = size + 4;
+
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <div
+      className="relative flex-shrink-0"
+      style={{ width: W, height: H }}
+      aria-hidden="true"
     >
-      {/* Bag body — soft trapezoid shape */}
-      <path d="M5 7h14l-1.5 13a1 1 0 01-1 .9H7.5a1 1 0 01-1-.9L5 7z" />
-      {/* Handles */}
-      <path d="M9 7V5a3 3 0 016 0v2" />
-      {/* Paint drip off bottom-right corner */}
-      <path d="M15.5 20.9c0 .6.3 1.4.7 1.8" strokeWidth="1.3" />
-    </svg>
+      {suits.map((suit, i) => {
+        const { x, rot } = fan[i] ?? { x: 0, rot: 0 };
+        return (
+          <div
+            key={`${suit}-${i}`}
+            className="absolute"
+            style={{
+              width:           size,
+              height:          size,
+              left:            "50%",
+              bottom:          0,
+              marginLeft:      -(size / 2),
+              transform:       `translateX(${x}px) rotate(${rot}deg)`,
+              transformOrigin: "bottom center",
+              zIndex:          i + 1,
+              opacity:         ghost ? 0.55 : 1,
+              filter:          ghost
+                ? "grayscale(0.5) brightness(1.15) drop-shadow(0 0 4px rgba(255,255,255,0.35))"
+                : SUIT_GLOW[suit],
+              transition:           "all 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+              animationName:        ghost ? "cart-ghost-breathe" : "none",
+              animationDuration:    ghost ? "3.2s" : "0s",
+              animationTimingFunction: "ease-in-out",
+              animationIterationCount: ghost ? "infinite" : 1,
+              animationDelay:       ghost ? `${i * 200}ms` : "0ms",
+            }}
+          >
+            <Image
+              src={SUIT_SRC[suit]}
+              alt=""
+              fill
+              className="object-contain"
+              sizes={`${size}px`}
+            />
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -71,7 +182,8 @@ const NAV_LINKS = [
 
 export function Header() {
   const { t } = useLanguage();
-  const { totalItems } = useCart();
+  const { items, totalItems } = useCart();
+  const { isFavorite } = useFavorites();
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -99,7 +211,7 @@ export function Header() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled && !mobileMenuOpen
-            ? "bg-void/95 backdrop-blur-md border-b border-white/5"
+            ? "bg-void/60 backdrop-blur-md border-b border-white/5"
             : "bg-transparent"
         }`}
       >
@@ -150,19 +262,13 @@ export function Header() {
               <UserIcon />
             </Link>
 
-            {/* Cart */}
+            {/* Cart — hand of cards */}
             <Link
               href="/cart"
-              className="flex items-center justify-center w-9 h-9 text-chrome-light hover:text-sage transition-colors duration-200"
+              className="flex items-center justify-center h-9 transition-opacity duration-200 hover:opacity-75"
+              aria-label={`Cart · ${totalItems} item${totalItems !== 1 ? "s" : ""}`}
             >
-              <span className="relative">
-                <BagIcon />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 text-[11px] font-extrabold text-[#8800CC] drop-shadow-[0_0_5px_rgba(136,0,204,0.7)] leading-none">
-                    {totalItems}
-                  </span>
-                )}
-              </span>
+              <CartHand items={items} isFavorite={isFavorite} size={20} />
             </Link>
           </div>
 
@@ -172,13 +278,14 @@ export function Header() {
               <UserIcon size={18} />
             </Link>
             
-            <Link href="/cart" className="relative text-chrome-light" onClick={closeMenu}>
-              <BagIcon size={18} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 text-[11px] font-extrabold text-[#8800CC] drop-shadow-[0_0_5px_rgba(136,0,204,0.7)] leading-none">
-                  {totalItems}
-                </span>
-              )}
+            {/* Cart — hand of cards (mobile) */}
+            <Link
+              href="/cart"
+              className="flex items-center justify-center transition-opacity duration-200 hover:opacity-75"
+              onClick={closeMenu}
+              aria-label={`Cart · ${totalItems} item${totalItems !== 1 ? "s" : ""}`}
+            >
+              <CartHand items={items} isFavorite={isFavorite} size={18} />
             </Link>
 
             <button
@@ -243,7 +350,7 @@ export function Header() {
         </div>
 
         {/* Dynamic Content Container */}
-        <div className="relative h-full flex flex-col justify-between px-6 md:px-12 pt-28 pb-10">
+        <div className="relative h-full flex flex-col justify-between px-6 md:px-12 pt-28 pb-10 overflow-hidden">
 
           {/* Master Navigation Links */}
           <nav className="flex flex-col flex-1 justify-center gap-2 md:gap-4 my-8 md:mt-16">
@@ -252,7 +359,7 @@ export function Header() {
                 <Link
                   href={link.href}
                   onClick={closeMenu}
-                  className={`group flex items-start gap-4 md:gap-6 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  className={`group flex items-start gap-4 md:gap-6 min-w-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                     mobileMenuOpen
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-full"
@@ -267,13 +374,13 @@ export function Header() {
                   </span>
 
                   {/* High-impact Typographic Link matching Collection Title */}
-                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2.5rem,11.5vw,5.5rem)] leading-[0.95] font-extrabold tracking-normal uppercase chrome-text transition-colors duration-500 group-hover:text-sage pb-2 pt-3 pr-4 break-words">
+                  <span className="relative font-[family-name:var(--font-display)] text-[clamp(2rem,9vw,5.5rem)] leading-[0.95] font-extrabold tracking-normal uppercase chrome-text transition-colors duration-500 group-hover:text-sage pb-2 pt-3 min-w-0 block overflow-visible">
                     {t(link.key)}
-                    
-                    {/* Floating Cart Indicator */}
-                    {link.href === "/cart" && totalItems > 0 && (
-                      <span className="absolute -top-1 -right-3 md:-right-6 text-plum text-sm md:text-lg font-bold font-sans">
-                        •
+
+                    {/* Cart hand floats beside the CART label */}
+                    {link.href === "/cart" && (
+                      <span className="absolute -right-14 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <CartHand items={items} isFavorite={isFavorite} size={16} />
                       </span>
                     )}
                   </span>

@@ -110,10 +110,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`antialiased ${syne.variable} ${inter.variable}`}>
+    <html lang="en" className={`antialiased ${syne.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         {/* Critical: hide animated elements before ANY content paints */}
-        <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}` }} />
+        <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}html.intro-pending body{visibility:hidden}html.intro-pending [data-intro]{visibility:visible}` }} />
+        {/* Synchronously decide whether the intro is about to play.
+            If yes, mark <html> so the body is invisible until the Intro overlay paints.
+            Runs before body parses — no flash of homepage content. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(location.pathname==='/'&&!sessionStorage.getItem('lexxbrush:intro-seen')){document.documentElement.classList.add('intro-pending')}}catch(e){}})();`,
+          }}
+        />
         <link rel="preconnect" href="https://nfvocdkvtaittmvbmaoq.supabase.co" crossOrigin="anonymous" />
         {/* JSON-LD Organization structured data */}
         <script

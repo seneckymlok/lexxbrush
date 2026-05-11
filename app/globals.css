@@ -72,10 +72,25 @@
 
   @media (max-width: 767px) {
     html {
+      /* Remove the html-level background image on mobile —
+         we render it via a fixed pseudo-element below so it
+         always matches the viewport regardless of page height
+         (iOS Safari ignores background-attachment: fixed). */
+      background-image: none;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
       background-image:
         linear-gradient(rgba(5,5,5,0.75), rgba(5,5,5,0.75)),
         url('/mobile-bg.jpg');
-      background-attachment: scroll;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      pointer-events: none;
     }
   }
 
@@ -101,15 +116,26 @@
     color: var(--color-white);
   }
 
-  /* Prevent Chrome autofill blue background */
+  /* Override browser autofill background — the only reliable method is
+     an inset box-shadow that paints over the UA-injected background color.
+     background-color itself is ignored by browsers for autofilled fields. */
   input:-webkit-autofill,
-  input:-webkit-autofill:hover, 
-  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
   textarea:-webkit-autofill,
   textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus {
+  textarea:-webkit-autofill:focus,
+  textarea:-webkit-autofill:active,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus,
+  select:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgba(15, 15, 20, 0.95) inset !important;
+    box-shadow: 0 0 0 1000px rgba(15, 15, 20, 0.95) inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff;
     transition: background-color 5000s ease-in-out 0s;
-    -webkit-text-fill-color: var(--color-white) !important;
   }
 
   ::-webkit-scrollbar {
@@ -127,6 +153,17 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-highlight);
+  }
+}
+
+@keyframes cart-ghost-breathe {
+  0%, 100% {
+    opacity: 0.45;
+    filter: grayscale(0.55) brightness(1.05) drop-shadow(0 0 3px rgba(255, 255, 255, 0.25));
+  }
+  50% {
+    opacity: 0.7;
+    filter: grayscale(0.3) brightness(1.25) drop-shadow(0 0 8px rgba(255, 255, 255, 0.45));
   }
 }
 

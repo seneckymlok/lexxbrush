@@ -61,29 +61,52 @@ export function Footer() {
               </Link>
             </div>
 
-            {/* Social */}
+            {/* Social — club = community */}
             <a
               href="https://www.instagram.com/lexxbrush"
               target="_blank"
               rel="noopener noreferrer"
-              className="ig-hover inline-flex items-center gap-2 text-xs font-[family-name:var(--font-display)] tracking-[0.15em] uppercase text-text-dim transition-colors duration-300 group"
+              className="group inline-flex items-center gap-3 transition-all duration-300"
+              aria-label="Follow Lexxbrush on Instagram"
             >
+              {/* Club symbol */}
+              <div
+                className="relative w-9 h-9 flex-shrink-0 transition-all duration-400 group-hover:scale-110 drop-shadow-[0_0_6px_rgba(210,210,0,0.35)] group-hover:drop-shadow-[0_0_14px_rgba(210,210,0,0.8)]"
+              >
+                <Image
+                  src="/suits/club.webp"
+                  alt=""
+                  fill
+                  className="object-contain"
+                  sizes="36px"
+                />
+              </div>
+
+              {/* Text stack */}
+              <div className="flex flex-col items-start gap-0.5">
+                <span className="font-[family-name:var(--font-display)] text-[9px] tracking-[0.28em] uppercase text-white/30 group-hover:text-white/60 transition-colors duration-300">
+                  Join the Club
+                </span>
+                <span className="font-[family-name:var(--font-display)] text-xs tracking-[0.15em] uppercase text-white/70 group-hover:text-white transition-colors duration-300">
+                  @lexxbrush
+                </span>
+              </div>
+
+              {/* Arrow */}
               <svg
-                width="16"
-                height="16"
+                width="12"
+                height="12"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="transition-all duration-300"
+                className="text-white/20 group-hover:text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ml-0.5 flex-shrink-0"
               >
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                <line x1="7" y1="17" x2="17" y2="7" />
+                <polyline points="7 7 17 7 17 17" />
               </svg>
-              {t("footer.instagram")}
             </a>
           </div>
         </div>
