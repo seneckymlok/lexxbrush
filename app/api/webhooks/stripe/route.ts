@@ -66,7 +66,16 @@ export async function POST(req: NextRequest) {
       const customerName = session.metadata?.customer_name || "";
       const customerPhone = session.metadata?.customer_phone || "";
 
-      // Create order in database with Packeta delivery info
+      // Test-mode flag set by the checkout API when the admin test token
+      // matched. Suppresses side effects that cost real money or lock
+      // inventory: NO Packeta packet (it's billable on creation) and
+      // NO "mark one-of-a-kind as sold" (would lock a real product from
+      // future sale just because of a test purchase).
+      const isTestMode = session.metadata?.test_mode === "true";
+
+      // Create order in database with Packeta delivery info.
+      // We still create the order row in test mode — that's how you verify
+      // the pipeline works — but it's clearly tagged.
       const { data: order } = await supabase.from("orders").insert({
         stripe_session_id: session.id,
         user_id: session.metadata?.user_id || null,
@@ -74,24 +83,28 @@ export async function POST(req: NextRequest) {
         customer_email: session.customer_details?.email,
         items,
         total: session.amount_total,
-        status: "paid",
+        status: isTestMode ? "test" : "paid",
         shipping_address: deliveryData || session.shipping_details?.address || null,
         delivery_type: deliveryType,
       }).select("id").single();
 
-      // Mark one-of-a-kind products as sold
-      for (const id of productIds) {
-        const { data: product } = await supabase
-          .from("products")
-          .select("is_one_of_a_kind")
-          .eq("id", id)
-          .single();
-
-        if (product?.is_one_of_a_kind) {
-          await supabase
+      // Mark one-of-a-kind products as sold — REAL ORDERS ONLY.
+      // Skipping in test mode prevents a smoke test from making a real,
+      // available piece unbuyable.
+      if (!isTestMode) {
+        for (const id of productIds) {
+          const { data: product } = await supabase
             .from("products")
-            .update({ is_sold: true })
-            .eq("id", id);
+            .select("is_one_of_a_kind")
+            .eq("id", id)
+            .single();
+
+          if (product?.is_one_of_a_kind) {
+            await supabase
+              .from("products")
+              .update({ is_sold: true })
+              .eq("id", id);
+          }
         }
       }
 
@@ -142,8 +155,12 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Auto-create Packeta packet after payment
-      if (deliveryData && order?.id) {
+      // Auto-create Packeta packet after payment — REAL ORDERS ONLY.
+      // Packeta bills per-packet at creation time via API, so we MUST NOT
+      // hit createPacket on test orders. The admin can still manually
+      // trigger packet creation from the orders page if a test order
+      // somehow needs to become real.
+      if (!isTestMode && deliveryData && order?.id) {
         try {
           const [firstName, ...lastParts] = customerName.split(" ");
           const surname = lastParts.join(" ") || firstName;
