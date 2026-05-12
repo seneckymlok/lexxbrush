@@ -212,7 +212,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   } as React.CSSProperties;
 
   return (
-    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 overflow-x-hidden" style={accentStyle}>
+    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 overflow-x-hidden w-full lg:flex-1 lg:flex lg:flex-col lg:min-h-0" style={accentStyle}>
 
       {/* Back button */}
       <button
@@ -227,14 +227,14 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         {t("product.backToShop")}
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
 
         {/* ── Image column ── */}
         <div className="-mx-6 lg:mx-0">
           {/* Main image cell — mousemove area for parallax, click for lightbox */}
           <div
             ref={imageRef}
-            className="aspect-[4/5] lg:aspect-square relative cursor-zoom-in group"
+            className="aspect-[4/5] lg:aspect-auto lg:h-full relative cursor-zoom-in group"
             onClick={() => setIsLightboxOpen(true)}
             onMouseMove={handleImageMouseMove}
             onMouseLeave={handleImageMouseLeave}
@@ -437,7 +437,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                       role="radio"
                       aria-checked={active}
                       aria-label={`Size ${size}`}
-                      className={`w-14 h-14 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-semibold rounded-xl border transition-all duration-300 ${
+                      className={`min-w-14 h-14 px-3 flex items-center justify-center text-sm font-[family-name:var(--font-display)] font-semibold rounded-xl border transition-all duration-300 whitespace-nowrap ${
                         active
                           ? "text-white"
                           : "bg-transparent text-chrome-dim border-white/10 hover:border-white/25 hover:text-chrome"

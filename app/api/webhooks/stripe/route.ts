@@ -93,6 +93,26 @@ export async function POST(req: NextRequest) {
         testMode: session.metadata?.test_mode === "true",
       });
 
+      // Fetch full product data before inserting so we can store enriched items.
+      const { data: productRows } = await supabase
+        .from("products")
+        .select("id, name_en, images, price")
+        .in("id", productIds);
+
+      // Build enriched items — flat format readable by both account page and admin.
+      const enrichedItems = items.map((item: any, i: number) => {
+        const fullId  = productIds[i];
+        const product = productRows?.find((p: any) => p.id === fullId);
+        return {
+          productId: fullId,
+          name:      product?.name_en || item.n || "Product",
+          price:     product?.price   ?? 0,
+          quantity:  item.q  ?? item.quantity ?? 1,
+          size:      item.s  || item.size     || null,
+          images:    product?.images || [],
+        };
+      });
+
       // Create order in database with Packeta delivery info.
       // We still create the order row in test mode — that's how you verify
       // the pipeline works — but it's clearly tagged.
@@ -101,7 +121,7 @@ export async function POST(req: NextRequest) {
         user_id: session.metadata?.user_id || null,
         stripe_payment_intent: session.payment_intent,
         customer_email: session.customer_details?.email,
-        items,
+        items: enrichedItems,
         total: session.amount_total,
         status: isTestMode ? "test" : "paid",
         shipping_address: deliveryData || session.shipping_details?.address || null,
@@ -138,28 +158,17 @@ export async function POST(req: NextRequest) {
       // metadata if a product can't be looked up.
       if (order?.id && session.customer_details?.email) {
         try {
-          const { data: productRows } = await supabase
-            .from("products")
-            .select("id, name_en, images, price")
-            .in("id", productIds);
-
           const subtotalCents = (session.amount_total ?? 0) - (session.total_details?.amount_shipping ?? 0);
           const shippingCents = session.total_details?.amount_shipping ?? 0;
           const totalCents    = session.amount_total ?? 0;
 
-          // Stripe sends short product-id prefixes in metadata.items; map them
-          // back to the full product row via productIds (same order).
-          const emailItems: OrderEmailItem[] = items.map((it: any, i: number) => {
-            const fullId = productIds[i];
-            const product = productRows?.find((p) => p.id === fullId);
-            return {
-              name:       product?.name_en || it.n || "Lexxbrush piece",
-              quantity:   it.q || 1,
-              size:       it.s || null,
-              priceCents: product?.price ?? 0,
-              imageUrl:   product?.images?.[0] || null,
-            };
-          });
+          const emailItems: OrderEmailItem[] = enrichedItems.map((it: any) => ({
+            name:       it.name,
+            quantity:   it.quantity,
+            size:       it.size || null,
+            priceCents: it.price,
+            imageUrl:   it.images?.[0] || null,
+          }));
 
           await sendOrderConfirmation({
             orderId:       order.id,

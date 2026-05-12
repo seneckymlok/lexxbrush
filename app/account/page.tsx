@@ -172,7 +172,13 @@ export default function AccountPage() {
         ) : (
           <div className="space-y-[1px]">
             {orders.map((order) => {
-              const items = typeof order.items === "string" ? JSON.parse(order.items) : order.items;
+              let items: any[] = [];
+              try {
+                const raw = typeof order.items === "string" ? JSON.parse(order.items) : order.items;
+                items = Array.isArray(raw) ? raw : [];
+              } catch {
+                items = [];
+              }
               const isExpanded = expandedOrder === order.id;
 
               return (
@@ -206,7 +212,7 @@ export default function AccountPage() {
 
                     <div className="flex items-center gap-4">
                       <p className="text-sm font-bold text-white">
-                        &euro;{order.amount?.toFixed(2) || order.total?.toFixed(2)}
+                        &euro;{((order.amount ?? order.total ?? 0) / 100).toFixed(2)}
                       </p>
                       <svg
                         width="14"
@@ -228,14 +234,24 @@ export default function AccountPage() {
                   {isExpanded && (
                     <div className="px-6 pb-6 pt-2 border-t border-white/[0.04]">
                       <div className="space-y-4">
-                        {items?.map((item: any, idx: number) => (
+                        {items.map((item: any, idx: number) => {
+                          // Support both enriched format {name, price, quantity, size, images}
+                          // and legacy format {product: {name_en/name, images, price}, quantity, size}
+                          const name     = item.name ?? item.product?.name_en ?? item.product?.name?.en ?? item.product?.name ?? "Product";
+                          const price    = item.price ?? item.product?.price ?? 0;
+                          const quantity = item.quantity ?? item.qty ?? item.q ?? 1;
+                          const size     = item.size ?? item.s ?? null;
+                          const imgSrc   = item.images?.[0] ?? item.product?.images?.[0] ?? null;
+                          const lineTotal = (price * quantity) / 100;
+                          return (
                           <div key={idx} className="flex items-center gap-4">
                             <div className="w-14 h-14 bg-white/[0.03] border border-white/5 rounded-lg overflow-hidden relative flex-shrink-0">
-                              {item.product.images?.[0] ? (
+                              {imgSrc ? (
                                 <Image
-                                  src={item.product.images[0]}
-                                  alt={item.product.name?.en || "Product"}
+                                  src={imgSrc}
+                                  alt={name}
                                   fill
+                                  sizes="56px"
                                   className="object-contain"
                                 />
                               ) : (
@@ -243,16 +259,17 @@ export default function AccountPage() {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-white truncate">{item.product.name?.en || item.product.name}</p>
+                              <p className="text-sm text-white truncate">{name}</p>
                               <p className="text-xs text-white/30 mt-0.5">
-                                {item.size ? `${item.size}` : ""}{item.size && item.quantity > 1 ? " · " : ""}{item.quantity > 1 ? `×${item.quantity}` : ""}
+                                {size ? `${size}` : ""}{size && quantity > 1 ? " · " : ""}{quantity > 1 ? `×${quantity}` : ""}
                               </p>
                             </div>
                             <p className="text-sm text-white/60 font-mono">
-                              &euro;{(item.product.price * item.quantity).toFixed(2)}
+                              &euro;{lineTotal.toFixed(2)}
                             </p>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}

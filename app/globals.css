@@ -788,3 +788,20 @@
   .suit-float-1, .suit-float-2, .suit-float-3, .suit-float-4 { animation: none !important; }
 }
 
+
+@keyframes route-hold-breathe {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 65px var(--suit-glow))
+      drop-shadow(0 0 22px var(--suit-glow))
+      blur(0px)
+      brightness(0.95);
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 120px var(--suit-glow))
+      drop-shadow(0 0 42px var(--suit-glow))
+      blur(0px)
+      brightness(1.18);
+  }
+}

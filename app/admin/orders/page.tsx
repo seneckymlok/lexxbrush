@@ -18,7 +18,7 @@ interface Order {
   id: string;
   stripe_session_id: string;
   customer_email: string;
-  items: Array<{ name: string; price: number; qty: number; size?: string }>;
+  items: Array<any>;
   total: number;
   status: string;
   shipping_address: any;
@@ -170,12 +170,18 @@ export default function AdminOrdersPage() {
                 {expandedId === order.id && (
                   <div className="px-5 pb-4 border-t border-white/5 pt-3">
                     <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Items</p>
-                    {order.items?.map((item, i) => (
+                    {order.items?.map((item: any, i: number) => {
+                      const name     = item.name ?? item.n ?? "Product";
+                      const price    = item.price ?? item.product?.price ?? 0;
+                      const quantity = item.quantity ?? item.qty ?? item.q ?? 1;
+                      const size     = item.size ?? item.s ?? null;
+                      return (
                       <div key={i} className="flex items-center justify-between py-1">
-                        <span className="text-sm text-white/60">{item.name} {item.size && `(${item.size})`} × {item.qty}</span>
-                        <span className="text-sm text-white/40">€{((item.price * item.qty) / 100).toFixed(2)}</span>
+                        <span className="text-sm text-white/60">{name} {size && `(${size})`} × {quantity}</span>
+                        <span className="text-sm text-white/40">€{((price * quantity) / 100).toFixed(2)}</span>
                       </div>
-                    ))}
+                      );
+                    })}
 
                     {/* Delivery info */}
                     {delivery && (

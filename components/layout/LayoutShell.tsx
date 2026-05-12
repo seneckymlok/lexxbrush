@@ -27,7 +27,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         )}
         <Header />
         <main
-          className="flex-1 relative z-[2]"
+          className="flex-1 flex flex-col relative z-[2]"
           style={{
             // Shift page content down by the same safe-area inset that the
             // header now reserves at top, so content never scrolls under the

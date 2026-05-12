@@ -121,11 +121,20 @@ export function ProductCard({ product, index }: ProductCardProps) {
   return (
     <div
       ref={cardRef}
-      className="group card-perspective"
+      className="group card-perspective relative"
       style={{ animationDelay: `${index * 80}ms` }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+      {/* ── Favorite — outside Link so clicks don't navigate ── */}
+      <button
+        onClick={handleFavClick}
+        className="absolute top-2 right-2 md:top-3 md:right-3 z-30 w-9 h-9 flex items-center justify-center transition-all duration-300 hover:scale-110"
+        aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+      >
+        <FavoriteIcon active={isFav} />
+      </button>
+
       <Link href={`/product/${product.id}`} className="block">
 
         {/* ── Cell — uniform square ── */}
@@ -167,33 +176,29 @@ export function ProductCard({ product, index }: ProductCardProps) {
           </div>
 
           {/* ── Badges — diamond = ONE OF ONE · spade = SOLD ── */}
-          <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col gap-0.5 pointer-events-none z-20">
+          <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col gap-0.5 z-20">
             {product.isOneOfAKind && (
-              <div
-                className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(0,220,255,0.65)]"
-                aria-label={t("shop.oneOfAKind")}
-              >
-                <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="44px" />
+              <div className="group/badge relative">
+                <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(0,220,255,0.65)]">
+                  <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="44px" />
+                </div>
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200">
+                  One of one
+                </span>
               </div>
             )}
             {product.isSold && (
-              <div
-                className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(30,80,255,0.65)]"
-                aria-label={t("shop.sold")}
-              >
-                <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="44px" />
+              <div className="group/badge relative">
+                <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(30,80,255,0.65)]">
+                  <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="44px" />
+                </div>
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200">
+                  Sold
+                </span>
               </div>
             )}
           </div>
 
-          {/* ── Favorite — top-right, no chip, legibility shadow ── */}
-          <button
-            onClick={handleFavClick}
-            className="absolute top-2 right-2 md:top-3 md:right-3 z-20 w-9 h-9 flex items-center justify-center transition-all duration-300 hover:scale-110"
-            aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-          >
-            <FavoriteIcon active={isFav} />
-          </button>
         </div>
 
         {/* ── Info — counter-parallax: drifts with cursor (further plane) ── */}

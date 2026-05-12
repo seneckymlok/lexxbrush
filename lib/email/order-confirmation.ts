@@ -311,10 +311,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL || "Lexxbrush <onboarding@resend.dev>";
 
+const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
+
 /**
- * Send the order confirmation email. Returns the Resend response on success,
- * or `null` if the send failed — the webhook should NOT fail just because
- * the email didn't go out (the order is still valid).
+ * Send the order confirmation email to the customer.
+ * Returns the Resend response on success, or `null` on failure.
+ * The webhook must NOT fail just because the email didn't go out.
  */
 export async function sendOrderConfirmation(payload: OrderEmailPayload) {
   if (!process.env.RESEND_API_KEY) {
@@ -327,18 +329,54 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
   }
 
   try {
+    // ── Customer confirmation ──────────────────────────────────────────────
     const result = await resend.emails.send({
       from:    FROM_EMAIL,
       to:      payload.customerEmail,
-      replyTo: "info@lexxbrush.eu",
+      replyTo: ADMIN_EMAIL,
       subject: `Order confirmed — ${payload.reference} · Lexxbrush`,
       html:    renderHtml(payload),
       text:    renderText(payload),
-      headers: {
-        // Help spam filters & inbox grouping.
-        "X-Entity-Ref-ID": payload.orderId,
-      },
+      headers: { "X-Entity-Ref-ID": payload.orderId },
     });
+
+    // ── Admin notification ─────────────────────────────────────────────────
+    // Fire-and-forget — never block or throw on admin notify failure.
+    const itemsSummary = payload.items
+      .map((i) => `${i.quantity}× ${i.name}${i.size ? ` (${i.size})` : ""}`)
+      .join(", ");
+    const totalEur = `€${(payload.totalCents / 100).toFixed(2)}`;
+
+    resend.emails.send({
+      from:    FROM_EMAIL,
+      to:      ADMIN_EMAIL,
+      subject: `New order ${payload.reference} — ${totalEur}`,
+      text: [
+        `New order on Lexxbrush`,
+        ``,
+        `Reference:  ${payload.reference}`,
+        `Customer:   ${payload.customerName || "(no name)"} <${payload.customerEmail}>`,
+        `Total:      ${totalEur}`,
+        `Items:      ${itemsSummary}`,
+        payload.delivery ? `Delivery:   ${payload.delivery.type === "pickup" ? "Pickup" : "Home delivery"} — ${payload.delivery.summary}` : "",
+        ``,
+        `View in admin: ${payload.siteUrl}/admin/orders`,
+      ].filter(Boolean).join("\n"),
+      html: `
+        <p style="font-family:sans-serif;font-size:14px;color:#111;">
+          <strong>New order on Lexxbrush</strong><br><br>
+          <b>Reference:</b> ${payload.reference}<br>
+          <b>Customer:</b> ${payload.customerName || "(no name)"} &lt;${payload.customerEmail}&gt;<br>
+          <b>Total:</b> ${totalEur}<br>
+          <b>Items:</b> ${itemsSummary}<br>
+          ${payload.delivery ? `<b>Delivery:</b> ${payload.delivery.type === "pickup" ? "Pickup" : "Home delivery"} — ${payload.delivery.summary}<br>` : ""}
+          <br>
+          <a href="${payload.siteUrl}/admin/orders">View in admin →</a>
+        </p>`,
+    }).catch((err) => {
+      console.error("[email] Admin notify failed (non-fatal):", err);
+    });
+
     return result;
   } catch (err) {
     console.error("[email] Order confirmation send failed:", err);
