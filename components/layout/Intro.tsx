@@ -75,6 +75,12 @@ export function Intro() {
 
   const timers = useRef<number[]>([]);
 
+  /** Cancel every pending timer (phase-sequencing + click-triggered). */
+  const clearAllTimers = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+
   // ─── Mount check ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -115,7 +121,7 @@ export function Intro() {
     const t2 = window.setTimeout(() => setPhase("shatter"), 4700);
     const t3 = window.setTimeout(() => setPhase("fan"),     5500);
     timers.current.push(t1, t2, t3);
-    return () => { timers.current.forEach(clearTimeout); timers.current = []; };
+    return () => { clearAllTimers(); };
   }, [mounted]);
 
   // ─── Render guard ─────────────────────────────────────────────────────────
@@ -123,22 +129,44 @@ export function Intro() {
 
   const handleClick = (suit: typeof SUITS[number]) => {
     if (clicked) return;
+    // Only allow clicks during the "fan" phase — suits are invisible or
+    // barely visible before that, and tapping them causes a broken state.
+    if (phase !== "fan") return;
+
+    // Cancel ALL pending phase-sequencing timers so nothing can override
+    // the "exit" phase we're about to set.
+    clearAllTimers();
+
     setClicked(suit.key);
     setPhase("exit");
-    window.setTimeout(() => setExiting(true), 50);
-    window.setTimeout(() => {
+
+    const t1 = window.setTimeout(() => setExiting(true), 50);
+    timers.current.push(t1);
+
+    const t2 = window.setTimeout(() => {
       if (suit.external) {
         window.location.href = suit.href;
+      } else if (suit.href === pathname) {
+        // Already on this page (e.g. heart → "/") — just dismiss the intro.
       } else {
         router.push(suit.href);
       }
-      window.setTimeout(() => setMounted(false), 250);
+      const t3 = window.setTimeout(() => setMounted(false), 250);
+      timers.current.push(t3);
     }, 650);
+    timers.current.push(t2);
+
+    // Hard safety: if something above fails, forcibly unmount after 2s
+    // so the user is never stuck on a blank screen.
+    const tSafety = window.setTimeout(() => setMounted(false), 2000);
+    timers.current.push(tSafety);
   };
 
   const skip = () => {
+    clearAllTimers();
     setExiting(true);
-    window.setTimeout(() => setMounted(false), 450);
+    const t = window.setTimeout(() => setMounted(false), 450);
+    timers.current.push(t);
   };
 
   const fan = isMobile ? FAN_MOBILE : FAN_DESKTOP;
@@ -242,6 +270,10 @@ export function Intro() {
                 opacity,
                 transition,
                 filter: `drop-shadow(0 0 14px ${suit.glowSoft})`,
+                // Only allow taps when suits are fully fanned out.
+                // Prevents accidental taps on invisible/semi-transparent
+                // buttons during earlier phases (root cause of the stuck bug).
+                pointerEvents: phase === "fan" ? "auto" : "none",
               }}
             >
               <div

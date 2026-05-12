@@ -182,7 +182,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(0,220,255,0.65)]">
                   <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="44px" />
                 </div>
-                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200">
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200 z-10">
                   One of one
                 </span>
               </div>
@@ -192,7 +192,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(30,80,255,0.65)]">
                   <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="44px" />
                 </div>
-                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200">
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200 z-10">
                   Sold
                 </span>
               </div>
