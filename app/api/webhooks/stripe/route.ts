@@ -162,12 +162,14 @@ export async function POST(req: NextRequest) {
           const shippingCents = session.total_details?.amount_shipping ?? 0;
           const totalCents    = session.amount_total ?? 0;
 
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
           const emailItems: OrderEmailItem[] = enrichedItems.map((it: any) => ({
             name:       it.name,
             quantity:   it.quantity,
             size:       it.size || null,
             priceCents: it.price,
             imageUrl:   it.images?.[0] || null,
+            productUrl: it.productId ? `${siteUrl}/product/${it.productId}` : null,
           }));
 
           await sendOrderConfirmation({

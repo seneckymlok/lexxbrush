@@ -10,6 +10,7 @@ import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { getProducts } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { ProductCard } from "@/components/ui/ProductCard";
+import Link from "next/link";
 
 export default function AccountPage() {
   const { user, signOut, loading: authLoading } = useAuth();
@@ -237,37 +238,41 @@ export default function AccountPage() {
                         {items.map((item: any, idx: number) => {
                           // Support both enriched format {name, price, quantity, size, images}
                           // and legacy format {product: {name_en/name, images, price}, quantity, size}
-                          const name     = item.name ?? item.product?.name_en ?? item.product?.name?.en ?? item.product?.name ?? "Product";
-                          const price    = item.price ?? item.product?.price ?? 0;
-                          const quantity = item.quantity ?? item.qty ?? item.q ?? 1;
-                          const size     = item.size ?? item.s ?? null;
-                          const imgSrc   = item.images?.[0] ?? item.product?.images?.[0] ?? null;
+                          const name      = item.name ?? item.product?.name_en ?? item.product?.name?.en ?? item.product?.name ?? "Product";
+                          const price     = item.price ?? item.product?.price ?? 0;
+                          const quantity  = item.quantity ?? item.qty ?? item.q ?? 1;
+                          const size      = item.size ?? item.s ?? null;
+                          const imgSrc    = item.images?.[0] ?? item.product?.images?.[0] ?? null;
                           const lineTotal = (price * quantity) / 100;
-                          return (
-                          <div key={idx} className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-white/[0.03] border border-white/5 rounded-lg overflow-hidden relative flex-shrink-0">
-                              {imgSrc ? (
-                                <Image
-                                  src={imgSrc}
-                                  alt={name}
-                                  fill
-                                  sizes="56px"
-                                  className="object-contain"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-white/5" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-white truncate">{name}</p>
-                              <p className="text-xs text-white/30 mt-0.5">
-                                {size ? `${size}` : ""}{size && quantity > 1 ? " · " : ""}{quantity > 1 ? `×${quantity}` : ""}
+                          const productId = item.productId ?? null;
+                          const inner = (
+                            <>
+                              <div className="w-14 h-14 bg-white/[0.03] border border-white/5 rounded-lg overflow-hidden relative flex-shrink-0">
+                                {imgSrc ? (
+                                  <Image src={imgSrc} alt={name} fill sizes="56px" className="object-contain" />
+                                ) : (
+                                  <div className="w-full h-full bg-white/5" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-white truncate">{name}</p>
+                                <p className="text-xs text-white/30 mt-0.5">
+                                  {size ? `${size}` : ""}{size && quantity > 1 ? " · " : ""}{quantity > 1 ? `×${quantity}` : ""}
+                                </p>
+                              </div>
+                              <p className="text-sm text-white/60 font-mono">
+                                &euro;{lineTotal.toFixed(2)}
                               </p>
+                            </>
+                          );
+                          return productId ? (
+                            <Link key={idx} href={`/product/${productId}`} className="flex items-center gap-4 hover:opacity-75 transition-opacity duration-200">
+                              {inner}
+                            </Link>
+                          ) : (
+                            <div key={idx} className="flex items-center gap-4">
+                              {inner}
                             </div>
-                            <p className="text-sm text-white/60 font-mono">
-                              &euro;{lineTotal.toFixed(2)}
-                            </p>
-                          </div>
                           );
                         })}
                       </div>

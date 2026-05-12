@@ -17,6 +17,8 @@ export interface OrderEmailItem {
   priceCents: number;
   /** Optional product image URL — absolute, https */
   imageUrl?: string | null;
+  /** Optional link to the product page */
+  productUrl?: string | null;
 }
 
 export interface OrderEmailDelivery {
@@ -62,9 +64,16 @@ function renderHtml(p: OrderEmailPayload): string {
   const itemsRows = p.items
     .map((item) => {
       const lineTotal = item.priceCents * item.quantity;
-      const img = item.imageUrl
+      const imgEl = item.imageUrl
         ? `<img src="${esc(item.imageUrl)}" alt="" width="64" height="64" style="display:block;border-radius:8px;background:#111;object-fit:cover;" />`
         : `<div style="width:64px;height:64px;border-radius:8px;background:#111;"></div>`;
+      const img = item.productUrl
+        ? `<a href="${esc(item.productUrl)}" style="display:block;text-decoration:none;">${imgEl}</a>`
+        : imgEl;
+      const nameEl = `<div style="font-weight:600;letter-spacing:0.04em;text-transform:uppercase;font-size:13px;">${esc(item.name)}</div>`;
+      const name = item.productUrl
+        ? `<a href="${esc(item.productUrl)}" style="text-decoration:none;color:inherit;">${nameEl}</a>`
+        : nameEl;
 
       return `
         <tr>
@@ -72,7 +81,7 @@ function renderHtml(p: OrderEmailPayload): string {
             ${img}
           </td>
           <td style="padding:14px 0 14px 16px;border-bottom:1px solid #1a1a1a;vertical-align:top;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4;">
-            <div style="font-weight:600;letter-spacing:0.04em;text-transform:uppercase;font-size:13px;">${esc(item.name)}</div>
+            ${name}
             ${item.size ? `<div style="color:#8a8a8a;font-size:11px;margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">Size · ${esc(item.size)}</div>` : ""}
             ${item.quantity > 1 ? `<div style="color:#8a8a8a;font-size:11px;margin-top:2px;">× ${item.quantity}</div>` : ""}
           </td>
