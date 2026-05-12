@@ -132,12 +132,12 @@ export function Footer() {
           <p className="text-[10px] text-chrome tracking-wider">
             {t("footer.madeBy")}{" "}
             <a
-              href="https://nexystech.com"
+              href="https://filiphegedus.com"
               target="_blank"
               rel="noopener noreferrer"
               className="font-[family-name:var(--font-accent)] text-xs text-chrome hover:text-[#7C3AED] transition-colors duration-300"
             >
-              NexysTech
+              Filip Hegedűs
             </a>
           </p>
         </div>
