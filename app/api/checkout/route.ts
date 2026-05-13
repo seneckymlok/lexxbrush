@@ -5,7 +5,7 @@ import { stripeShippingOptions, type DeliveryType } from "@/lib/shipping";
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, customer, delivery, successUrl, cancelUrl, userId, testToken } = await req.json();
+    const { items, customer, delivery, successUrl, cancelUrl, userId, testToken, newsletterOptIn } = await req.json();
     const supabase = createAdminClient();
 
     // ── Test mode ────────────────────────────────────────────────────────
@@ -117,6 +117,11 @@ export async function POST(req: NextRequest) {
     }
     if (customer?.phone) {
       sessionConfig.metadata.customer_phone = customer.phone;
+    }
+    if (newsletterOptIn === true) {
+      // Read by the Stripe webhook to subscribe the customer AFTER a
+      // successful payment (so abandoned carts don't pollute the list).
+      sessionConfig.metadata.newsletter_opt_in = "true";
     }
     if (deliveryData) {
       sessionConfig.metadata.delivery_type = deliveryData.type;

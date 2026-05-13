@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { NewsletterSignup } from "@/components/ui/NewsletterSignup";
 export function Footer() {
   const { t } = useLanguage();
 
@@ -12,7 +13,7 @@ export function Footer() {
     <footer className="relative border-t border-white/10 overflow-hidden" style={{ background: footerBg }}>
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10">
         {/* Main Footer */}
-        <div className="py-12 md:py-16 flex flex-col items-center text-center md:text-left md:flex-row md:items-center md:justify-between gap-8">
+        <div className="py-12 md:py-16 flex flex-col items-center text-center md:text-left md:flex-row md:items-start md:justify-between gap-10 md:gap-12">
           {/* Brand + description */}
           <div className="flex-shrink-0 flex flex-col items-center md:items-start">
             <Link href="/" className="inline-block">
@@ -29,6 +30,11 @@ export function Footer() {
               Hand-airbrushed wearable art.<br />
               Every piece painted entirely by hand.
             </p>
+          </div>
+
+          {/* Newsletter — the drop list */}
+          <div className="flex-1 flex justify-center md:justify-start max-w-sm w-full">
+            <NewsletterSignup source="footer" />
           </div>
 
           {/* Nav + Social */}

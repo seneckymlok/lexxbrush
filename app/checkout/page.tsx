@@ -41,6 +41,10 @@ function CheckoutPageInner() {
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("SK");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "home_delivery">("pickup");
+  // Newsletter opt-in — unchecked by default per GDPR. Forwarded through to
+  // the Stripe webhook; we only subscribe AFTER a successful payment so
+  // abandoned-checkout emails don't end up on the list.
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<PacketaPoint | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<(PacketaHDAddress & { carrierId: number }) | null>(null);
 
@@ -128,6 +132,7 @@ function CheckoutPageInner() {
             phone: phone || undefined,
           },
           delivery,
+          newsletterOptIn,
           // Only sent when present; validated server-side against the
           // CHECKOUT_TEST_TOKEN env var. Silently ignored otherwise.
           ...(testToken ? { testToken } : {}),
@@ -296,6 +301,19 @@ function CheckoutPageInner() {
                   />
                 </div>
               </div>
+
+              {/* Newsletter opt-in */}
+              <label className="flex items-start gap-3 cursor-pointer group select-none">
+                <input
+                  type="checkbox"
+                  checked={newsletterOptIn}
+                  onChange={(e) => setNewsletterOptIn(e.target.checked)}
+                  className="mt-[2px] w-4 h-4 accent-white/80 bg-white/5 border border-white/15 rounded cursor-pointer flex-shrink-0"
+                />
+                <span className="text-xs text-chrome-light leading-relaxed group-hover:text-white/80 transition-colors duration-300">
+                  {t("newsletter.checkout.label")}
+                </span>
+              </label>
 
               {/* Error */}
               {error && (

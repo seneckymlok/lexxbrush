@@ -147,6 +147,42 @@ export const translations = {
       privacy: "Privacy Policy",
       shipping: "Shipping & Returns",
     },
+    newsletter: {
+      form: {
+        ariaLabel:     "Newsletter signup",
+        label:         "Join the drop list",
+        placeholder:   "your@email.com",
+        helper:        "Only when a new piece drops. Roughly once a month.",
+        submit:        "Join",
+        submitting:    "Joining…",
+        successInline: "Check your inbox",
+        successDetail: "We just sent you a confirmation link. Tap it to finish.",
+        invalid:       "That doesn't look like a valid email.",
+        serverError:   "Something went wrong on our side. Try again in a moment.",
+        networkError:  "Connection error. Please try again.",
+      },
+      checkout: {
+        label: "Email me when new pieces drop. Roughly once a month — never more.",
+      },
+      confirmed: {
+        eyebrow: "♠   You're in",
+        title:   "Welcome to the drop.",
+        body:    "You'll only hear from us when something new lands. No filler, no daily noise — just first looks.",
+        cta:     "Browse the collection",
+      },
+      unsubscribed: {
+        eyebrow: "♣   Removed",
+        title:   "You're off the list.",
+        body:    "You won't hear from us again. If this was a mistake, you can rejoin from the footer of any page.",
+        cta:     "Back to the site",
+      },
+      invalid: {
+        eyebrow: "Error",
+        title:   "This link is no longer valid.",
+        body:    "It may have already been used or expired. If you meant to subscribe or unsubscribe, you can do it from the footer of any page.",
+        cta:     "Back to the site",
+      },
+    },
   },
   sk: {
     nav: {
@@ -293,6 +329,42 @@ export const translations = {
       terms: "Obchodné Podmienky",
       privacy: "Ochrana Osobných Údajov",
       shipping: "Doprava a Vrátenie",
+    },
+    newsletter: {
+      form: {
+        ariaLabel:     "Prihlásenie na newsletter",
+        label:         "Pridaj sa na zoznam dropov",
+        placeholder:   "tvoj@email.com",
+        helper:        "Ozveme sa len keď príde niečo nové. Zvyčajne raz za mesiac.",
+        submit:        "Pridať sa",
+        submitting:    "Pridávam…",
+        successInline: "Skontroluj e-mail",
+        successDetail: "Práve sme ti poslali potvrdzovací link. Klikni naň a si v zozname.",
+        invalid:       "Toto nevyzerá ako platná e-mailová adresa.",
+        serverError:   "Niečo sa pokazilo na našej strane. Skús to znova o chvíľu.",
+        networkError:  "Chyba spojenia. Skús to znova.",
+      },
+      checkout: {
+        label: "Daj mi vedieť e-mailom keď príde nový drop. Zvyčajne raz za mesiac — nikdy viac.",
+      },
+      confirmed: {
+        eyebrow: "♠   Si na zozname",
+        title:   "Vitaj v drope.",
+        body:    "Ozveme sa len keď príde niečo nové. Žiadny denný šum — len prvé pozretie.",
+        cta:     "Pozrieť kolekciu",
+      },
+      unsubscribed: {
+        eyebrow: "♣   Odhlásený/á",
+        title:   "Si mimo zoznamu.",
+        body:    "Už ti nepošleme žiadne e-maily. Ak to bolo omylom, pridať sa môžeš z päty každej stránky.",
+        cta:     "Späť na stránku",
+      },
+      invalid: {
+        eyebrow: "Chyba",
+        title:   "Tento link už nie je platný.",
+        body:    "Možno už bol použitý alebo vypršala jeho platnosť. Prihlásiť alebo odhlásiť sa môžeš z päty každej stránky.",
+        cta:     "Späť na stránku",
+      },
     },
   },
 } as const;

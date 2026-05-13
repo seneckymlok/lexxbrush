@@ -7,6 +7,8 @@ import {
   type OrderEmailItem,
   type OrderEmailDelivery,
 } from "@/lib/email/order-confirmation";
+import crypto from "node:crypto";
+import { sendNewsletterConfirm } from "@/lib/email/newsletter";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -187,6 +189,78 @@ export async function POST(req: NextRequest) {
         } catch (emailErr) {
           // Never fail the webhook for an email issue — the order is valid.
           console.error("Order confirmation email failed:", emailErr);
+        }
+      }
+
+      // ── Newsletter opt-in ──────────────────────────────────────────────
+      // Customer ticked the "email me when new pieces drop" box at checkout.
+      // We only act on it AFTER a successful payment so abandoned carts
+      // never pollute the list. Real orders only — test mode skipped.
+      if (!isTestMode && session.metadata?.newsletter_opt_in === "true") {
+        const optInEmail = session.customer_details?.email?.toLowerCase().trim();
+        if (optInEmail) {
+          try {
+            const supa = supabase;
+            const { data: existing } = await supa
+              .from("newsletter_subscribers")
+              .select("id, status")
+              .eq("email", optInEmail)
+              .maybeSingle();
+
+            // Already-confirmed buyer → do nothing (don't double-subscribe).
+            // Suppressed (bounced/complained) → do nothing.
+            const reusable = !existing
+              || existing.status === "pending"
+              || existing.status === "unsubscribed";
+
+            if (reusable) {
+              const confirmToken = crypto.randomBytes(32).toString("base64url");
+              const unsubToken   = crypto.randomBytes(32).toString("base64url");
+              const locale = "en"; // checkout locale not currently captured in metadata
+              const consentSource = "checkout";
+
+              if (existing) {
+                await supa
+                  .from("newsletter_subscribers")
+                  .update({
+                    status:         "pending",
+                    confirm_token:  confirmToken,
+                    unsub_token:    unsubToken,
+                    locale,
+                    source:         consentSource,
+                    user_id:        session.metadata?.user_id || null,
+                    consent_source: consentSource,
+                    created_at:     new Date().toISOString(),
+                    confirmed_at:   null,
+                    unsubscribed_at: null,
+                  })
+                  .eq("id", existing.id);
+              } else {
+                await supa
+                  .from("newsletter_subscribers")
+                  .insert({
+                    email:          optInEmail,
+                    locale,
+                    status:         "pending",
+                    source:         consentSource,
+                    confirm_token:  confirmToken,
+                    unsub_token:    unsubToken,
+                    user_id:        session.metadata?.user_id || null,
+                    consent_source: consentSource,
+                  });
+              }
+
+              await sendNewsletterConfirm({
+                email:        optInEmail,
+                locale,
+                confirmToken,
+                siteUrl:      process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu",
+              });
+            }
+          } catch (newsletterErr) {
+            // Never fail the webhook for the newsletter side-effect.
+            console.error("[stripe-webhook] newsletter opt-in failed:", newsletterErr);
+          }
         }
       }
 
