@@ -57,7 +57,12 @@ interface Campaign {
   unsubscribed_count: number;
   created_at: string;
   sent_at: string | null;
+  attribution_revenue_cents?: number;
+  attribution_orders?:        number;
+  audience_filter?:           { locale?: string; segment?: string } | null;
 }
+
+type Segment = "all" | "buyers" | "non_buyers";
 interface Subscriber {
   id: string;
   email: string;
@@ -84,6 +89,7 @@ export default function AdminNewsletterPage() {
   const [preheader, setPreheader] = useState("");
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [locale, setLocale] = useState<"all" | "en" | "sk">("all");
+  const [segment, setSegment] = useState<Segment>("all");
   const [audienceCount, setAudienceCount] = useState<number | null>(null);
 
   // Products for the picker
@@ -142,11 +148,11 @@ export default function AdminNewsletterPage() {
 
   // Live audience count for current filter
   useEffect(() => {
-    adminFetch(`/api/admin/newsletter?action=audience&locale=${locale}`)
+    adminFetch(`/api/admin/newsletter?action=audience&locale=${locale}&segment=${segment}`)
       .then((r) => r.json())
       .then((d) => setAudienceCount(d.count ?? 0))
       .catch(() => setAudienceCount(null));
-  }, [locale]);
+  }, [locale, segment]);
 
   useEffect(() => {
     if (tab === "history") {
@@ -247,7 +253,7 @@ export default function AdminNewsletterPage() {
           preheader: preheader.trim() || undefined,
           html:      bodyHtml,
           text:      bodyText,
-          audience:  { status: "confirmed", locale },
+          audience:  { status: "confirmed", locale, segment },
         }),
       });
       const data = await res.json();
@@ -344,15 +350,28 @@ export default function AdminNewsletterPage() {
 
             <Field label="Audience">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <select
-                  value={locale}
-                  onChange={(e) => setLocale(e.target.value as any)}
-                  className="bg-white/[0.02] border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none"
-                >
-                  <option value="all" className="bg-[#1a1a1a]">All languages</option>
-                  <option value="en" className="bg-[#1a1a1a]">English only</option>
-                  <option value="sk" className="bg-[#1a1a1a]">Slovak only</option>
-                </select>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <select
+                    value={segment}
+                    onChange={(e) => setSegment(e.target.value as Segment)}
+                    className="bg-white/[0.02] border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none"
+                    title="Who receives this campaign"
+                  >
+                    <option value="all"        className="bg-[#1a1a1a]">All confirmed</option>
+                    <option value="buyers"     className="bg-[#1a1a1a]">Past buyers only</option>
+                    <option value="non_buyers" className="bg-[#1a1a1a]">Subscribers who haven't bought</option>
+                  </select>
+                  <select
+                    value={locale}
+                    onChange={(e) => setLocale(e.target.value as any)}
+                    className="bg-white/[0.02] border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none"
+                    title="Language filter"
+                  >
+                    <option value="all" className="bg-[#1a1a1a]">All languages</option>
+                    <option value="en"  className="bg-[#1a1a1a]">English only</option>
+                    <option value="sk"  className="bg-[#1a1a1a]">Slovak only</option>
+                  </select>
+                </div>
                 <span className="text-xs text-white/40">
                   {audienceCount === null ? "—" : `${audienceCount} recipient${audienceCount === 1 ? "" : "s"}`}
                 </span>
@@ -471,27 +490,60 @@ export default function AdminNewsletterPage() {
               <p className="text-white/30 text-sm">No campaigns yet</p>
             </div>
           ) : (
-            history.map((c) => (
-              <div key={c.id} className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white/80 truncate">{c.subject}</p>
-                    {c.preheader && <p className="text-xs text-white/30 mt-0.5 truncate">{c.preheader}</p>}
-                    <p className="text-[10px] text-white/30 mt-2 uppercase tracking-wider">
-                      {c.sent_at ? new Date(c.sent_at).toLocaleString() : "—"} · {c.status}
-                    </p>
+            history.map((c) => {
+              const revenue = (c.attribution_revenue_cents ?? 0) / 100;
+              const orders  = c.attribution_orders ?? 0;
+              const seg     = c.audience_filter?.segment;
+              const loc     = c.audience_filter?.locale;
+              return (
+                <div key={c.id} className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-white/80 truncate">{c.subject}</p>
+                      {c.preheader && <p className="text-xs text-white/30 mt-0.5 truncate">{c.preheader}</p>}
+                      <p className="text-[10px] text-white/30 mt-2 uppercase tracking-wider flex items-center gap-2 flex-wrap">
+                        <span>{c.sent_at ? new Date(c.sent_at).toLocaleString() : "—"} · {c.status}</span>
+                        {seg && seg !== "all" && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/50">
+                            {seg === "buyers" ? "Buyers" : "Non-buyers"}
+                          </span>
+                        )}
+                        {loc && loc !== "all" && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/50">
+                            {loc.toUpperCase()}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs flex-shrink-0">
+                      <Metric label="Sent"     value={c.recipient_count} />
+                      <Metric label="Delivered" value={c.delivered_count} />
+                      <Metric label="Opened"    value={c.opened_count} />
+                      <Metric label="Clicked"   value={c.clicked_count} />
+                      <Metric label="Bounce"    value={c.bounced_count} accent="red" />
+                      <Metric label="Unsub"     value={c.unsubscribed_count} accent="slate" />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4 text-xs flex-shrink-0">
-                    <Metric label="Sent"     value={c.recipient_count} />
-                    <Metric label="Delivered" value={c.delivered_count} />
-                    <Metric label="Opened"    value={c.opened_count} />
-                    <Metric label="Clicked"   value={c.clicked_count} />
-                    <Metric label="Bounce"    value={c.bounced_count} accent="red" />
-                    <Metric label="Unsub"     value={c.unsubscribed_count} accent="slate" />
-                  </div>
+                  {c.sent_at && (
+                    <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                      <span className="text-[10px] uppercase tracking-[0.25em] text-white/30">
+                        Attributed revenue · 7 days
+                      </span>
+                      {orders > 0 ? (
+                        <span className="text-emerald-400 font-medium">
+                          €{revenue.toFixed(2)}
+                          <span className="text-white/40 font-normal ml-2">
+                            ({orders} order{orders === 1 ? "" : "s"})
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="text-white/30">No attributed orders yet</span>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       )}

@@ -10,12 +10,12 @@ import { sendNewsletterCampaign } from "@/lib/email/newsletter";
 // app layer.
 //
 // Endpoints:
-//   GET  /api/admin/newsletter?action=stats        → list size + breakdown
-//   GET  /api/admin/newsletter?action=audience     → recipient count for filter
-//   GET  /api/admin/newsletter?action=history      → past campaigns
-//   POST /api/admin/newsletter   { action: "test",    subject, html, text, locale }
+//   GET  /api/admin/newsletter?action=stats                  → list size + breakdown
+//   GET  /api/admin/newsletter?action=audience               → recipient count for filter
+//   GET  /api/admin/newsletter?action=history                → past campaigns + attribution
+//   POST /api/admin/newsletter   { action: "test",    subject, html, text }
 //   POST /api/admin/newsletter   { action: "send",    subject, html, text, preheader, audience }
-//   DELETE ?id=<subscriberId>                      → GDPR-style hard delete
+//   DELETE ?id=<subscriberId>                                → GDPR-style hard delete
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
@@ -24,6 +24,9 @@ const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 const BATCH_SIZE = 100;
 // Slow the cadence a touch so we never hit rate caps on big sends.
 const BATCH_INTERVAL_MS = 1100;
+
+// 7-day attribution window from `sent_at`.
+const ATTRIBUTION_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 async function verifyAdmin(req: NextRequest): Promise<string | null> {
   const authHeader = req.headers.get("authorization");
@@ -37,9 +40,84 @@ async function verifyAdmin(req: NextRequest): Promise<string | null> {
   return user?.id || null;
 }
 
+type Segment = "all" | "buyers" | "non_buyers";
+
 interface AudienceFilter {
-  status?: "confirmed" | "all";
-  locale?: "en" | "sk" | "all";
+  status?:  "confirmed" | "all";
+  locale?:  "en" | "sk" | "all";
+  segment?: Segment;
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Fetch the lowercase email set of every customer who has ever placed a
+ * non-pending order. Used to build the "buyers" and "non_buyers" segments.
+ * At our scale this is a few hundred rows at most — cheap to do per request.
+ */
+async function getBuyerEmails(
+  supabase: ReturnType<typeof createAdminClient>,
+): Promise<Set<string>> {
+  const { data } = await supabase
+    .from("orders")
+    .select("customer_email")
+    .neq("status", "pending")
+    .neq("status", "test");
+  const set = new Set<string>();
+  for (const row of data || []) {
+    if (row.customer_email) set.add(String(row.customer_email).toLowerCase().trim());
+  }
+  return set;
+}
+
+/**
+ * Filter subscribers by the buyer segment in JS — there's no clean way to
+ * express "email in (subselect over orders)" in PostgREST without a view.
+ */
+function applySegment<T extends { email: string }>(
+  rows: T[],
+  segment: Segment,
+  buyers: Set<string>,
+): T[] {
+  if (segment === "all") return rows;
+  if (segment === "buyers") return rows.filter((r) => buyers.has(r.email.toLowerCase()));
+  return rows.filter((r) => !buyers.has(r.email.toLowerCase()));
+}
+
+/**
+ * Compute attribution for a sent campaign. Joins `recipient_emails` (the
+ * snapshot we took at send time) against orders placed within 7 days of
+ * `sent_at`. Returns `{ revenue: cents, orders }`. Counts only paid+ orders.
+ */
+async function attributionFor(
+  supabase: ReturnType<typeof createAdminClient>,
+  campaign: { id: string; sent_at: string | null; recipient_emails: string[] | null },
+): Promise<{ revenue: number; orders: number }> {
+  if (!campaign.sent_at || !campaign.recipient_emails || campaign.recipient_emails.length === 0) {
+    return { revenue: 0, orders: 0 };
+  }
+  const sentAt   = new Date(campaign.sent_at).toISOString();
+  const endAt    = new Date(new Date(campaign.sent_at).getTime() + ATTRIBUTION_WINDOW_MS).toISOString();
+  const emailSet = new Set(campaign.recipient_emails.map((e) => e.toLowerCase()));
+
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("total, customer_email")
+    .gte("created_at", sentAt)
+    .lt("created_at", endAt)
+    .neq("status", "pending")
+    .neq("status", "test");
+
+  let revenue = 0;
+  let count   = 0;
+  for (const o of orders || []) {
+    if (!o.customer_email) continue;
+    if (emailSet.has(String(o.customer_email).toLowerCase())) {
+      revenue += o.total || 0;
+      count   += 1;
+    }
+  }
+  return { revenue, orders: count };
 }
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
@@ -71,25 +149,70 @@ export async function GET(req: NextRequest) {
   }
 
   if (action === "audience") {
-    const locale = (url.searchParams.get("locale") as "en"|"sk"|"all"|null) || "all";
-    let q = supabase
+    const locale  = (url.searchParams.get("locale")  as "en"|"sk"|"all"|null)        || "all";
+    const segment = (url.searchParams.get("segment") as Segment | null)              || "all";
+
+    // For segment=all + any locale we can use a fast count-only query.
+    if (segment === "all") {
+      let q = supabase
+        .from("newsletter_subscribers")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "confirmed");
+      if (locale !== "all") {
+        q = q.eq("locale", locale);
+      }
+      const { count } = await q;
+      return NextResponse.json({ count: count || 0 });
+    }
+
+    // For buyer / non_buyer segments we need the email column to intersect
+    // with the buyer set. Still fast at our scale.
+    let listQuery = supabase
       .from("newsletter_subscribers")
-      .select("*", { count: "exact", head: true })
+      .select("email")
       .eq("status", "confirmed");
     if (locale !== "all") {
-      q = q.eq("locale", locale);
+      listQuery = listQuery.eq("locale", locale);
     }
-    const { count } = await q;
-    return NextResponse.json({ count: count || 0 });
+    const [{ data: rows }, buyers] = await Promise.all([
+      listQuery,
+      getBuyerEmails(supabase),
+    ]);
+    const filtered = applySegment(rows || [], segment, buyers);
+    return NextResponse.json({ count: filtered.length });
   }
 
   if (action === "history") {
-    const { data } = await supabase
+    const { data: campaigns } = await supabase
       .from("newsletter_campaigns")
-      .select("id, subject, preheader, status, recipient_count, delivered_count, opened_count, clicked_count, bounced_count, complained_count, unsubscribed_count, created_at, sent_at")
+      .select(
+        "id, subject, preheader, status, recipient_count, delivered_count, opened_count, clicked_count, bounced_count, complained_count, unsubscribed_count, created_at, sent_at, recipient_emails, audience_filter",
+      )
       .order("created_at", { ascending: false })
       .limit(50);
-    return NextResponse.json(data || []);
+
+    if (!campaigns) return NextResponse.json([]);
+
+    // Compute attribution for every campaign in parallel. Each query is
+    // bounded by the 7-day window and a small recipient set.
+    const withAttribution = await Promise.all(
+      campaigns.map(async (c: any) => {
+        const att = await attributionFor(supabase, {
+          id:               c.id,
+          sent_at:          c.sent_at,
+          recipient_emails: c.recipient_emails,
+        });
+        // Don't leak the raw recipient list to the client.
+        const { recipient_emails, ...rest } = c;
+        return {
+          ...rest,
+          attribution_revenue_cents: att.revenue,
+          attribution_orders:        att.orders,
+        };
+      }),
+    );
+
+    return NextResponse.json(withAttribution);
   }
 
   if (action === "list") {
@@ -138,9 +261,6 @@ export async function POST(req: NextRequest) {
   // ── Test send: deliver only to ADMIN_EMAIL, never touch subscriber list.
   if (body.action === "test") {
     try {
-      // Build a one-off "dry" send. We bypass the campaign row entirely.
-      // The unsub token here is a throwaway — it won't match any real row,
-      // but the link still renders for layout validation.
       const fakeUnsub = "test-token-not-real";
       await sendNewsletterCampaign({
         subscriberId: "test",
@@ -162,9 +282,10 @@ export async function POST(req: NextRequest) {
 
   // ── Real send.
   if (body.action === "send") {
-    const audience = body.audience || { status: "confirmed", locale: "all" };
+    const audience: AudienceFilter = body.audience || { status: "confirmed", locale: "all", segment: "all" };
+    const segment: Segment = audience.segment || "all";
 
-    // Fetch recipient list — only confirmed, optionally locale-filtered.
+    // Fetch deliverable rows — confirmed, optionally locale-filtered.
     let query = supabase
       .from("newsletter_subscribers")
       .select("id, email, locale, unsub_token")
@@ -172,26 +293,37 @@ export async function POST(req: NextRequest) {
     if (audience.locale && audience.locale !== "all") {
       query = query.eq("locale", audience.locale);
     }
-    const { data: recipients, error: fetchErr } = await query;
+    const { data: baseRecipients, error: fetchErr } = await query;
     if (fetchErr) {
       console.error("[admin/newsletter] recipient fetch failed:", fetchErr);
       return NextResponse.json({ error: "fetch_failed" }, { status: 500 });
     }
-    if (!recipients || recipients.length === 0) {
+    if (!baseRecipients || baseRecipients.length === 0) {
       return NextResponse.json({ error: "no_recipients" }, { status: 400 });
     }
 
-    // Create campaign row.
+    // Apply segment in JS (buyers / non_buyers).
+    const buyers = segment === "all" ? new Set<string>() : await getBuyerEmails(supabase);
+    const recipients = applySegment(baseRecipients, segment, buyers);
+    if (recipients.length === 0) {
+      return NextResponse.json({ error: "no_recipients_after_segment" }, { status: 400 });
+    }
+
+    // Snapshot the recipient emails on the campaign row so attribution
+    // remains correct even if the subscriber list changes later.
+    const recipientEmails = recipients.map((r) => r.email.toLowerCase());
+
     const { data: campaign, error: campaignErr } = await supabase
       .from("newsletter_campaigns")
       .insert({
-        subject:         body.subject,
-        preheader:       body.preheader || null,
-        html:            body.html,
-        audience_filter: audience,
-        sent_by:         uid,
-        status:          "sending",
-        recipient_count: recipients.length,
+        subject:          body.subject,
+        preheader:        body.preheader || null,
+        html:             body.html,
+        audience_filter:  audience,
+        sent_by:          uid,
+        status:           "sending",
+        recipient_count:  recipients.length,
+        recipient_emails: recipientEmails,
       })
       .select("id")
       .single();
