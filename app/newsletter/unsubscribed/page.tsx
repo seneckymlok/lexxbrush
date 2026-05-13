@@ -24,16 +24,19 @@ export default function NewsletterUnsubscribedPage() {
           {t("newsletter.unsubscribed.body")}
         </p>
 
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white border-b border-white/20 hover:border-white/50 pb-px transition-all duration-300 font-[family-name:var(--font-display)] tracking-[0.1em] uppercase"
+        <button
+          onClick={() => {
+            sessionStorage.setItem("lexxbrush:intro-seen", "1");
+            window.location.href = "/";
+          }}
+          className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white border-b border-white/20 hover:border-white/50 pb-px transition-all duration-300 font-[family-name:var(--font-display)] tracking-[0.1em] uppercase cursor-pointer"
         >
           {t("newsletter.unsubscribed.cta")}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
-        </Link>
+        </button>
       </div>
     </div>
   );
