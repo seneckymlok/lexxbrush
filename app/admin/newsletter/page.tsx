@@ -2,16 +2,28 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { BlockComposer, type ComposerProduct } from "@/components/admin/newsletter/BlockComposer";
+import {
+  type Block,
+  renderBlocksToHtml,
+  renderBlocksToText,
+  makeStarterBlocks,
+} from "@/lib/email/newsletter-blocks";
+import { wrapInFrame } from "@/lib/email/frame";
 
 // ─── Admin newsletter console ────────────────────────────────────────────────
 //
 // One-page surface for composing and sending newsletter campaigns plus
 // reviewing the list and past sends.
 //
+// Composing is block-based (see lib/email/newsletter-blocks.ts). The right
+// pane previews the email exactly as recipients will see it, including the
+// shared header + footer frame.
+//
 // Strict guardrails:
 //   • Cannot send until a successful "Send test" has happened.
 //   • Final send requires typing a confirmation phrase.
-//   • Audience count is fetched live as the locale filter changes.
+//   • Any edit to the composition invalidates the previous test.
 
 async function getToken() {
   const { data } = await supabase.auth.getSession();
@@ -57,6 +69,9 @@ interface Subscriber {
 
 const CONFIRM_PHRASE = "SEND";
 
+const CONTACT_EMAIL = "info@lexxbrush.eu";
+const SITE_URL = "https://lexxbrush.eu";
+
 export default function AdminNewsletterPage() {
   // ─── State ─────────────────────────────────────────────────────────────────
   const [tab, setTab] = useState<"compose" | "subscribers" | "history">("compose");
@@ -67,11 +82,13 @@ export default function AdminNewsletterPage() {
   // Composer
   const [subject, setSubject] = useState("");
   const [preheader, setPreheader] = useState("");
-  const [bodyHtml, setBodyHtml] = useState("");
-  const [bodyText, setBodyText] = useState("");
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const [locale, setLocale] = useState<"all" | "en" | "sk">("all");
   const [audienceCount, setAudienceCount] = useState<number | null>(null);
-  const [previewKey, setPreviewKey] = useState(0);
+
+  // Products for the picker
+  const [products, setProducts] = useState<ComposerProduct[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   // Send state machine
   const [hasTested, setHasTested] = useState(false);
@@ -100,6 +117,29 @@ export default function AdminNewsletterPage() {
       .catch(() => {});
   }, []);
 
+  // Fetch products once for the picker. We use the existing admin endpoint
+  // and re-shape rows into the ComposerProduct format.
+  useEffect(() => {
+    adminFetch("/api/admin?table=products")
+      .then((r) => r.json())
+      .then((rows: any[]) => {
+        if (!Array.isArray(rows)) return setProducts([]);
+        const out: ComposerProduct[] = rows.map((r) => ({
+          id:         r.id,
+          name:       r.name_en || r.name?.en || r.name || "Untitled",
+          priceCents: r.price ?? 0,
+          imageUrl:   Array.isArray(r.images) && r.images.length > 0 ? r.images[0] : null,
+          isSold:     !!r.is_sold,
+          category:   r.category,
+        }));
+        // Newest-first feels right (matches admin/products page).
+        out.sort((a, b) => a.name.localeCompare(b.name));
+        setProducts(out);
+      })
+      .catch(() => setProducts([]))
+      .finally(() => setProductsLoading(false));
+  }, []);
+
   // Live audience count for current filter
   useEffect(() => {
     adminFetch(`/api/admin/newsletter?action=audience&locale=${locale}`)
@@ -117,15 +157,52 @@ export default function AdminNewsletterPage() {
     }
   }, [tab]);
 
-  // Any edit to subject/html/text invalidates the test — must re-test.
+  // ─── Derived render output ─────────────────────────────────────────────────
+  // Live HTML/text built from the block model + product data. Recomputed on
+  // every keystroke — block renderers are pure string-builders, so this is
+  // cheap even for 50+ blocks.
+
+  const renderCtx = useMemo(() => {
+    const productMap: Record<string, ComposerProduct> = {};
+    for (const p of products) productMap[p.id] = p;
+    return {
+      products: productMap,
+      siteUrl:  SITE_URL,
+      locale:   (locale === "sk" ? "sk" : "en") as "en" | "sk",
+    };
+  }, [products, locale]);
+
+  const bodyHtml = useMemo(
+    () => renderBlocksToHtml(blocks, renderCtx),
+    [blocks, renderCtx],
+  );
+  const bodyText = useMemo(
+    () => renderBlocksToText(blocks, renderCtx),
+    [blocks, renderCtx],
+  );
+
+  // Fully framed preview HTML — mirrors what subscribers receive.
+  const previewSrcDoc = useMemo(() => {
+    return wrapInFrame({
+      preheader:    preheader || subject || "",
+      bodyHtml,
+      bodyIsRows:   true,
+      locale:       renderCtx.locale,
+      unsubUrl:     "#preview-unsubscribe",
+      siteUrl:      SITE_URL,
+      contactEmail: CONTACT_EMAIL,
+    });
+  }, [bodyHtml, preheader, subject, renderCtx.locale]);
+
+  // Any edit to subject/preheader/blocks invalidates the previous test.
   useEffect(() => {
     setHasTested(false);
-  }, [subject, preheader, bodyHtml, bodyText]);
+  }, [subject, preheader, blocks]);
 
   // ─── Actions ───────────────────────────────────────────────────────────────
   async function sendTest() {
     if (!subject.trim() || !bodyHtml.trim() || !bodyText.trim()) {
-      showToast("Subject, HTML and text are required.", "error");
+      showToast("Add a subject and at least one block.", "error");
       return;
     }
     setSendingTest(true);
@@ -178,8 +255,7 @@ export default function AdminNewsletterPage() {
       showToast(`Sent to ${data.sent} subscriber(s). ${data.failed ? data.failed + " failed." : ""}`);
       setSubject("");
       setPreheader("");
-      setBodyHtml("");
-      setBodyText("");
+      setBlocks([]);
       setHasTested(false);
       setConfirmOpen(false);
       setConfirmTyped("");
@@ -201,10 +277,6 @@ export default function AdminNewsletterPage() {
       showToast(err.message, "error");
     }
   }
-
-  const previewSrcDoc = useMemo(() => {
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><base target="_blank" /></head><body style="margin:0;background:#050505;">${bodyHtml || "<div style='padding:40px;color:#666;font-family:sans-serif;font-size:13px;'>Preview will render here.</div>"}</body></html>`;
-  }, [bodyHtml, previewKey]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
@@ -247,9 +319,9 @@ export default function AdminNewsletterPage() {
       </div>
 
       {tab === "compose" && (
-        <div className="grid lg:grid-cols-[1fr_1fr] gap-6">
+        <div className="grid xl:grid-cols-[minmax(0,1fr)_minmax(0,540px)] gap-6">
           {/* Composer */}
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0">
             <Field label="Subject" hint={`${subject.length}/200`}>
               <input
                 value={subject}
@@ -260,7 +332,7 @@ export default function AdminNewsletterPage() {
               />
             </Field>
 
-            <Field label="Preheader (preview text)" hint={`${preheader.length}/120`}>
+            <Field label="Preheader (inbox preview text)" hint={`${preheader.length}/120`}>
               <input
                 value={preheader}
                 onChange={(e) => setPreheader(e.target.value)}
@@ -270,29 +342,8 @@ export default function AdminNewsletterPage() {
               />
             </Field>
 
-            <Field label="HTML body" hint="Inline styles only. Wrapped in our branded shell.">
-              <textarea
-                value={bodyHtml}
-                onChange={(e) => setBodyHtml(e.target.value)}
-                rows={14}
-                spellCheck={false}
-                className="w-full bg-white/[0.02] border border-white/10 focus:border-white/30 rounded-lg px-3 py-2.5 text-xs text-white font-mono placeholder:text-white/20 outline-none resize-y"
-                placeholder={`<div style="padding:0 0 32px 0;">...</div>`}
-              />
-            </Field>
-
-            <Field label="Plain-text fallback" hint={`${bodyText.length} chars`}>
-              <textarea
-                value={bodyText}
-                onChange={(e) => setBodyText(e.target.value)}
-                rows={4}
-                className="w-full bg-white/[0.02] border border-white/10 focus:border-white/30 rounded-lg px-3 py-2.5 text-xs text-white placeholder:text-white/20 outline-none resize-y"
-                placeholder="What the subscriber sees in plain-text clients."
-              />
-            </Field>
-
             <Field label="Audience">
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
                 <select
                   value={locale}
                   onChange={(e) => setLocale(e.target.value as any)}
@@ -308,45 +359,66 @@ export default function AdminNewsletterPage() {
               </div>
             </Field>
 
+            {/* Composer toolbar */}
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Content</p>
+              {blocks.length === 0 && (
+                <button
+                  type="button"
+                  onClick={() => setBlocks(makeStarterBlocks())}
+                  className="text-[10px] uppercase tracking-wider text-white/50 hover:text-white"
+                >
+                  Load drop template
+                </button>
+              )}
+            </div>
+
+            <BlockComposer
+              blocks={blocks}
+              onChange={setBlocks}
+              products={products}
+              loadingProducts={productsLoading}
+            />
+
             {/* Action row */}
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-3 pt-4 sticky bottom-4 bg-[#0a0a0a]/80 backdrop-blur-sm py-3 -mx-2 px-2 rounded-lg border-t border-white/5">
               <button
                 onClick={sendTest}
-                disabled={sendingTest}
-                className="px-4 py-2 text-xs uppercase tracking-wider bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/80 hover:text-white transition-all disabled:opacity-50"
+                disabled={sendingTest || blocks.length === 0}
+                className="px-4 py-2 text-xs uppercase tracking-wider bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/80 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sendingTest ? "Sending test…" : hasTested ? "Send another test" : "Send test"}
               </button>
 
               <button
                 onClick={() => setConfirmOpen(true)}
-                disabled={!hasTested || !audienceCount}
+                disabled={!hasTested || !audienceCount || blocks.length === 0}
                 title={!hasTested ? "Send a test first" : !audienceCount ? "No recipients in audience" : ""}
                 className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg transition-all ${
-                  hasTested && audienceCount
+                  hasTested && audienceCount && blocks.length > 0
                     ? "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
                     : "bg-white/[0.03] border border-white/5 text-white/30 cursor-not-allowed"
                 }`}
               >
                 Send to {audienceCount ?? 0}
               </button>
+
+              <div className="flex-1" />
+
+              <span className="text-[10px] uppercase tracking-wider text-white/30">
+                {blocks.length} block{blocks.length === 1 ? "" : "s"}
+              </span>
             </div>
           </div>
 
           {/* Preview */}
-          <div className="lg:sticky lg:top-6 h-fit">
+          <div className="xl:sticky xl:top-6 h-fit">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[10px] text-white/40 uppercase tracking-wider">Preview</p>
-              <button
-                onClick={() => setPreviewKey((k) => k + 1)}
-                className="text-[10px] text-white/40 hover:text-white/70 uppercase tracking-wider"
-              >
-                Refresh
-              </button>
+              <span className="text-[10px] text-white/30">Live · 600px wide</span>
             </div>
-            <div className="bg-[#050505] border border-white/10 rounded-lg overflow-hidden h-[640px]">
+            <div className="bg-[#050505] border border-white/10 rounded-lg overflow-hidden h-[760px]">
               <iframe
-                key={previewKey}
                 srcDoc={previewSrcDoc}
                 className="w-full h-full"
                 sandbox=""
