@@ -115,18 +115,30 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
   // ── Lightbox keyboard handler + scroll lock ───────────────────────────────
   useEffect(() => {
+    if (!isLightboxOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsLightboxOpen(false);
     };
-    if (isLightboxOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+
+    // Save position, pin body — the only approach that reliably stops
+    // scroll-bleed on iOS Safari and momentum-based trackpads.
+    const scrollY = window.scrollY;
+    const body = document.body;
+    body.style.position   = "fixed";
+    body.style.top        = `-${scrollY}px`;
+    body.style.width      = "100%";
+    body.style.overflow   = "hidden";
+
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      body.style.position = "";
+      body.style.top      = "";
+      body.style.width    = "";
+      body.style.overflow = "";
+      window.scrollTo({ top: scrollY, behavior: "instant" });
     };
   }, [isLightboxOpen]);
 
@@ -508,6 +520,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         <div
           className="fixed inset-0 z-[100] bg-[#080808]/95 flex items-center justify-center"
           onClick={() => setIsLightboxOpen(false)}
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           {/* Close */}
           <button
