@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -31,6 +32,9 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   const [added, setAdded]           = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [mounted, setMounted]       = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // DOM targets
   const imageRef         = useRef<HTMLDivElement>(null);      // GSAP clipPath + mousemove area
@@ -117,15 +121,12 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     if (isLightboxOpen) {
       window.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
     }
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
     };
   }, [isLightboxOpen]);
 
@@ -501,16 +502,17 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         </div>
       </div>
 
-      {/* ── Lightbox ── */}
-      {isLightboxOpen && (
+      {/* ── Lightbox — rendered via portal so it sits at document.body level,
+           outside any ancestor with overflow constraints or transforms.       */}
+      {mounted && isLightboxOpen && product.images.length > 0 && createPortal(
         <div
-          className="fixed inset-0 z-[100] bg-[#080808]/95 flex items-center justify-center backdrop-blur-xl animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] bg-[#080808]/95 flex items-center justify-center"
           onClick={() => setIsLightboxOpen(false)}
         >
           {/* Close */}
           <button
             onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
-            className="fixed top-24 right-4 md:top-16 md:right-12 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+            className="absolute top-24 right-4 md:top-16 md:right-12 w-12 h-12 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-10 hover:scale-105 active:scale-95"
             aria-label="Close lightbox"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -522,7 +524,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           {hasMultipleImages && (
             <button
               onClick={handlePrevImage}
-              className="fixed left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+              className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-10 hover:scale-105 active:scale-95"
               aria-label="Previous image"
             >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -531,21 +533,21 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             </button>
           )}
 
-          <div className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw] flex items-center justify-center -mt-12 md:mt-0">
+          <div className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw]">
             <Image
               src={product.images[activeImage]}
               alt={`${product.name[locale as Locale]} - Zoomed`}
               fill
               className="object-contain"
               sizes="100vw"
-              priority
+              preload
             />
           </div>
 
           {hasMultipleImages && (
             <button
               onClick={handleNextImage}
-              className="fixed right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-[110] hover:scale-105 active:scale-95"
+              className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-full transition-all z-10 hover:scale-105 active:scale-95"
               aria-label="Next image"
             >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -553,7 +555,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               </svg>
             </button>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
