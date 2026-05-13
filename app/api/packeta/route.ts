@@ -52,31 +52,36 @@ export async function POST(req: NextRequest) {
 
     const deliveryData = order.shipping_address;
     const deliveryType = order.delivery_type;
-    const customerName = order.customer_email?.split("@")[0] || "Customer";
+
+    // Prefer stored customer name; fall back to email prefix so the packet
+    // always has a non-empty name/surname even for guest checkouts.
+    const rawName = order.customer_name || order.customer_email?.split("@")[0] || "Customer";
+    const [firstName, ...lastParts] = rawName.trim().split(/\s+/);
+    const surname = lastParts.join(" ") || firstName; // Packeta requires both
 
     try {
-      const [firstName, ...lastParts] = customerName.split(" ");
-      const surname = lastParts.join(" ") || firstName;
       const valueEur = ((order.total || 0) / 100).toFixed(2);
 
       const packetParams: Parameters<typeof createPacket>[0] = {
-        number: order.id.substring(0, 24),
+        number: order.id.replace(/-/g, "").substring(0, 24), // strip hyphens, keep alphanumeric
         name: firstName,
         surname,
         email: order.customer_email || "",
+        phone: order.customer_phone || undefined,
         value: valueEur,
         currency: "EUR",
         weight: 0.5,
       };
 
       if (deliveryType === "pickup" && deliveryData?.point) {
-        packetParams.addressId = deliveryData.point.id;
+        packetParams.addressId = Number(deliveryData.point.id);
       } else if (deliveryType === "home_delivery" && deliveryData?.address) {
         packetParams.carrierId = deliveryData.address.carrierId;
         packetParams.street = deliveryData.address.street;
-        packetParams.houseNumber = deliveryData.address.houseNumber;
+        packetParams.houseNumber = deliveryData.address.houseNumber || undefined;
         packetParams.city = deliveryData.address.city;
         packetParams.zip = deliveryData.address.postcode;
+        packetParams.country = (deliveryData.address.country || deliveryData.country || "").toUpperCase();
       }
 
       const { packetId } = await createPacket(packetParams);

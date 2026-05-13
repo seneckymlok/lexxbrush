@@ -123,6 +123,8 @@ export async function POST(req: NextRequest) {
         user_id: session.metadata?.user_id || null,
         stripe_payment_intent: session.payment_intent,
         customer_email: session.customer_details?.email,
+        customer_name: customerName || session.customer_details?.name || null,
+        customer_phone: customerPhone || session.customer_details?.phone || null,
         items: enrichedItems,
         total: session.amount_total,
         status: isTestMode ? "test" : "paid",

@@ -40,12 +40,18 @@ function parseXmlValue(xml: string, tag: string): string | null {
 }
 
 function parseXmlError(xml: string): string | null {
-  // Packeta returns <status>fault</status> and <fault>...</fault> or <message>...</message>
   const status = parseXmlValue(xml, "status");
-  if (status === "fault" || status === "error") {
-    return parseXmlValue(xml, "fault") || parseXmlValue(xml, "message") || "Unknown Packeta API error";
-  }
-  return null;
+  if (status !== "fault" && status !== "error") return null;
+
+  // PacketAttributesFault wraps child elements: <fault xsi:type="PacketAttributesFault">
+  //   <attribute>fieldName</attribute><message>reason</message></fault>
+  // Pull the xsi:type attribute name, the problem field, and the message.
+  const faultType  = xml.match(/xsi:type="([^"]+)"/)?.[1] || "";
+  const attribute  = parseXmlValue(xml, "attribute") || "";
+  const message    = parseXmlValue(xml, "message") || parseXmlValue(xml, "fault") || "";
+
+  const parts = [faultType, attribute ? `field=${attribute}` : "", message].filter(Boolean);
+  return parts.join(" | ") || "Unknown Packeta API error";
 }
 
 async function postXml(xml: string): Promise<string> {
@@ -62,6 +68,8 @@ async function postXml(xml: string): Promise<string> {
   const text = await res.text();
   const error = parseXmlError(text);
   if (error) {
+    // Log the full response so we can read which attribute failed in Vercel logs.
+    console.error("[packeta] API fault response:", text);
     throw new Error(`Packeta API error: ${error}`);
   }
 
@@ -88,6 +96,7 @@ interface CreatePacketParams {
   houseNumber?: string;
   city?: string;
   zip?: string;
+  country?: string;     // ISO 3166-1 alpha-2, required for home delivery
 }
 
 export async function createPacket(params: CreatePacketParams): Promise<{ packetId: string }> {
@@ -116,12 +125,13 @@ function buildPacketAttributesXml(params: CreatePacketParams): string {
     currency: params.currency || "EUR",
     weight: params.weight,
     eshop: params.eshop || process.env.PACKETA_ESHOP || "lexxbrush",
-    addressId: params.addressId,
+    addressId: params.addressId !== undefined ? Number(params.addressId) : undefined,
     carrierId: params.carrierId,
     street: params.street,
     houseNumber: params.houseNumber,
     city: params.city,
     zip: params.zip,
+    country: params.country,
   };
 
   return Object.entries(fields)
