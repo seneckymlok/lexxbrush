@@ -267,18 +267,15 @@ export async function POST(req: NextRequest) {
       }
 
       // Auto-create Packeta packet after payment — REAL ORDERS ONLY.
-      // Packeta bills per-packet at creation time via API, so we MUST NOT
-      // hit createPacket on test orders. The admin can still manually
-      // trigger packet creation from the orders page if a test order
-      // somehow needs to become real.
-      if (!isTestMode && deliveryData && order?.id) {
+      if (deliveryData && order?.id) {
         try {
-          const [firstName, ...lastParts] = customerName.split(" ");
+          const rawName = customerName || session.customer_details?.name || "Customer";
+          const [firstName, ...lastParts] = rawName.trim().split(/\s+/);
           const surname = lastParts.join(" ") || firstName;
           const valueEur = ((session.amount_total || 0) / 100).toFixed(2);
 
           const packetParams: Parameters<typeof createPacket>[0] = {
-            number: order.id.substring(0, 24),
+            number: order.id.replace(/-/g, "").substring(0, 24),
             name: firstName,
             surname,
             email: session.customer_details?.email || "",
@@ -289,13 +286,14 @@ export async function POST(req: NextRequest) {
           };
 
           if (deliveryType === "pickup" && deliveryData.point) {
-            packetParams.addressId = deliveryData.point.id;
+            packetParams.addressId = Number(deliveryData.point.id);
           } else if (deliveryType === "home_delivery" && deliveryData.address) {
             packetParams.carrierId = deliveryData.address.carrierId;
             packetParams.street = deliveryData.address.street;
-            packetParams.houseNumber = deliveryData.address.houseNumber;
+            packetParams.houseNumber = deliveryData.address.houseNumber || undefined;
             packetParams.city = deliveryData.address.city;
             packetParams.zip = deliveryData.address.postcode;
+            packetParams.country = (deliveryData.address.country || deliveryData.country || "").toUpperCase();
           }
 
           const { packetId } = await createPacket(packetParams);
