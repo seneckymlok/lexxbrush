@@ -74,8 +74,14 @@ export async function POST(req: NextRequest) {
   }
 
   const raw = await req.text();
+  // Always log a one-liner per hit so it's obvious in Vercel logs whether
+  // Resend is reaching us at all. This is the first thing to check when
+  // counters look frozen on the admin panel.
+  console.log("[resend-webhook] hit, bytes=", raw.length);
+
   const evt = verifySvix(req, raw) || verifyHmac(req, raw);
   if (!evt) {
+    console.error("[resend-webhook] rejected: signature invalid. Check RESEND_WEBHOOK_SECRET.");
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
   }
 
@@ -83,6 +89,15 @@ export async function POST(req: NextRequest) {
   const data:  any            = evt.data || {};
   const to:    string | string[] | undefined = data.to;
   const recipient = Array.isArray(to) ? to[0] : to;
+
+  // Log the event shape so we can confirm tags are arriving as expected.
+  console.log("[resend-webhook] event", {
+    type,
+    to: recipient,
+    email_id: data.email_id,
+    tags: data.tags,
+    has_click: !!data.click,
+  });
   // Resend echoes back `tags` (not custom headers) in webhook payloads.
   // Tags arrive as { name: value } — we send `campaign_id` from
   // sendNewsletterCampaign. Fall back to legacy header shape for any
