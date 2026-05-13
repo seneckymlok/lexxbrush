@@ -176,9 +176,27 @@ export async function POST(req: NextRequest) {
             productUrl: it.productId ? `${siteUrl}/product/${it.productId}` : null,
           }));
 
+          // Fetch Stripe-generated invoice PDF if available.
+          let invoicePdf: Buffer | undefined;
+          let invoiceNumber: string | undefined;
+          if (session.invoice) {
+            try {
+              const invoice = await stripe.invoices.retrieve(session.invoice as string);
+              invoiceNumber = invoice.number ?? undefined;
+              if (invoice.invoice_pdf) {
+                const res = await fetch(invoice.invoice_pdf);
+                if (res.ok) {
+                  invoicePdf = Buffer.from(await res.arrayBuffer());
+                }
+              }
+            } catch (invErr) {
+              console.error("[stripe-webhook] invoice PDF fetch failed:", invErr);
+            }
+          }
+
           await sendOrderConfirmation({
             orderId:       order.id,
-            reference:     order.id.slice(0, 8).toUpperCase(),
+            reference:     invoiceNumber || order.id.slice(0, 8).toUpperCase(),
             customerEmail: session.customer_details.email,
             customerName:  customerName || undefined,
             items:         emailItems,
@@ -187,6 +205,8 @@ export async function POST(req: NextRequest) {
             totalCents,
             delivery:      deliverySummary(deliveryType, deliveryData),
             siteUrl:       process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu",
+            invoicePdf,
+            invoiceNumber,
           });
         } catch (emailErr) {
           // Never fail the webhook for an email issue — the order is valid.

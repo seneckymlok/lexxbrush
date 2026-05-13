@@ -40,6 +40,9 @@ export interface OrderEmailPayload {
   delivery:          OrderEmailDelivery | null;
   /** Base site URL — used for "manage your order" link */
   siteUrl:           string;
+  /** Stripe invoice PDF buffer — attached when available */
+  invoicePdf?:       Buffer;
+  invoiceNumber?:    string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -347,6 +350,12 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
       html:    renderHtml(payload),
       text:    renderText(payload),
       headers: { "X-Entity-Ref-ID": payload.orderId },
+      ...(payload.invoicePdf ? {
+        attachments: [{
+          filename: `invoice-${payload.invoiceNumber || payload.reference}.pdf`,
+          content:  payload.invoicePdf,
+        }],
+      } : {}),
     });
 
     // ── Admin notification ─────────────────────────────────────────────────
