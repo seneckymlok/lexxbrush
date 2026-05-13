@@ -358,7 +358,15 @@ export async function sendNewsletterCampaign(p: CampaignPayload) {
       "List-Unsubscribe":      `<${unsubUrl}>, <mailto:${REPLY_TO}?subject=unsubscribe>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       "X-Entity-Ref-ID":       p.subscriberId,
-      ...(p.campaignId ? { "X-Campaign-ID": p.campaignId } : {}),
     },
+    // Tags are the only payload Resend echoes back in webhook events
+    // (custom X- headers are dropped). We rely on these in
+    // /api/webhooks/resend to attribute opens/clicks to a campaign +
+    // subscriber. Tag values are restricted to [A-Za-z0-9_-], which is
+    // compatible with UUIDs.
+    tags: [
+      { name: "subscriber_id", value: p.subscriberId },
+      ...(p.campaignId ? [{ name: "campaign_id", value: p.campaignId }] : []),
+    ],
   });
 }

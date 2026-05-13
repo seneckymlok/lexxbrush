@@ -83,8 +83,17 @@ export async function POST(req: NextRequest) {
   const data:  any            = evt.data || {};
   const to:    string | string[] | undefined = data.to;
   const recipient = Array.isArray(to) ? to[0] : to;
+  // Resend echoes back `tags` (not custom headers) in webhook payloads.
+  // Tags arrive as { name: value } — we send `campaign_id` from
+  // sendNewsletterCampaign. Fall back to legacy header shape for any
+  // in-flight events sent before this change rolled out.
+  const tags: Record<string, string> = (data.tags && typeof data.tags === "object")
+    ? (data.tags as Record<string, string>)
+    : {};
   const campaignId: string | undefined =
-    data.headers?.["X-Campaign-ID"] || data.headers?.["x-campaign-id"];
+    tags.campaign_id ||
+    data.headers?.["X-Campaign-ID"] ||
+    data.headers?.["x-campaign-id"];
 
   if (!recipient) {
     // Nothing actionable; ack so Resend doesn't retry.

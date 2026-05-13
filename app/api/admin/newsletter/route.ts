@@ -17,6 +17,27 @@ import { sendNewsletterCampaign } from "@/lib/email/newsletter";
 //   POST /api/admin/newsletter   { action: "send",    subject, html, text, preheader, audience }
 //   DELETE ?id=<subscriberId>                                → GDPR-style hard delete
 
+// Admin reads MUST always reflect the live DB — subscribers unsubscribe
+// asynchronously (via email link, Gmail one-click, or Resend webhook),
+// and stale CDN/browser caches were causing the admin to keep showing
+// people as "confirmed" until the next deploy invalidated the cache.
+// Force-dynamic + explicit no-store kills both layers.
+export const dynamic     = "force-dynamic";
+export const revalidate  = 0;
+export const fetchCache  = "force-no-store";
+
+const NO_STORE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+  "Pragma":        "no-cache",
+} as const;
+
+function json(body: unknown, init?: { status?: number }) {
+  return NextResponse.json(body, {
+    status:  init?.status ?? 200,
+    headers: NO_STORE_HEADERS,
+  });
+}
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 
@@ -125,7 +146,7 @@ async function attributionFor(
 export async function GET(req: NextRequest) {
   const uid = await verifyAdmin(req);
   if (!uid) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const url = new URL(req.url);
@@ -140,7 +161,7 @@ export async function GET(req: NextRequest) {
       supabase.from("newsletter_subscribers").select("*", { count: "exact", head: true }).in("status", ["bounced", "complained"]),
     ]);
 
-    return NextResponse.json({
+    return json({
       pending:      pending.count || 0,
       confirmed:    confirmed.count || 0,
       unsubscribed: unsubscribed.count || 0,
@@ -162,7 +183,7 @@ export async function GET(req: NextRequest) {
         q = q.eq("locale", locale);
       }
       const { count } = await q;
-      return NextResponse.json({ count: count || 0 });
+      return json({ count: count || 0 });
     }
 
     // For buyer / non_buyer segments we need the email column to intersect
@@ -179,7 +200,7 @@ export async function GET(req: NextRequest) {
       getBuyerEmails(supabase),
     ]);
     const filtered = applySegment(rows || [], segment, buyers);
-    return NextResponse.json({ count: filtered.length });
+    return json({ count: filtered.length });
   }
 
   if (action === "history") {
@@ -191,7 +212,7 @@ export async function GET(req: NextRequest) {
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (!campaigns) return NextResponse.json([]);
+    if (!campaigns) return json([]);
 
     // Compute attribution for every campaign in parallel. Each query is
     // bounded by the 7-day window and a small recipient set.
@@ -212,7 +233,7 @@ export async function GET(req: NextRequest) {
       }),
     );
 
-    return NextResponse.json(withAttribution);
+    return json(withAttribution);
   }
 
   if (action === "list") {
@@ -221,10 +242,10 @@ export async function GET(req: NextRequest) {
       .select("id, email, locale, status, source, created_at, confirmed_at, unsubscribed_at")
       .order("created_at", { ascending: false })
       .limit(500);
-    return NextResponse.json(data || []);
+    return json(data || []);
   }
 
-  return NextResponse.json({ error: "unknown_action" }, { status: 400 });
+  return json({ error: "unknown_action" }, { status: 400 });
 }
 
 // ─── POST ────────────────────────────────────────────────────────────────────
@@ -232,7 +253,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const uid = await verifyAdmin(req);
   if (!uid) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let body: {
@@ -246,14 +267,14 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   if (!body.subject || !body.html || !body.text) {
-    return NextResponse.json({ error: "missing_fields" }, { status: 400 });
+    return json({ error: "missing_fields" }, { status: 400 });
   }
   if (body.subject.length > 200) {
-    return NextResponse.json({ error: "subject_too_long" }, { status: 400 });
+    return json({ error: "subject_too_long" }, { status: 400 });
   }
 
   const supabase = createAdminClient();
@@ -273,10 +294,10 @@ export async function POST(req: NextRequest) {
         unsubToken:   fakeUnsub,
         siteUrl:      SITE_URL,
       });
-      return NextResponse.json({ ok: true, sentTo: ADMIN_EMAIL });
+      return json({ ok: true, sentTo: ADMIN_EMAIL });
     } catch (err) {
       console.error("[admin/newsletter] test send failed:", err);
-      return NextResponse.json({ error: "send_failed" }, { status: 500 });
+      return json({ error: "send_failed" }, { status: 500 });
     }
   }
 
@@ -296,17 +317,17 @@ export async function POST(req: NextRequest) {
     const { data: baseRecipients, error: fetchErr } = await query;
     if (fetchErr) {
       console.error("[admin/newsletter] recipient fetch failed:", fetchErr);
-      return NextResponse.json({ error: "fetch_failed" }, { status: 500 });
+      return json({ error: "fetch_failed" }, { status: 500 });
     }
     if (!baseRecipients || baseRecipients.length === 0) {
-      return NextResponse.json({ error: "no_recipients" }, { status: 400 });
+      return json({ error: "no_recipients" }, { status: 400 });
     }
 
     // Apply segment in JS (buyers / non_buyers).
     const buyers = segment === "all" ? new Set<string>() : await getBuyerEmails(supabase);
     const recipients = applySegment(baseRecipients, segment, buyers);
     if (recipients.length === 0) {
-      return NextResponse.json({ error: "no_recipients_after_segment" }, { status: 400 });
+      return json({ error: "no_recipients_after_segment" }, { status: 400 });
     }
 
     // Snapshot the recipient emails on the campaign row so attribution
@@ -330,7 +351,7 @@ export async function POST(req: NextRequest) {
 
     if (campaignErr || !campaign) {
       console.error("[admin/newsletter] campaign insert failed:", campaignErr);
-      return NextResponse.json({ error: "campaign_create_failed" }, { status: 500 });
+      return json({ error: "campaign_create_failed" }, { status: 500 });
     }
 
     // Fire off sends in batches. We deliberately wait between batches so we
@@ -373,7 +394,7 @@ export async function POST(req: NextRequest) {
       })
       .eq("id", campaign.id);
 
-    return NextResponse.json({
+    return json({
       ok: true,
       campaignId: campaign.id,
       sent:       delivered,
@@ -381,7 +402,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ error: "unknown_action" }, { status: 400 });
+  return json({ error: "unknown_action" }, { status: 400 });
 }
 
 // ─── DELETE — GDPR hard delete a subscriber row ──────────────────────────────
@@ -389,11 +410,11 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const uid = await verifyAdmin(req);
   if (!uid) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return json({ error: "Unauthorized" }, { status: 401 });
   }
   const id = new URL(req.url).searchParams.get("id");
   if (!id) {
-    return NextResponse.json({ error: "missing_id" }, { status: 400 });
+    return json({ error: "missing_id" }, { status: 400 });
   }
   const supabase = createAdminClient();
   const { error } = await supabase
@@ -401,7 +422,7 @@ export async function DELETE(req: NextRequest) {
     .delete()
     .eq("id", id);
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return json({ error: error.message }, { status: 400 });
   }
-  return NextResponse.json({ ok: true });
+  return json({ ok: true });
 }

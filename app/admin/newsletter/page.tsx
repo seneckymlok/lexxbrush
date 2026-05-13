@@ -34,6 +34,10 @@ async function adminFetch(url: string, options?: RequestInit) {
   const token = await getToken();
   return fetch(url, {
     ...options,
+    // Subscriber state changes asynchronously (Gmail one-click unsub,
+    // Resend webhooks, etc.). The browser HTTP cache must not serve a
+    // stale roster — pair this with no-store response headers server-side.
+    cache: "no-store",
     headers: {
       ...options?.headers,
       "Content-Type": "application/json",
@@ -154,12 +158,35 @@ export default function AdminNewsletterPage() {
       .catch(() => setAudienceCount(null));
   }, [locale, segment]);
 
+  // Stable refreshers so we can also re-pull on demand from a button.
+  const refreshStats = async () => {
+    try {
+      const r = await adminFetch("/api/admin/newsletter?action=stats");
+      setStats(await r.json());
+    } catch {}
+  };
+  const refreshSubscribers = async () => {
+    try {
+      const r = await adminFetch("/api/admin/newsletter?action=list");
+      setSubscribers(await r.json());
+    } catch {}
+  };
+  const refreshHistory = async () => {
+    try {
+      const r = await adminFetch("/api/admin/newsletter?action=history");
+      setHistory(await r.json());
+    } catch {}
+  };
+
   useEffect(() => {
     if (tab === "history") {
-      adminFetch("/api/admin/newsletter?action=history").then((r) => r.json()).then(setHistory).catch(() => {});
+      refreshHistory();
     }
     if (tab === "subscribers") {
-      adminFetch("/api/admin/newsletter?action=list").then((r) => r.json()).then(setSubscribers).catch(() => {});
+      // Pull both — stats stays in sync with the list view so the header
+      // counts reflect a fresh unsubscribe right after the row updates.
+      refreshSubscribers();
+      refreshStats();
     }
   }, [tab]);
 
@@ -450,6 +477,17 @@ export default function AdminNewsletterPage() {
 
       {tab === "subscribers" && (
         <div className="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
+            <div className="text-[10px] uppercase tracking-wider text-white/40">
+              {subscribers.length} {subscribers.length === 1 ? "row" : "rows"}
+            </div>
+            <button
+              onClick={() => { refreshSubscribers(); refreshStats(); }}
+              className="text-[10px] uppercase tracking-wider text-white/50 hover:text-white border border-white/10 hover:border-white/30 rounded px-3 py-1 transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
           <div className="grid grid-cols-[1fr_80px_120px_120px_140px_60px] px-5 py-3 border-b border-white/5 text-[10px] uppercase tracking-wider text-white/40">
             <div>Email</div><div>Locale</div><div>Status</div><div>Source</div><div>Joined</div><div></div>
           </div>
