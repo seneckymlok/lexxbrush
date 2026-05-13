@@ -122,11 +122,6 @@ function CartHand({
                 ? "grayscale(0.5) brightness(1.15) drop-shadow(0 0 4px rgba(255,255,255,0.35))"
                 : SUIT_GLOW[suit],
               transition:           "all 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
-              animationName:        ghost ? "cart-ghost-breathe" : "none",
-              animationDuration:    ghost ? "3.2s" : "0s",
-              animationTimingFunction: "ease-in-out",
-              animationIterationCount: ghost ? "infinite" : 1,
-              animationDelay:       ghost ? `${i * 200}ms` : "0ms",
             }}
           >
             <Image
