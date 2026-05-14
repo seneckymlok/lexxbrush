@@ -222,10 +222,20 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     "--product-accent":     accent,
     "--product-accent-2":   accent2,
     "--product-accent-rgb": accentRgb,
+    // While the lightbox is open, hide the page entirely. The portal-rendered
+    // lightbox lives at document.body so it stays visible, but the GPU no
+    // longer composites the blur-[80px] halo, the drop-shadow on the hero
+    // image, or any other paint work behind the overlay. This is what makes
+    // zoom feel snappy — the browser is rendering ONE image, not two layers.
+    ...(isLightboxOpen ? { visibility: "hidden" as const, contentVisibility: "hidden" as const } : null),
   } as React.CSSProperties;
 
   return (
-    <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 overflow-x-hidden w-full lg:flex-1 lg:flex lg:flex-col lg:min-h-0" style={accentStyle}>
+    <div
+      className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 overflow-x-hidden w-full lg:flex-1 lg:flex lg:flex-col lg:min-h-0"
+      style={accentStyle}
+      aria-hidden={isLightboxOpen}
+    >
 
       {/* Back button */}
       <button
