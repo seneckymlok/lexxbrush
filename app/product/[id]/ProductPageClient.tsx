@@ -266,9 +266,13 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                 Always present at 18% (atmospheric presence even at rest).
                 Blooms to 65% on hover — the shirt's palette floods the space.
                 Updates with activeImage so each angle has its own aura.
-                Negative scale (2×) + 80px blur = wide, soft spread.          */}
+                Negative scale (2×) + 80px blur = wide, soft spread.
+                Desktop-only: on mobile this 80px blur has no hover bloom
+                (no :hover on touch) and tanks pinch-zoom performance for
+                a barely-visible 18% effect. Killing it on mobile keeps the
+                zoom buttery.                                                 */}
             <div
-              className="absolute inset-0 z-0 pointer-events-none opacity-[0.18] group-hover:opacity-[0.65] transition-opacity duration-700"
+              className="absolute inset-0 z-0 pointer-events-none opacity-0 md:opacity-[0.18] md:group-hover:opacity-[0.65] transition-opacity duration-700 hidden md:block"
               aria-hidden="true"
             >
               <Image

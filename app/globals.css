@@ -655,15 +655,22 @@
   }
 
   /* Hero variant for the product detail page — bigger image, bigger shadow,
-     stays in place (no lift) since the image is the focal point of the page. */
+     stays in place (no lift) since the image is the focal point of the page.
+     Desktop-only: three stacked drop-shadows (the largest at 60px blur radius)
+     re-rasterize on every pinch-zoom frame on mobile, which makes the gesture
+     stutter. Mobile gets the bare image — fast, clean. */
   .product-float-hero {
-    filter:
-      drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5))
-      drop-shadow(0 40px 32px rgba(0, 0, 0, 0.38))
-      drop-shadow(0 80px 60px rgba(0, 0, 0, 0.22));
-    transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: filter;
     transform: translateZ(0);
+  }
+  @media (min-width: 768px) {
+    .product-float-hero {
+      filter:
+        drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5))
+        drop-shadow(0 40px 32px rgba(0, 0, 0, 0.38))
+        drop-shadow(0 80px 60px rgba(0, 0, 0, 0.22));
+      transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: filter;
+    }
   }
 }
 
