@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase";
-import { stripeShippingOptions, type DeliveryType } from "@/lib/shipping";
+import { stripeShippingOptions, cartWeightKg, type DeliveryType } from "@/lib/shipping";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const productIds = items.map((item: any) => item.productId);
     const { data: products } = await supabase
       .from("products")
-      .select("id, slug, name_en, price, images, is_sold")
+      .select("id, slug, name_en, price, images, is_sold, category")
       .in("id", productIds);
 
     if (!products || products.length === 0) {
@@ -59,6 +59,18 @@ export async function POST(req: NextRequest) {
       price_data: { unit_amount: number };
       quantity: number;
     }>).reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0);
+
+    // Cart weight (kg) — sums per-category defaults from the Packeta pricelist
+    // so the shipping rate matches the actual carrier cost.
+    const weightKg = cartWeightKg(
+      items.map((item: any) => {
+        const product = products.find((p) => p.id === item.productId);
+        return {
+          category: product?.category ?? null,
+          quantity: item.quantity || 1,
+        };
+      }),
+    );
 
     // Build compact delivery data for Stripe metadata (500 char limit per value)
     const deliveryData = delivery?.type === "pickup" && delivery.point
@@ -124,6 +136,10 @@ export async function POST(req: NextRequest) {
       // successful payment (so abandoned carts don't pollute the list).
       sessionConfig.metadata.newsletter_opt_in = "true";
     }
+    // Persist cart weight in metadata so the Stripe webhook can pass the same
+    // value to Packeta when creating the packet (instead of hardcoding 0.5 kg).
+    sessionConfig.metadata.cart_weight_kg = weightKg.toFixed(2);
+
     if (deliveryData) {
       sessionConfig.metadata.delivery_type = deliveryData.type;
       sessionConfig.metadata.delivery_data = JSON.stringify(deliveryData).slice(0, 500);
@@ -146,10 +162,11 @@ export async function POST(req: NextRequest) {
         ];
         sessionConfig.metadata.test_mode = "true";
       } else {
-        // Normal flow: real shipping rate based on the delivery method.
+        // Normal flow: weight-based Packeta pricing for the chosen method.
         sessionConfig.shipping_options = stripeShippingOptions(
           deliveryData.type as DeliveryType,
           subtotalCents,
+          weightKg,
         );
       }
     }

@@ -294,6 +294,11 @@ export async function POST(req: NextRequest) {
           const surname = lastParts.join(" ") || firstName;
           const valueEur = ((session.amount_total || 0) / 100).toFixed(2);
 
+          // Real cart weight (kg) stored by the checkout API from the
+          // per-category weight table. Falls back to 0.5 kg only for legacy
+          // sessions where the metadata key didn't exist yet.
+          const packetWeightKg = Number(session.metadata?.cart_weight_kg) || 0.5;
+
           const packetParams: Parameters<typeof createPacket>[0] = {
             number: order.id.replace(/-/g, "").substring(0, 24),
             name: firstName,
@@ -302,7 +307,7 @@ export async function POST(req: NextRequest) {
             phone: customerPhone || undefined,
             value: valueEur,
             currency: "EUR",
-            weight: 0.5,
+            weight: packetWeightKg,
           };
 
           if (deliveryType === "pickup" && deliveryData.point) {
