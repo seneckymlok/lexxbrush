@@ -105,6 +105,13 @@ export async function POST(req: NextRequest) {
     // how Apple Pay, Google Pay, Link, Klarna, SEPA, iDEAL etc. light up as
     // "Express Checkout" buttons above the card form. With `["card"]` set
     // we'd force the card form only and suppress every wallet.
+    //
+    // NO Stripe Tax / no automatic_tax / no tax_behavior — Lexxbrush is
+    // registered under §7a of the Slovak VAT Act, which means we have an
+    // IČ DPH for cross-border B2B reverse-charge purposes only and we are
+    // NOT a VAT payer (§4) on our own sales. Invoices to customers MUST
+    // NOT contain a VAT line. The "Neplatca DPH" disclaimer lives in the
+    // Stripe Dashboard invoice template footer instead.
     const sessionConfig: any = {
       mode: "payment",
       invoice_creation: { enabled: true },
