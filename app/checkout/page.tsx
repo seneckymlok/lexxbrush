@@ -11,6 +11,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import type { Locale } from "@/lib/translations";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { PACKETA_COUNTRIES } from "@/lib/packeta";
+import { cartWeightKg, resolveShippingRate } from "@/lib/shipping";
 import PacketaWidget from "@/components/checkout/PacketaWidget";
 
 // Default export is a thin Suspense wrapper. `useSearchParams` (used inside
@@ -165,6 +166,17 @@ function CheckoutPageInner() {
     "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all duration-300";
   const labelClass =
     "block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1.5";
+
+  const weightKg = cartWeightKg(
+    items.map((item) => ({
+      category: (item.product as any).category,
+      quantity: item.quantity,
+    }))
+  );
+  const subtotalCents = Math.round(totalPrice * 100);
+  const shippingRate = resolveShippingRate(deliveryType, subtotalCents, weightKg);
+  const shippingEur = (shippingRate.amount / 100).toFixed(2);
+  const finalTotal = (totalPrice + shippingRate.amount / 100).toFixed(2);
 
   return (
     <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-18 pb-12 md:pt-24 md:pb-24">
@@ -363,10 +375,19 @@ function CheckoutPageInner() {
 
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
                   <span className="font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.15em] uppercase text-chrome">
+                    {t("checkout.shipping")}
+                  </span>
+                  <span className="font-[family-name:var(--font-display)] text-sm text-chrome-bright">
+                    {shippingRate.amount === 0 ? t("checkout.free") : `€${shippingEur}`}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between mt-2 pt-2">
+                  <span className="font-[family-name:var(--font-display)] text-sm font-bold tracking-[0.15em] uppercase text-chrome">
                     {t("cart.total")}
                   </span>
                   <span className="font-[family-name:var(--font-display)] text-2xl font-extrabold text-white">
-                    &euro;{totalPrice}
+                    &euro;{finalTotal}
                   </span>
                 </div>
 

@@ -86,6 +86,9 @@ export const translations = {
       pay: "Continue to Payment",
       processing: "Processing...",
       backToCart: "Back to Cart",
+      successTitle: "Order Confirmed!",
+      successMessage: "Thanks for your order. You'll receive a confirmation email shortly. Each piece is hand-airbrushed, so your unique artwork will be on its way soon.",
+      free: "FREE",
     },
     contact: {
       title: "Contact",
@@ -269,6 +272,9 @@ export const translations = {
       pay: "Pokračovať k Platbe",
       processing: "Spracováva sa...",
       backToCart: "Späť do Košíka",
+      successTitle: "Objednávka potvrdená!",
+      successMessage: "Ďakujeme za objednávku. Čoskoro dostanete potvrdzovací email. Každý kus je ručne maľovaný, takže vaše unikátne umenie bude čoskoro na ceste.",
+      free: "ZADARMO",
     },
     contact: {
       title: "Kontakt",

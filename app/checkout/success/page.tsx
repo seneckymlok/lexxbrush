@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useCart } from "@/components/providers/CartProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const { clearCart } = useCart();
+  const { t } = useLanguage();
 
   useEffect(() => {
     clearCart();
@@ -24,16 +26,15 @@ function SuccessContent() {
             <path d="m9 12 2 2 4-4" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-white mb-3">Order Confirmed!</h1>
+        <h1 className="text-2xl font-bold text-white mb-3">{t("checkout.successTitle")}</h1>
         <p className="text-white/50 text-sm leading-relaxed mb-8">
-          Thanks for your order. You&apos;ll receive a confirmation email shortly.
-          Each piece is hand-airbrushed, so your unique artwork will be on its way soon.
+          {t("checkout.successMessage")}
         </p>
         <Link
           href="/"
           className="inline-block px-6 py-3 bg-white text-black text-sm font-semibold rounded-full hover:bg-white/90 transition-colors"
         >
-          Back to Shop
+          {t("product.backToShop")}
         </Link>
         {sessionId && (
           <p className="mt-6 text-[10px] text-white/15">Ref: {sessionId.slice(0, 20)}...</p>
