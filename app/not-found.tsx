@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const SUITS = [
   {
@@ -101,6 +102,7 @@ function SuitCard({
 
 export default function NotFound() {
   const [visible, setVisible] = useState(false);
+  const { t } = useLanguage();
 
   // Stagger-in after mount - no GSAP needed, pure CSS transitions
   useEffect(() => {
@@ -120,7 +122,7 @@ export default function NotFound() {
         }}
       >
         <h1 className="font-[family-name:var(--font-display)] text-[clamp(3.5rem,14vw,9rem)] font-extrabold tracking-tight uppercase chrome-text leading-[0.88]">
-          WRONG<br />CARD.
+          {t("notFound.titleLine1")}<br />{t("notFound.titleLine2")}
         </h1>
       </div>
 
@@ -133,7 +135,7 @@ export default function NotFound() {
           transform: visible ? "translateY(0)" : "translateY(12px)",
         }}
       >
-        Pick one and try again
+        {t("notFound.subtitle")}
       </p>
 
       {/* Four suits */}
@@ -152,7 +154,7 @@ export default function NotFound() {
           transitionDelay: "600ms",
         }}
       >
-        Back to shop
+        {t("notFound.back")}
       </Link>
     </div>
   );

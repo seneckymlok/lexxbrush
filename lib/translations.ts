@@ -186,6 +186,12 @@ export const translations = {
         cta:     "Back to the site",
       },
     },
+    notFound: {
+      titleLine1: "WRONG",
+      titleLine2: "CARD.",
+      subtitle: "Pick one and try again",
+      back: "Back to shop",
+    },
   },
   sk: {
     nav: {
@@ -371,6 +377,12 @@ export const translations = {
         body:    "Možno už bol použitý alebo vypršala jeho platnosť. Prihlásiť alebo odhlásiť sa môžeš z päty každej stránky.",
         cta:     "Späť na stránku",
       },
+    },
+    notFound: {
+      titleLine1: "ZLÁ",
+      titleLine2: "KARTA.",
+      subtitle: "Vyber si jednu a skús to znova",
+      back: "Späť do obchodu",
     },
   },
 } as const;
