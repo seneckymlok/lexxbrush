@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -47,6 +47,27 @@ export function ProductCard({ product, index }: ProductCardProps) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  const [showDiamondTooltip, setShowDiamondTooltip] = useState(false);
+  const [showSpadeTooltip, setShowSpadeTooltip] = useState(false);
+  const diamondTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleDiamondClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDiamondTooltip(true);
+    if (diamondTimeoutRef.current) clearTimeout(diamondTimeoutRef.current);
+    diamondTimeoutRef.current = setTimeout(() => setShowDiamondTooltip(false), 2000);
+  };
+
+  const handleSpadeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowSpadeTooltip(true);
+    if (spadeTimeoutRef.current) clearTimeout(spadeTimeoutRef.current);
+    spadeTimeoutRef.current = setTimeout(() => setShowSpadeTooltip(false), 2000);
+  };
 
   const handleFavClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -178,21 +199,21 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {/* ── Badges — diamond = ONE OF ONE · spade = SOLD ── */}
           <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col gap-0.5 z-20">
             {product.isOneOfAKind && (
-              <div className="group/badge relative">
+              <div className="group/badge relative cursor-pointer" onClick={handleDiamondClick}>
                 <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(0,220,255,0.65)]">
                   <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="44px" />
                 </div>
-                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200 z-10">
+                <span className={`pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded transition-opacity duration-200 z-10 ${showDiamondTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
                   One of one
                 </span>
               </div>
             )}
             {product.isSold && (
-              <div className="group/badge relative">
+              <div className="group/badge relative cursor-pointer" onClick={handleSpadeClick}>
                 <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(30,80,255,0.65)]">
                   <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="44px" />
                 </div>
-                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200 z-10">
+                <span className={`pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-0.5 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded transition-opacity duration-200 z-10 ${showSpadeTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
                   Sold
                 </span>
               </div>

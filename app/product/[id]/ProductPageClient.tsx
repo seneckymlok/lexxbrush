@@ -46,6 +46,23 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   const rafRef     = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [showDiamondTooltip, setShowDiamondTooltip] = useState(false);
+  const [showSpadeTooltip, setShowSpadeTooltip] = useState(false);
+  const diamondTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleDiamondClick = () => {
+    setShowDiamondTooltip(true);
+    if (diamondTimeoutRef.current) clearTimeout(diamondTimeoutRef.current);
+    diamondTimeoutRef.current = setTimeout(() => setShowDiamondTooltip(false), 2000);
+  };
+
+  const handleSpadeClick = () => {
+    setShowSpadeTooltip(true);
+    if (spadeTimeoutRef.current) clearTimeout(spadeTimeoutRef.current);
+    spadeTimeoutRef.current = setTimeout(() => setShowSpadeTooltip(false), 2000);
+  };
+
   // ── Title shimmer ─────────────────────────────────────────────────────────
   // Shared logic: remove the class, force a reflow so the browser registers
   // the removal, then re-add it — animation restarts from the beginning.
@@ -110,6 +127,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     return () => {
       cancelAnimationFrame(rafRef.current);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (diamondTimeoutRef.current) clearTimeout(diamondTimeoutRef.current);
+      if (spadeTimeoutRef.current) clearTimeout(spadeTimeoutRef.current);
     };
   }, []);
 
@@ -398,21 +417,21 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           {(product.isOneOfAKind || product.isSold) && (
             <div className="flex items-center gap-3 mb-5">
               {product.isOneOfAKind && (
-                <div className="group/badge relative flex-shrink-0">
+                <div className="group/badge relative flex-shrink-0 cursor-pointer" onClick={handleDiamondClick}>
                   <div className="relative w-12 h-12 drop-shadow-[0_0_10px_rgba(0,220,255,0.7)]">
                     <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="48px" />
                   </div>
-                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200 z-10">
+                  <span className={`pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded transition-opacity duration-200 z-10 ${showDiamondTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
                     One of one
                   </span>
                 </div>
               )}
               {product.isSold && (
-                <div className="group/badge relative flex-shrink-0">
+                <div className="group/badge relative flex-shrink-0 cursor-pointer" onClick={handleSpadeClick}>
                   <div className="relative w-12 h-12 drop-shadow-[0_0_10px_rgba(30,80,255,0.7)]">
                     <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="48px" />
                   </div>
-                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded opacity-0 group-hover/badge:opacity-100 transition-opacity duration-200 z-10">
+                  <span className={`pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded transition-opacity duration-200 z-10 ${showSpadeTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
                     Sold
                   </span>
                 </div>
