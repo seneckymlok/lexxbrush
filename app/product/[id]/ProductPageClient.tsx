@@ -421,7 +421,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   <div className="relative w-12 h-12 drop-shadow-[0_0_10px_rgba(0,220,255,0.7)]">
                     <Image src="/suits/diamond.webp" alt="One of a kind" fill className="object-contain" sizes="48px" />
                   </div>
-                  <span className={`pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded transition-opacity duration-200 z-10 ${showDiamondTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
+                  <span className={`pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-cyan-300 border border-cyan-500/40 rounded transition-opacity duration-200 z-10 ${showDiamondTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
                     One of one
                   </span>
                 </div>
@@ -431,7 +431,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   <div className="relative w-12 h-12 drop-shadow-[0_0_10px_rgba(30,80,255,0.7)]">
                     <Image src="/suits/spade.webp" alt="Sold" fill className="object-contain" sizes="48px" />
                   </div>
-                  <span className={`pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded transition-opacity duration-200 z-10 ${showSpadeTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
+                  <span className={`pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-medium tracking-widest uppercase whitespace-nowrap bg-black/80 text-blue-300 border border-blue-500/40 rounded transition-opacity duration-200 z-10 ${showSpadeTooltip ? "opacity-100" : "opacity-0 group-hover/badge:opacity-100"}`}>
                     Sold
                   </span>
                 </div>
