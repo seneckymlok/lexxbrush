@@ -13,18 +13,18 @@ export function LanguageSwitcher() {
     >
       <span
         className={`transition-all duration-200 ${
-          locale === "en" ? "text-white" : "text-text-dim"
-        }`}
-      >
-        EN
-      </span>
-      <span className="text-steel">/</span>
-      <span
-        className={`transition-all duration-200 ${
           locale === "sk" ? "text-white" : "text-text-dim"
         }`}
       >
         SK
+      </span>
+      <span className="text-steel">/</span>
+      <span
+        className={`transition-all duration-200 ${
+          locale === "en" ? "text-white" : "text-text-dim"
+        }`}
+      >
+        EN
       </span>
     </button>
   );

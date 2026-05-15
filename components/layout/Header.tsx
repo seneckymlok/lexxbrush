@@ -383,10 +383,6 @@ export function Header() {
                     transitionDelay: mobileMenuOpen ? `${300 + i * 80}ms` : "0ms",
                   }}
                 >
-                  {/* Numbering */}
-                  <span className="font-[family-name:var(--font-accent)] text-xs md:text-sm italic text-white/30 tabular-nums mt-3 md:mt-5 transition-colors duration-300 group-hover:text-sage">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
 
                   {/* High-impact Typographic Link matching Collection Title */}
                   <span className="relative font-[family-name:var(--font-display)] text-[clamp(2rem,9vw,5.5rem)] leading-[0.95] font-extrabold tracking-normal uppercase chrome-text transition-colors duration-500 group-hover:text-sage pb-2 pt-3 min-w-0 block overflow-visible">
