@@ -96,10 +96,17 @@ export async function POST(req: NextRequest) {
         }
       : null;
 
-    // Build session config
+    // Build session config.
+    //
+    // We deliberately do NOT set `payment_method_types`. Omitting it switches
+    // Stripe Checkout into "dynamic payment methods" mode — Stripe shows
+    // every method enabled in Dashboard → Settings → Payment methods that's
+    // eligible for the customer's country, currency, and cart total. This is
+    // how Apple Pay, Google Pay, Link, Klarna, SEPA, iDEAL etc. light up as
+    // "Express Checkout" buttons above the card form. With `["card"]` set
+    // we'd force the card form only and suppress every wallet.
     const sessionConfig: any = {
       mode: "payment",
-      payment_method_types: ["card"],
       invoice_creation: { enabled: true },
       line_items: lineItems,
       success_url: successUrl || `${req.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,

@@ -25,6 +25,13 @@ interface Order {
   delivery_type: string | null;
   packeta_packet_id: string | null;
   packeta_tracking_number: string | null;
+  // Stripe invoice metadata — populated by the webhook the moment the
+  // checkout session completes (see app/api/webhooks/stripe/route.ts).
+  // Older rows pre-migration will have these null; the UI degrades silently.
+  stripe_invoice_id:   string | null;
+  invoice_number:      string | null;
+  invoice_hosted_url:  string | null;
+  invoice_pdf_url:     string | null;
   created_at: string;
 }
 
@@ -188,6 +195,43 @@ export default function AdminOrdersPage() {
                       <div className="mt-3 pt-3 border-t border-white/5">
                         <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">{delivery.label}</p>
                         <p className="text-xs text-white/40">{delivery.detail}</p>
+                      </div>
+                    )}
+
+                    {/* Invoice — Stripe-generated. The hosted URL is stable;
+                        the PDF URL is signed and may expire — both are
+                        offered so the admin gets the fastest path while it
+                        works, and the permanent one as a fallback. */}
+                    {(order.invoice_number || order.invoice_hosted_url || order.invoice_pdf_url) && (
+                      <div className="mt-3 pt-3 border-t border-white/5">
+                        <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Invoice</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {order.invoice_number && (
+                            <code className="text-xs text-white/60 bg-white/5 px-1.5 py-0.5 rounded">
+                              {order.invoice_number}
+                            </code>
+                          )}
+                          {order.invoice_hosted_url && (
+                            <a
+                              href={order.invoice_hosted_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                            >
+                              View
+                            </a>
+                          )}
+                          {order.invoice_pdf_url && (
+                            <a
+                              href={order.invoice_pdf_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                            >
+                              PDF
+                            </a>
+                          )}
+                        </div>
                       </div>
                     )}
 

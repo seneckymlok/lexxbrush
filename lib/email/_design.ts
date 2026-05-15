@@ -184,16 +184,9 @@ export function cinematicFrame(opts: CinematicFrameOpts): string {
             </td>
           </tr>
 
-          <!-- Suit micro-line — sits directly under the logo, in the accent hue.
-               One-line typographic signature. -->
+          <!-- Spacer below logo — suit label removed; accent colour carries the mood. -->
           <tr>
-            <td align="center" style="padding:24px 0 48px 0;">
-              <div style="font-family:${SANS};font-size:9px;letter-spacing:0.55em;text-transform:uppercase;color:${a.hex};font-weight:700;">
-                <span style="opacity:0.55;">·</span>
-                &nbsp;${a.label}&nbsp;
-                <span style="opacity:0.55;">·</span>
-              </div>
-            </td>
+            <td style="padding:0 0 48px 0;font-size:0;line-height:0;">&nbsp;</td>
           </tr>
 
           <!-- ─── BODY (caller content) ─────────────────────────────────────── -->

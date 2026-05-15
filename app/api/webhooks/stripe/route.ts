@@ -176,13 +176,28 @@ export async function POST(req: NextRequest) {
             productUrl: it.productId ? `${siteUrl}/product/${it.productId}` : null,
           }));
 
-          // Fetch Stripe-generated invoice PDF if available.
+          // Fetch Stripe-generated invoice + persist its URLs on the order
+          // row so the admin panel can link to the hosted page and download
+          // the PDF without round-tripping back to Stripe.
           let invoicePdf: Buffer | undefined;
           let invoiceNumber: string | undefined;
           if (session.invoice) {
             try {
               const invoice = await stripe.invoices.retrieve(session.invoice as string);
               invoiceNumber = invoice.number ?? undefined;
+
+              // Persist invoice metadata. Fire-and-forget by design — a
+              // failure here must not break the email flow below.
+              await supabase
+                .from("orders")
+                .update({
+                  stripe_invoice_id:  invoice.id ?? null,
+                  invoice_number:     invoice.number ?? null,
+                  invoice_hosted_url: invoice.hosted_invoice_url ?? null,
+                  invoice_pdf_url:    invoice.invoice_pdf ?? null,
+                })
+                .eq("id", order.id);
+
               if (invoice.invoice_pdf) {
                 const res = await fetch(invoice.invoice_pdf);
                 if (res.ok) {
@@ -190,7 +205,7 @@ export async function POST(req: NextRequest) {
                 }
               }
             } catch (invErr) {
-              console.error("[stripe-webhook] invoice PDF fetch failed:", invErr);
+              console.error("[stripe-webhook] invoice fetch/persist failed:", invErr);
             }
           }
 
