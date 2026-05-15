@@ -3,7 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { NewsletterSignup } from "@/components/ui/NewsletterSignup";
+// Newsletter signup intentionally removed from the public web — the client
+// doesn't want to use it. Admin tooling and the existing campaign/confirm
+// API endpoints stay intact so manually managed broadcasts still work.
 export function Footer() {
   const { t } = useLanguage();
 
@@ -32,10 +34,9 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Newsletter — the drop list */}
-          <div className="flex-1 flex justify-center md:justify-start max-w-sm w-full">
-            <NewsletterSignup source="footer" />
-          </div>
+          {/* Spacer — newsletter slot intentionally removed. Keeps the
+              three-column footer rhythm without leaving a yawning empty box. */}
+          <div className="flex-1 hidden md:block" aria-hidden="true" />
 
           {/* Nav + Social */}
           <div className="flex flex-col items-center md:items-end gap-6 md:gap-8">

@@ -1,12 +1,35 @@
 // ─── Order confirmation email ────────────────────────────────────────────────
 //
-// Builds and sends a branded order confirmation via Resend.
-// Designed for email-client hostility: inline styles only, table layout,
-// web-safe fonts, max-width 600px, plain-text fallback.
+// Two emails are sent per successful order:
+//
+//   • CUSTOMER  → cinematic, heart-purple lit. "Thank you. Your piece is being
+//                 prepared by hand." Full order summary, delivery, invoice PDF
+//                 attached when available.
+//
+//   • ADMIN     → cinematic, diamond-cyan lit. "New order — €X." Compact,
+//                 urgent, functional — designed for a glance from a phone.
+//
+// Both share the same Lexxbrush cinematic frame (see `_design.ts`) so the
+// brand voice is identical even though the moods differ.
 
 import { Resend } from "resend";
+import {
+  cinematicFrame,
+  label,
+  headline,
+  paragraph,
+  divider,
+  thinRule,
+  button,
+  infoRow,
+  itemRow,
+  row,
+  esc,
+  eur,
+  FONTS,
+} from "./_design";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types (PUBLIC API — do not break callers) ──────────────────────────────
 
 export interface OrderEmailItem {
   /** Display name (English, since email needs a stable canonical form) */
@@ -33,6 +56,7 @@ export interface OrderEmailPayload {
   reference:         string;
   customerEmail:     string;
   customerName?:     string;
+  customerPhone?:    string;
   items:             OrderEmailItem[];
   subtotalCents:     number;
   shippingCents:     number;
@@ -45,275 +69,323 @@ export interface OrderEmailPayload {
   invoiceNumber?:    string;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Customer email ──────────────────────────────────────────────────────────
 
-const eur = (cents: number) =>
-  `€${(cents / 100).toLocaleString("en-IE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+function renderCustomerHtml(p: OrderEmailPayload): string {
+  // ── Greeting + intro ─────────────────────────────────────────────────────
+  const firstName = p.customerName?.trim().split(/\s+/)[0];
+  const greeting  = firstName ? `Thank you, ${firstName}.` : "Thank you.";
 
-const esc = (s: string | undefined | null) =>
-  (s ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  const headerBlock = `
+    ${row(label("Order · Confirmed", "heart"), "0 0 18px 0")}
+    ${row(headline(greeting),                  "0 0 18px 0")}
+    ${row(paragraph(
+      "Your piece is now in our hands. Every Lexxbrush garment is hand-airbrushed — give us a few days while we finish the work properly. You'll hear from us again the moment it ships."
+    ), "0 0 36px 0")}
+    ${row(divider("heart"), "0 0 32px 0")}
+  `;
 
-// ─── HTML template ───────────────────────────────────────────────────────────
+  // ── Meta strip (reference + email + invoice) ─────────────────────────────
+  const metaBlock = `
+    ${row(infoRow("Reference",  p.reference,     { mono: true }), "0")}
+    ${row(thinRule(), "0")}
+    ${row(infoRow("Sent to",    p.customerEmail),                  "0")}
+    ${p.invoiceNumber ? `${row(thinRule(), "0")}${row(infoRow("Invoice", p.invoiceNumber, { mono: true }), "0")}` : ""}
+    ${row(divider("heart"), "20px 0 28px 0")}
+  `;
 
-function renderHtml(p: OrderEmailPayload): string {
-  const itemsRows = p.items
-    .map((item) => {
-      const lineTotal = item.priceCents * item.quantity;
-      const imgEl = item.imageUrl
-        ? `<img src="${esc(item.imageUrl)}" alt="" width="64" height="64" style="display:block;border-radius:8px;background:#111;object-fit:cover;" />`
-        : `<div style="width:64px;height:64px;border-radius:8px;background:#111;"></div>`;
-      const img = item.productUrl
-        ? `<a href="${esc(item.productUrl)}" style="display:block;text-decoration:none;">${imgEl}</a>`
-        : imgEl;
-      const nameEl = `<div style="font-weight:600;letter-spacing:0.04em;text-transform:uppercase;font-size:13px;">${esc(item.name)}</div>`;
-      const name = item.productUrl
-        ? `<a href="${esc(item.productUrl)}" style="text-decoration:none;color:inherit;">${nameEl}</a>`
-        : nameEl;
-
-      return `
-        <tr>
-          <td style="padding:14px 0;border-bottom:1px solid #1a1a1a;vertical-align:top;width:80px;">
-            ${img}
-          </td>
-          <td style="padding:14px 0 14px 16px;border-bottom:1px solid #1a1a1a;vertical-align:top;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4;">
-            ${name}
-            ${item.size ? `<div style="color:#8a8a8a;font-size:11px;margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">Size · ${esc(item.size)}</div>` : ""}
-            ${item.quantity > 1 ? `<div style="color:#8a8a8a;font-size:11px;margin-top:2px;">× ${item.quantity}</div>` : ""}
-          </td>
-          <td style="padding:14px 0;border-bottom:1px solid #1a1a1a;vertical-align:top;text-align:right;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:500;white-space:nowrap;">
-            ${eur(lineTotal)}
-          </td>
-        </tr>`;
+  // ── In the box (line items) ─────────────────────────────────────────────
+  const itemsHtml = p.items
+    .map((it, i) => {
+      const rowHtml = itemRow({
+        name:       it.name,
+        size:       it.size,
+        quantity:   it.quantity,
+        priceCents: it.priceCents,
+        imageUrl:   it.imageUrl,
+        productUrl: it.productUrl,
+      }, "heart");
+      const separator = i < p.items.length - 1 ? row(thinRule(), "0") : "";
+      return row(rowHtml, "0") + separator;
     })
     .join("");
 
+  const itemsBlock = `
+    ${row(label("In the box", "heart"), "0 0 8px 0")}
+    ${itemsHtml}
+    ${row(divider("heart"), "16px 0 8px 0")}
+  `;
+
+  // ── Totals ──────────────────────────────────────────────────────────────
+  const shippingValue = p.shippingCents === 0 ? "Free" : eur(p.shippingCents);
+  const totalsBlock = `
+    ${row(infoRow("Subtotal", eur(p.subtotalCents)),                                   "0")}
+    ${row(infoRow("Shipping", shippingValue),                                          "0")}
+    ${row(divider("heart", 0.25), "12px 0 0 0")}
+    ${row(infoRow("Total",    eur(p.totalCents), { accent: "heart", emphasize: true }), "0")}
+    ${row(divider("heart"), "16px 0 36px 0")}
+  `;
+
+  // ── Delivery details ────────────────────────────────────────────────────
   const deliveryBlock = p.delivery
     ? `
-      <tr>
-        <td style="padding:24px 0 0 0;">
-          <div style="color:#6a6a6a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;margin-bottom:8px;">
-            ${p.delivery.type === "pickup" ? "Pickup Point" : "Home Delivery"}
-          </div>
-          <div style="color:#dcdcdc;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;">
-            ${esc(p.delivery.summary)}
-          </div>
-        </td>
-      </tr>`
+      ${row(label("Delivery", "heart"), "0 0 12px 0")}
+      ${row(`<div style="font-family:${FONTS.SANS};font-size:13px;color:#dcdcdc;line-height:1.65;">
+        <div style="font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:11px;color:#aaaaaa;margin-bottom:6px;">
+          ${esc(p.delivery.type === "pickup" ? "Packeta — Pickup Point" : "Packeta — Home Delivery")}
+        </div>
+        <div style="font-size:14px;color:#dcdcdc;">${esc(p.delivery.summary)}</div>
+      </div>`, "0 0 32px 0")}
+      ${row(divider("heart"), "0 0 36px 0")}
+    `
     : "";
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="x-apple-disable-message-reformatting" />
-  <title>Order confirmed</title>
-</head>
-<body style="margin:0;padding:0;background:#050505;color:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <!-- Preheader (hidden on render, shown in inbox preview) -->
-  <div style="display:none;max-height:0;overflow:hidden;color:transparent;line-height:0;font-size:0;">
-    Your Lexxbrush order ${esc(p.reference)} is confirmed — ${eur(p.totalCents)}.
-  </div>
+  // ── What happens next (the editorial moment) ────────────────────────────
+  // Four-step ladder. Each step has its own micro-typography. Cinematic
+  // touch: the numbered marker is the accent color, ghosted to 30%.
+  const steps: Array<[string, string]> = [
+    ["01", "We've received your order."],
+    ["02", "Your piece is prepared and packaged by hand — usually 1–3 business days."],
+    ["03", "Tracking arrives the moment the courier collects it."],
+    ["04", "You wear it. Tag @lexxbrush if you do — we always reshare."],
+  ];
 
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#050505;">
-    <tr>
-      <td align="center" style="padding:48px 16px;">
+  const stepsHtml = steps
+    .map(([num, text]) => `
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;"><tr>
+        <td width="56" valign="top" style="padding:14px 0;vertical-align:top;">
+          <div style="font-family:${FONTS.SERIF};font-style:italic;font-size:22px;color:rgba(136, 0, 204, 0.4);font-weight:400;line-height:1;">${num}</div>
+        </td>
+        <td valign="top" style="padding:14px 0;vertical-align:top;">
+          <div style="font-family:${FONTS.SANS};font-size:14px;color:#bbbbbb;line-height:1.6;">${esc(text)}</div>
+        </td>
+      </tr></table>`)
+    .join("");
 
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;">
+  const stepsBlock = `
+    ${row(label("What happens next", "heart"), "0 0 8px 0")}
+    ${row(stepsHtml, "0")}
+    ${row(divider("heart"), "32px 0 40px 0")}
+  `;
 
-          <!-- Header -->
-          <tr>
-            <td align="center" style="padding-bottom:40px;">
-              <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:0.4em;text-transform:uppercase;color:#6a6a6a;">
-                Lexxbrush
-              </div>
-            </td>
-          </tr>
+  // ── CTA ─────────────────────────────────────────────────────────────────
+  const ctaUrl = `${p.siteUrl.replace(/\/$/, "")}/account/orders`;
+  const ctaBlock = `
+    <tr><td align="center" style="padding:0 0 16px 0;">
+      ${button("View your order", ctaUrl, "heart")}
+    </td></tr>
+    ${p.invoicePdf ? `
+      <tr><td align="center" style="padding:18px 0 0 0;">
+        <div style="font-family:${FONTS.SANS};font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#5a5a5a;">
+          Invoice attached as PDF
+        </div>
+      </td></tr>` : ""}
+  `;
 
-          <!-- Hero -->
-          <tr>
-            <td style="padding:0 0 32px 0;">
-              <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:#a014dc;margin-bottom:12px;">
-                ♥ &nbsp; Order Confirmed
-              </div>
-              <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:36px;font-weight:800;line-height:1;color:#ffffff;letter-spacing:-0.02em;">
-                Your hand is dealt.
-              </div>
-              <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#8a8a8a;margin-top:16px;">
-                ${p.customerName ? `${esc(p.customerName)}, your` : "Your"} order is in. Every piece is painted entirely by hand — give us a few days to finish the work and prepare it for the courier.
-              </div>
-            </td>
-          </tr>
+  // ── Assemble ────────────────────────────────────────────────────────────
+  const body = `
+    ${headerBlock}
+    ${metaBlock}
+    ${itemsBlock}
+    ${totalsBlock}
+    ${deliveryBlock}
+    ${stepsBlock}
+    ${ctaBlock}
+  `;
 
-          <!-- Order block -->
-          <tr>
-            <td style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:24px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-
-                <!-- Reference + email -->
-                <tr>
-                  <td style="padding-bottom:20px;border-bottom:1px solid #1a1a1a;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                      <tr>
-                        <td>
-                          <div style="color:#6a6a6a;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;">Order</div>
-                          <div style="color:#ffffff;font-size:13px;font-family:'Menlo',monospace;margin-top:4px;">${esc(p.reference)}</div>
-                        </td>
-                        <td align="right">
-                          <div style="color:#6a6a6a;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;">Email</div>
-                          <div style="color:#dcdcdc;font-size:13px;margin-top:4px;">${esc(p.customerEmail)}</div>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- Items -->
-                <tr>
-                  <td style="padding-top:8px;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                      ${itemsRows}
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- Totals -->
-                <tr>
-                  <td style="padding-top:18px;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                      <tr>
-                        <td style="color:#8a8a8a;font-size:13px;padding:4px 0;">Subtotal</td>
-                        <td align="right" style="color:#dcdcdc;font-size:13px;padding:4px 0;">${eur(p.subtotalCents)}</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#8a8a8a;font-size:13px;padding:4px 0;">Shipping</td>
-                        <td align="right" style="color:#dcdcdc;font-size:13px;padding:4px 0;">${p.shippingCents === 0 ? "Free" : eur(p.shippingCents)}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding-top:14px;border-top:1px solid #1a1a1a;color:#ffffff;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;font-weight:600;">
-                          Total
-                        </td>
-                        <td align="right" style="padding-top:14px;border-top:1px solid #1a1a1a;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.01em;">
-                          ${eur(p.totalCents)}
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                ${deliveryBlock}
-
-              </table>
-            </td>
-          </tr>
-
-          <!-- Next steps -->
-          <tr>
-            <td style="padding:40px 0 0 0;">
-              <div style="color:#6a6a6a;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:16px;">
-                What happens next
-              </div>
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                <tr>
-                  <td style="padding:8px 0;color:#dcdcdc;font-size:13px;line-height:1.6;">
-                    <span style="color:#a014dc;">♥</span> &nbsp; We confirm your order (now).
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 0;color:#dcdcdc;font-size:13px;line-height:1.6;">
-                    <span style="color:#00dcff;">◆</span> &nbsp; Your piece is prepared and packaged — usually 1–3 business days.
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 0;color:#dcdcdc;font-size:13px;line-height:1.6;">
-                    <span style="color:#dcdc1e;">♣</span> &nbsp; Packeta tracking link arrives by email when the courier picks it up.
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 0;color:#dcdcdc;font-size:13px;line-height:1.6;">
-                    <span style="color:#3264ff;">♠</span> &nbsp; You wear it. Tag <strong style="color:#ffffff;">@lexxbrush</strong> if you do.
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td align="center" style="padding:48px 0 0 0;border-top:1px solid #1a1a1a;margin-top:40px;">
-              <div style="border-top:1px solid #1a1a1a;padding-top:32px;">
-                <div style="color:#6a6a6a;font-size:11px;line-height:1.6;">
-                  Questions? Reply to this email or write to
-                  <a href="mailto:info@lexxbrush.eu" style="color:#dcdcdc;text-decoration:none;">info@lexxbrush.eu</a>.
-                </div>
-                <div style="color:#4a4a4a;font-size:10px;line-height:1.6;margin-top:16px;letter-spacing:0.15em;text-transform:uppercase;">
-                  <a href="${esc(p.siteUrl)}" style="color:#6a6a6a;text-decoration:none;">lexxbrush.eu</a>
-                  &nbsp;·&nbsp;
-                  <a href="https://www.instagram.com/lexxbrush" style="color:#6a6a6a;text-decoration:none;">@lexxbrush</a>
-                </div>
-                <div style="color:#3a3a3a;font-size:10px;line-height:1.6;margin-top:24px;">
-                  Hand-airbrushed wearable art. Every piece is unique.
-                </div>
-              </div>
-            </td>
-          </tr>
-
-        </table>
-
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  return cinematicFrame({
+    accent:       "heart",
+    preheader:    `${firstName ? `${firstName}, your` : "Your"} Lexxbrush order ${p.reference} is confirmed — ${eur(p.totalCents)}.`,
+    bodyHtml:     body,
+    locale:       "en",
+    siteUrl:      p.siteUrl,
+    contactEmail: ADMIN_EMAIL,
+  });
 }
 
-// ─── Plain-text fallback ─────────────────────────────────────────────────────
-
-function renderText(p: OrderEmailPayload): string {
+function renderCustomerText(p: OrderEmailPayload): string {
   const lines: string[] = [];
-  lines.push(`LEXXBRUSH — Order confirmed`);
+  const firstName = p.customerName?.trim().split(/\s+/)[0];
+
+  lines.push(`LEXXBRUSH — ORDER · CONFIRMED`);
   lines.push(``);
-  lines.push(`${p.customerName ? `${p.customerName}, your` : "Your"} order is in.`);
-  lines.push(`Every piece is painted entirely by hand — give us a few days to finish the work.`);
+  lines.push(firstName ? `Thank you, ${firstName}.` : `Thank you.`);
   lines.push(``);
-  lines.push(`Order: ${p.reference}`);
-  lines.push(`Email: ${p.customerEmail}`);
+  lines.push(`Your piece is now in our hands. Every Lexxbrush garment is`);
+  lines.push(`hand-airbrushed — give us a few days while we finish the work`);
+  lines.push(`properly. You'll hear from us again the moment it ships.`);
   lines.push(``);
-  lines.push(`Items`);
-  lines.push(`-----`);
-  for (const item of p.items) {
-    const size = item.size ? ` · Size ${item.size}` : "";
-    const qty  = item.quantity > 1 ? ` × ${item.quantity}` : "";
-    lines.push(`${item.name}${size}${qty}    ${eur(item.priceCents * item.quantity)}`);
+  lines.push(`────────────────────────────────────────`);
+  lines.push(`Reference:  ${p.reference}`);
+  lines.push(`Sent to:    ${p.customerEmail}`);
+  if (p.invoiceNumber) lines.push(`Invoice:    ${p.invoiceNumber}`);
+  lines.push(`────────────────────────────────────────`);
+  lines.push(``);
+  lines.push(`IN THE BOX`);
+  lines.push(``);
+  for (const it of p.items) {
+    const size = it.size ? ` · Size ${it.size}` : "";
+    const qty  = it.quantity > 1 ? ` × ${it.quantity}` : "";
+    lines.push(`  ${it.name}${size}${qty}`);
+    lines.push(`  ${eur(it.priceCents * it.quantity)}`);
+    lines.push(``);
   }
-  lines.push(``);
-  lines.push(`Subtotal:  ${eur(p.subtotalCents)}`);
-  lines.push(`Shipping:  ${p.shippingCents === 0 ? "Free" : eur(p.shippingCents)}`);
-  lines.push(`Total:     ${eur(p.totalCents)}`);
+  lines.push(`────────────────────────────────────────`);
+  lines.push(`Subtotal:   ${eur(p.subtotalCents)}`);
+  lines.push(`Shipping:   ${p.shippingCents === 0 ? "Free" : eur(p.shippingCents)}`);
+  lines.push(`Total:      ${eur(p.totalCents)}`);
+  lines.push(`────────────────────────────────────────`);
   if (p.delivery) {
     lines.push(``);
-    lines.push(`${p.delivery.type === "pickup" ? "Pickup Point" : "Home Delivery"}`);
+    lines.push(`DELIVERY`);
+    lines.push(p.delivery.type === "pickup" ? "Packeta — Pickup Point" : "Packeta — Home Delivery");
     lines.push(p.delivery.summary);
   }
   lines.push(``);
-  lines.push(`What happens next`);
-  lines.push(`-----------------`);
-  lines.push(`1. We confirm your order (now).`);
-  lines.push(`2. Your piece is prepared and packaged — usually 1–3 business days.`);
-  lines.push(`3. Packeta tracking link arrives by email when the courier picks it up.`);
-  lines.push(`4. You wear it. Tag @lexxbrush if you do.`);
+  lines.push(`WHAT HAPPENS NEXT`);
+  lines.push(`01  We've received your order.`);
+  lines.push(`02  Your piece is prepared and packaged by hand (1–3 business days).`);
+  lines.push(`03  Tracking arrives the moment the courier collects it.`);
+  lines.push(`04  You wear it. Tag @lexxbrush if you do.`);
   lines.push(``);
-  lines.push(`Questions? Reply to this email or write to info@lexxbrush.eu`);
-  lines.push(`${p.siteUrl}`);
+  lines.push(`View your order:  ${p.siteUrl.replace(/\/$/, "")}/account/orders`);
+  if (p.invoicePdf) lines.push(`Invoice attached as PDF.`);
+  lines.push(``);
+  lines.push(`Questions?  ${ADMIN_EMAIL}`);
+  lines.push(`lexxbrush.eu · @lexxbrush`);
   return lines.join("\n");
+}
+
+// ─── Admin notification email ────────────────────────────────────────────────
+//
+// Same frame, different lighting (cyan = diamond = electric/urgent), different
+// information hierarchy. Designed to be readable in 2 seconds on a phone.
+
+function renderAdminHtml(p: OrderEmailPayload): string {
+  // Big total — the first thing visible after the logo.
+  const totalBlock = `
+    ${row(label("New order · Incoming", "diamond"), "0 0 18px 0")}
+    ${row(`<div style="font-family:${FONTS.SERIF};font-style:italic;font-size:54px;line-height:1;color:#ffffff;font-weight:400;letter-spacing:-0.02em;">
+      ${esc(eur(p.totalCents))}
+    </div>`, "0 0 12px 0")}
+    ${row(`<div style="font-family:${FONTS.SANS};font-size:11px;letter-spacing:0.32em;text-transform:uppercase;color:#00DDEE;font-weight:700;">
+      Order ${esc(p.reference)}
+    </div>`, "0 0 36px 0")}
+    ${row(divider("diamond"), "0 0 28px 0")}
+  `;
+
+  // Customer block — name, email, phone.
+  const phoneRow = p.customerPhone
+    ? `${row(thinRule(), "0")}${row(infoRow("Phone", p.customerPhone, { mono: true }), "0")}`
+    : "";
+  const customerBlock = `
+    ${row(label("Customer", "diamond"), "0 0 8px 0")}
+    ${row(infoRow("Name",  p.customerName || "(not provided)"), "0")}
+    ${row(thinRule(), "0")}
+    ${row(infoRow("Email", p.customerEmail), "0")}
+    ${phoneRow}
+    ${row(divider("diamond"), "20px 0 28px 0")}
+  `;
+
+  // Items — same component, cyan-themed.
+  const itemsHtml = p.items
+    .map((it, i) => {
+      const rowHtml = itemRow({
+        name:       it.name,
+        size:       it.size,
+        quantity:   it.quantity,
+        priceCents: it.priceCents,
+        imageUrl:   it.imageUrl,
+        productUrl: it.productUrl,
+      }, "diamond");
+      const separator = i < p.items.length - 1 ? row(thinRule(), "0") : "";
+      return row(rowHtml, "0") + separator;
+    })
+    .join("");
+
+  const itemsBlock = `
+    ${row(label("Items", "diamond"), "0 0 8px 0")}
+    ${itemsHtml}
+    ${row(divider("diamond"), "16px 0 28px 0")}
+  `;
+
+  // Totals breakdown — admin needs to see the split.
+  const shippingValue = p.shippingCents === 0 ? "Free" : eur(p.shippingCents);
+  const totalsBlock = `
+    ${row(infoRow("Subtotal", eur(p.subtotalCents)),                                       "0")}
+    ${row(infoRow("Shipping", shippingValue),                                              "0")}
+    ${row(divider("diamond", 0.25), "12px 0 0 0")}
+    ${row(infoRow("Total",    eur(p.totalCents), { accent: "diamond", emphasize: true }), "0")}
+    ${row(divider("diamond"), "16px 0 28px 0")}
+  `;
+
+  // Delivery — emphasized for the admin since they need to know how to ship.
+  const deliveryBlock = p.delivery
+    ? `
+      ${row(label("Delivery", "diamond"), "0 0 12px 0")}
+      ${row(`<div style="font-family:${FONTS.SANS};font-size:13px;color:#dcdcdc;line-height:1.65;">
+        <div style="font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:11px;color:#aaaaaa;margin-bottom:6px;">
+          ${esc(p.delivery.type === "pickup" ? "Packeta — Pickup Point" : "Packeta — Home Delivery")}
+        </div>
+        <div style="font-size:14px;color:#dcdcdc;">${esc(p.delivery.summary)}</div>
+      </div>`, "0 0 32px 0")}
+      ${row(divider("diamond"), "0 0 36px 0")}
+    `
+    : "";
+
+  // CTA — straight into the admin panel.
+  const adminUrl = `${p.siteUrl.replace(/\/$/, "")}/admin/orders`;
+  const ctaBlock = `
+    <tr><td align="center" style="padding:0;">
+      ${button("Open in admin", adminUrl, "diamond")}
+    </td></tr>
+  `;
+
+  const body = `
+    ${totalBlock}
+    ${customerBlock}
+    ${itemsBlock}
+    ${totalsBlock}
+    ${deliveryBlock}
+    ${ctaBlock}
+  `;
+
+  return cinematicFrame({
+    accent:       "diamond",
+    preheader:    `New order ${p.reference} — ${eur(p.totalCents)} · ${p.customerName || p.customerEmail}`,
+    bodyHtml:     body,
+    locale:       "en",
+    siteUrl:      p.siteUrl,
+    contactEmail: ADMIN_EMAIL,
+  });
+}
+
+function renderAdminText(p: OrderEmailPayload): string {
+  const itemsSummary = p.items
+    .map((i) => `${i.quantity}× ${i.name}${i.size ? ` (${i.size})` : ""}`)
+    .join(", ");
+
+  return [
+    `LEXXBRUSH — NEW ORDER · INCOMING`,
+    ``,
+    `${eur(p.totalCents)}`,
+    `Order ${p.reference}`,
+    ``,
+    `────────────────────────────────────────`,
+    `Customer:   ${p.customerName || "(no name)"} <${p.customerEmail}>`,
+    p.customerPhone ? `Phone:      ${p.customerPhone}` : "",
+    `────────────────────────────────────────`,
+    ``,
+    `Items:      ${itemsSummary}`,
+    ``,
+    `Subtotal:   ${eur(p.subtotalCents)}`,
+    `Shipping:   ${p.shippingCents === 0 ? "Free" : eur(p.shippingCents)}`,
+    `Total:      ${eur(p.totalCents)}`,
+    ``,
+    p.delivery ? `Delivery:   ${p.delivery.type === "pickup" ? "Pickup" : "Home delivery"} — ${p.delivery.summary}` : "",
+    ``,
+    `View in admin: ${p.siteUrl.replace(/\/$/, "")}/admin/orders`,
+  ].filter(Boolean).join("\n");
 }
 
 // ─── Sender ──────────────────────────────────────────────────────────────────
@@ -326,8 +398,8 @@ const FROM_EMAIL =
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 
 /**
- * Send the order confirmation email to the customer.
- * Returns the Resend response on success, or `null` on failure.
+ * Send the order confirmation email to the customer + admin notification.
+ * Returns the customer-email Resend response on success, or `null` on failure.
  * The webhook must NOT fail just because the email didn't go out.
  */
 export async function sendOrderConfirmation(payload: OrderEmailPayload) {
@@ -346,9 +418,9 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
       from:    FROM_EMAIL,
       to:      payload.customerEmail,
       replyTo: ADMIN_EMAIL,
-      subject: `Order confirmed — ${payload.reference} · Lexxbrush`,
-      html:    renderHtml(payload),
-      text:    renderText(payload),
+      subject: `Order confirmed · ${payload.reference} — Lexxbrush`,
+      html:    renderCustomerHtml(payload),
+      text:    renderCustomerText(payload),
       headers: { "X-Entity-Ref-ID": payload.orderId },
       ...(payload.invoicePdf ? {
         attachments: [{
@@ -360,37 +432,13 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
 
     // ── Admin notification ─────────────────────────────────────────────────
     // Fire-and-forget — never block or throw on admin notify failure.
-    const itemsSummary = payload.items
-      .map((i) => `${i.quantity}× ${i.name}${i.size ? ` (${i.size})` : ""}`)
-      .join(", ");
-    const totalEur = `€${(payload.totalCents / 100).toFixed(2)}`;
-
     resend.emails.send({
       from:    FROM_EMAIL,
       to:      ADMIN_EMAIL,
-      subject: `New order ${payload.reference} — ${totalEur}`,
-      text: [
-        `New order on Lexxbrush`,
-        ``,
-        `Reference:  ${payload.reference}`,
-        `Customer:   ${payload.customerName || "(no name)"} <${payload.customerEmail}>`,
-        `Total:      ${totalEur}`,
-        `Items:      ${itemsSummary}`,
-        payload.delivery ? `Delivery:   ${payload.delivery.type === "pickup" ? "Pickup" : "Home delivery"} — ${payload.delivery.summary}` : "",
-        ``,
-        `View in admin: ${payload.siteUrl}/admin/orders`,
-      ].filter(Boolean).join("\n"),
-      html: `
-        <p style="font-family:sans-serif;font-size:14px;color:#111;">
-          <strong>New order on Lexxbrush</strong><br><br>
-          <b>Reference:</b> ${payload.reference}<br>
-          <b>Customer:</b> ${payload.customerName || "(no name)"} &lt;${payload.customerEmail}&gt;<br>
-          <b>Total:</b> ${totalEur}<br>
-          <b>Items:</b> ${itemsSummary}<br>
-          ${payload.delivery ? `<b>Delivery:</b> ${payload.delivery.type === "pickup" ? "Pickup" : "Home delivery"} — ${payload.delivery.summary}<br>` : ""}
-          <br>
-          <a href="${payload.siteUrl}/admin/orders">View in admin →</a>
-        </p>`,
+      subject: `New order · ${eur(payload.totalCents)} — ${payload.reference}`,
+      html:    renderAdminHtml(payload),
+      text:    renderAdminText(payload),
+      headers: { "X-Entity-Ref-ID": `${payload.orderId}-admin` },
     }).catch((err) => {
       console.error("[email] Admin notify failed (non-fatal):", err);
     });

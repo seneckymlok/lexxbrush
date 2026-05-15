@@ -199,6 +199,7 @@ export async function POST(req: NextRequest) {
             reference:     invoiceNumber || order.id.slice(0, 8).toUpperCase(),
             customerEmail: session.customer_details.email,
             customerName:  customerName || undefined,
+            customerPhone: customerPhone || session.customer_details?.phone || undefined,
             items:         emailItems,
             subtotalCents,
             shippingCents,
