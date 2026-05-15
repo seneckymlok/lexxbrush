@@ -156,18 +156,18 @@ export async function GET(req: NextRequest) {
   // ── orders CSV ────────────────────────────────────────────────────────────
   const ordersLines: string[] = [
     csvRow([
-      "Date",
-      "Invoice number",
-      "Order ID",
-      "Customer name",
-      "Customer email",
-      "Customer phone",
-      "Total (EUR)",
-      "Delivery",
-      "Status",
+      "Dátum",
+      "Číslo faktúry",
+      "ID objednávky",
+      "Meno zákazníka",
+      "Email zákazníka",
+      "Telefón zákazníka",
+      "Suma (EUR)",
+      "Doručenie",
+      "Stav",
       "Stripe session",
       "Stripe payment intent",
-      "Invoice hosted URL",
+      "URL faktúry",
     ]),
   ];
   for (const o of orders) {
@@ -200,13 +200,13 @@ export async function GET(req: NextRequest) {
   // Stripe rate limits make parallel-then-recover more code than it's worth.
   const feesLines: string[] = [
     csvRow([
-      "Date",
-      "Invoice number",
-      "Order ID",
-      "Gross (EUR)",
-      "Stripe fee (EUR)",
-      "Net payout (EUR)",
-      "Currency",
+      "Dátum",
+      "Číslo faktúry",
+      "ID objednávky",
+      "Hrubá suma (EUR)",
+      "Stripe poplatok (EUR)",
+      "Čistý príjem (EUR)",
+      "Mena",
       "Charge ID",
       "Balance txn ID",
     ]),

@@ -32,7 +32,7 @@ function buildMonths(): MonthOption[] {
     const month = String(d.getUTCMonth() + 1).padStart(2, "0");
     out.push({
       key:       `${year}-${month}`,
-      label:     d.toLocaleString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }),
+      label:     d.toLocaleString("sk-SK", { month: "long", year: "numeric", timeZone: "UTC" }),
       isCurrent: i === 0,
     });
   }

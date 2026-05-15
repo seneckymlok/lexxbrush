@@ -74,7 +74,7 @@ export const metadata: Metadata = {
       "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand.",
     url: baseUrl,
     siteName: "Lexxbrush",
-    locale: "en_US",
+    locale: "sk_SK",
     type: "website",
     images: [
       {
@@ -114,7 +114,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`antialiased ${syne.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="sk" className={`antialiased ${syne.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         {/* Belt-and-suspenders: ensure viewport-fit=cover is set so iOS exposes
             env(safe-area-inset-*) values for the notch-aware header padding. */}
