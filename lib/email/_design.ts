@@ -326,8 +326,6 @@ export function infoRow(
 
 /**
  * Item line — used in the "in the box" section. 64×64 image, name + size, price.
- * Accent border-left bar on the image cell so each item visually anchors to the
- * email's stage color.
  */
 export interface LineItem {
   name:        string;
@@ -337,8 +335,7 @@ export interface LineItem {
   imageUrl?:   string | null;
   productUrl?: string | null;
 }
-export function itemRow(item: LineItem, accent: AccentKey): string {
-  const a = ACCENTS[accent];
+export function itemRow(item: LineItem, _accent: AccentKey): string {
   const lineTotal = item.priceCents * item.quantity;
 
   const imgInner = item.imageUrl
@@ -361,7 +358,7 @@ export function itemRow(item: LineItem, accent: AccentKey): string {
   const price = `<div style="font-family:${SANS};font-size:15px;font-weight:600;color:#ffffff;text-align:right;white-space:nowrap;">${esc(eur(lineTotal))}</div>`;
 
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;"><tr>
-    <td width="80" style="padding:18px 16px 18px 0;vertical-align:middle;border-left:2px solid ${a.hex};padding-left:16px;">
+    <td width="80" style="padding:18px 16px 18px 0;vertical-align:middle;">
       ${img}
     </td>
     <td style="padding:18px 0;vertical-align:middle;">

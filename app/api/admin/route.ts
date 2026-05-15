@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase";
 import { createClient } from "@supabase/supabase-js";
-import { Resend } from "resend";
 import { getTrackingUrl } from "@/lib/packeta";
+import { sendOrderShipped } from "@/lib/email/order-shipped";
 
 /**
  * Invalidate Next.js cache for the public-facing surfaces that depend on
@@ -25,116 +25,6 @@ function revalidateProductSurfaces(productId?: string) {
     revalidatePath(`/product/${productId}`);
   }
 }
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-function buildShippingEmailHtml(orderId: string, trackingUrl: string): string {
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Your Lexxbrush Order Has Shipped!</title>
-  <style>
-    body {
-      background-color: #0a0a0a;
-      color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-    }
-    .wrapper {
-      width: 100%;
-      background-color: #0a0a0a;
-      padding: 40px 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #111111;
-      border: 1px solid #333333;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    }
-    .header {
-      text-align: center;
-      padding: 40px 20px 20px 20px;
-    }
-    .content {
-      padding: 30px 40px;
-      text-align: center;
-    }
-    .title {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #ffffff;
-      letter-spacing: 0.05em;
-    }
-    .text {
-      color: #a0a0a0;
-      font-size: 15px;
-      margin-bottom: 30px;
-    }
-    .order-number {
-      font-family: monospace;
-      font-size: 16px;
-      color: #ffffff;
-      background-color: #222222;
-      padding: 6px 12px;
-      border-radius: 6px;
-      margin: 0 4px;
-    }
-    .btn {
-      display: inline-block;
-      background-color: #ffffff;
-      color: #000000;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 16px 36px;
-      border-radius: 8px;
-    }
-    .footer {
-      padding: 30px 40px;
-      text-align: center;
-      border-top: 1px solid #222222;
-    }
-    .footer-text {
-      color: #666666;
-      font-size: 12px;
-      margin: 0;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <div class="container">
-      <div class="header">
-        <a href="https://lexxbrush.eu" target="_blank">
-          <img src="https://lexxbrush.eu/logo.png" alt="Lexxbrush" style="height: 48px; width: auto; object-fit: contain; border: 0;" />
-        </a>
-      </div>
-      <div class="content">
-        <h2 class="title">Great News! Your Order Has Shipped</h2>
-        <p class="text">We've just completely packed up tracking <span class="order-number">#${orderId.substring(0, 8)}</span> and handed it over to the shipper. Your wearable art is on its way.</p>
-        <a href="${trackingUrl}" class="btn">Track Order Details</a>
-      </div>
-      <div class="footer">
-        <p class="footer-text" style="margin-bottom: 16px;">This is an automated message, please do not reply to this email.<br>If you need help, please contact <a href="mailto:info@lexxbrush.eu" style="color: #a0a0a0; text-decoration: underline;">info@lexxbrush.eu</a>.</p>
-        <p class="footer-text">© 2026 Lexxbrush. All rights reserved.<br>Hand-painted wearable art.</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
-  `;
-}
-
 
 // Helper to verify the user is authenticated
 async function verifyAdmin(req: NextRequest) {
@@ -227,28 +117,35 @@ export async function PATCH(req: NextRequest) {
     revalidateProductSurfaces(id);
   }
 
-  // If this was an order status update to "shipped", dispatch the Resend email
+  // If this was an order status update to "shipped", dispatch the
+  // cinematic spade-blue "your parcel is in motion" email.
   if (table === "orders" && data.status === "shipped") {
     try {
-      // Fetch order data for shipping notification
-      const { data: orderData } = await admin.from("orders").select("customer_email, packeta_packet_id").eq("id", id).single();
+      const { data: orderData } = await admin
+        .from("orders")
+        .select("customer_email, customer_name, packeta_packet_id")
+        .eq("id", id)
+        .single();
 
       if (orderData?.customer_email) {
+        const siteUrl     = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
         const trackingUrl = orderData.packeta_packet_id
           ? getTrackingUrl(orderData.packeta_packet_id)
-          : `${process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu"}/account`;
-        const emailHtml = buildShippingEmailHtml(id, trackingUrl);
+          : `${siteUrl}/account`;
 
-        await resend.emails.send({
-          from: "Lexxbrush <noreply@lexxbrush.eu>",
-          to: orderData.customer_email,
-          subject: "Your Lexxbrush order has shipped! 📦",
-          html: emailHtml,
+        await sendOrderShipped({
+          orderId:       id,
+          reference:     id.slice(0, 8).toUpperCase(),
+          customerEmail: orderData.customer_email,
+          customerName:  orderData.customer_name || undefined,
+          trackingUrl,
+          packetId:      orderData.packeta_packet_id || undefined,
+          siteUrl,
         });
       }
     } catch (err) {
-      console.error("Failed to send shipping email:", err);
-      // We don't fail the PATCH request if the email fails, the DB already updated.
+      // Never fail the PATCH for an email issue — the DB already updated.
+      console.error("[admin] Shipped email dispatch failed:", err);
     }
   }
 
