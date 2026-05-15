@@ -1,4 +1,4 @@
-// ─── Shipping rates — Packeta SK pricelist (valid 14.5.2026) ─────────────────
+// ─── Shipping rates - Packeta SK pricelist (valid 14.5.2026) ─────────────────
 //
 // All customer-facing amounts are returned in CENTS (Stripe convention).
 //
@@ -13,13 +13,13 @@
 //
 // Per-category weight defaults are used because we do not (yet) store a
 // per-product weight in the DB. If actual shipments diverge significantly
-// from these, tune the numbers — or add a `weight_g` column to `products`
+// from these, tune the numbers - or add a `weight_g` column to `products`
 // and replace the lookup.
 
 export type DeliveryType = "pickup" | "home_delivery";
 
 // ── Per-category weight assumptions (kg per single item) ─────────────────────
-// Conservative — better to slightly over-quote than to ship at a loss.
+// Conservative - better to slightly over-quote than to ship at a loss.
 const CATEGORY_WEIGHT_KG: Record<string, number> = {
   hoodies:     0.70,
   tees:        0.25,
@@ -37,7 +37,7 @@ const PICKUP_TIERS: Array<{ maxKg: number; baseEur: number }> = [
   { maxKg: 15, baseEur: 4.30 },
 ];
 
-// SK Packeta Home HD — home delivery by courier.
+// SK Packeta Home HD - home delivery by courier.
 const HOME_TIERS: Array<{ maxKg: number; baseEur: number }> = [
   { maxKg:  1, baseEur:  3.60 },
   { maxKg:  2, baseEur:  4.15 },
@@ -67,7 +67,7 @@ export const FREE_SHIPPING_THRESHOLD_CENTS = envNum(
 // ── Cart-weight helper ───────────────────────────────────────────────────────
 
 export interface ShippingItem {
-  /** Product category from `products.category` — drives the weight default. */
+  /** Product category from `products.category` - drives the weight default. */
   category?: string | null;
   quantity?: number | null;
 }
@@ -122,8 +122,8 @@ interface ShippingRate {
 }
 
 const LABELS: Record<DeliveryType, string> = {
-  pickup:        "Packeta — Pickup Point",
-  home_delivery: "Packeta — Home Delivery",
+  pickup:        "Packeta - Pickup Point",
+  home_delivery: "Packeta - Home Delivery",
 };
 
 /**
@@ -137,7 +137,7 @@ export function resolveShippingRate(
 ): ShippingRate {
   const isFree = subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS;
   return {
-    label:           isFree ? `${LABELS[deliveryType]} — Free` : LABELS[deliveryType],
+    label:           isFree ? `${LABELS[deliveryType]} - Free` : LABELS[deliveryType],
     amount:          isFree ? 0 : computeShippingCents(deliveryType, weightKg),
     estimateMinDays: 1,
     estimateMaxDays: 3,

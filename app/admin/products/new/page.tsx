@@ -29,7 +29,7 @@ export default function NewProductPage() {
     accent_color: "",
     accent_color_secondary: "",
   });
-  // Tracks whether the admin has manually edited the colors — if so, we never
+  // Tracks whether the admin has manually edited the colors - if so, we never
   // auto-overwrite them when a new image is dropped.
   const [accentTouched, setAccentTouched] = useState(false);
 
@@ -52,7 +52,7 @@ export default function NewProductPage() {
         .then(({ from, to }) => {
           if (!accentTouched) setForm((f) => ({ ...f, accent_color: from, accent_color_secondary: to }));
         })
-        .catch(() => { /* swallow — admin can extract manually */ });
+        .catch(() => { /* swallow - admin can extract manually */ });
     }
   }
 

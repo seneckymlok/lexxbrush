@@ -6,7 +6,7 @@
 // blocks, lets the user add / remove / reorder / edit them inline, and emits
 // changes back up via onChange.
 //
-// Pure UI — all HTML/text rendering happens in `lib/email/newsletter-blocks`.
+// Pure UI - all HTML/text rendering happens in `lib/email/newsletter-blocks`.
 // The composer never assembles markup itself; it just edits the JSON shape.
 
 import { useMemo, useState } from "react";
@@ -589,6 +589,6 @@ const BLOCK_PALETTE: { type: BlockType; label: string; icon: string }[] = [
   { type: "image",    label: "Image",    icon: "▭" },
   { type: "quote",    label: "Quote",    icon: "❝" },
   { type: "cta",      label: "Button",   icon: "▶" },
-  { type: "divider",  label: "Divider",  icon: "—" },
+  { type: "divider",  label: "Divider",  icon: "-" },
   { type: "spacer",   label: "Spacer",   icon: "↕" },
 ];

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // ─── Health check ────────────────────────────────────────────────────────────
 //
 // Returns the configuration state of every service the payment pipeline
-// depends on. Does NOT return secret values — only whether each one is
+// depends on. Does NOT return secret values - only whether each one is
 // present and not a known placeholder. Safe to expose publicly.
 //
 // Use this to verify in 5 seconds whether the broken payment flow is a
@@ -52,18 +52,18 @@ export async function GET() {
   // Flag the issues most likely to break payments.
   const issues: string[] = [];
   if (!stripe.secret_key.set || stripe.secret_key.placeholder) {
-    issues.push("STRIPE_SECRET_KEY missing or placeholder — checkout sessions will fail");
+    issues.push("STRIPE_SECRET_KEY missing or placeholder - checkout sessions will fail");
   }
   if (!stripe.webhook_secret.set || stripe.webhook_secret.placeholder) {
     issues.push(
-      "STRIPE_WEBHOOK_SECRET missing or placeholder — paid orders will NOT be recorded. Fix at: Stripe Dashboard → Developers → Webhooks → your endpoint → Signing secret",
+      "STRIPE_WEBHOOK_SECRET missing or placeholder - paid orders will NOT be recorded. Fix at: Stripe Dashboard → Developers → Webhooks → your endpoint → Signing secret",
     );
   }
   if (!supabase.service_role_key) {
-    issues.push("SUPABASE_SERVICE_ROLE_KEY missing — admin DB writes will fail");
+    issues.push("SUPABASE_SERVICE_ROLE_KEY missing - admin DB writes will fail");
   }
   if (!email.resend_api_key.set || email.resend_api_key.placeholder) {
-    issues.push("RESEND_API_KEY missing or placeholder — confirmation emails will NOT send");
+    issues.push("RESEND_API_KEY missing or placeholder - confirmation emails will NOT send");
   }
 
   return NextResponse.json({

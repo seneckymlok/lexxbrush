@@ -129,7 +129,7 @@ export function Intro() {
 
   const handleClick = (suit: typeof SUITS[number]) => {
     if (clicked) return;
-    // Only allow clicks during the "fan" phase — suits are invisible or
+    // Only allow clicks during the "fan" phase - suits are invisible or
     // barely visible before that, and tapping them causes a broken state.
     if (phase !== "fan") return;
 
@@ -147,7 +147,7 @@ export function Intro() {
       if (suit.external) {
         window.location.href = suit.href;
       } else if (suit.href === pathname) {
-        // Already on this page (e.g. heart → "/") — just dismiss the intro.
+        // Already on this page (e.g. heart → "/") - just dismiss the intro.
       } else {
         router.push(suit.href);
       }

@@ -51,7 +51,7 @@ export function OverflowArt() {
 
   return (
     <>
-      {/* Character 1 — guitar monster, right edge */}
+      {/* Character 1 - guitar monster, right edge */}
       <img
         ref={art1Ref}
         src="/characters/typecek1(png).png"
@@ -68,7 +68,7 @@ export function OverflowArt() {
         loading="lazy"
       />
 
-      {/* Character 2 — flame runner, left edge */}
+      {/* Character 2 - flame runner, left edge */}
       <img
         ref={art2Ref}
         src="/characters/typecek2(png).png"

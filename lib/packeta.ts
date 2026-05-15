@@ -6,7 +6,7 @@
 
 const PACKETA_API_URL = "https://www.zasilkovna.cz/api/rest";
 
-// Placeholder carrier IDs — confirm with Packeta once API keys are available.
+// Placeholder carrier IDs - confirm with Packeta once API keys are available.
 export const HD_CARRIER_IDS: Record<string, number> = {
   SK: 106,
   CZ: 131,

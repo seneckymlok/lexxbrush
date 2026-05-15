@@ -130,7 +130,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
       <div className="absolute inset-0 concrete-bg" />
 
-      {/* Subtle character art — opposite side from login */}
+      {/* Subtle character art - opposite side from login */}
       <div className="absolute left-0 top-20 opacity-[0.03] pointer-events-none select-none">
         <Image
           src="/characters/typecek2(png).webp"

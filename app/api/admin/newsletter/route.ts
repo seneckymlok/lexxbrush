@@ -17,7 +17,7 @@ import { sendNewsletterCampaign } from "@/lib/email/newsletter";
 //   POST /api/admin/newsletter   { action: "send",    subject, html, text, preheader, audience }
 //   DELETE ?id=<subscriberId>                                → GDPR-style hard delete
 
-// Admin reads MUST always reflect the live DB — subscribers unsubscribe
+// Admin reads MUST always reflect the live DB - subscribers unsubscribe
 // asynchronously (via email link, Gmail one-click, or Resend webhook),
 // and stale CDN/browser caches were causing the admin to keep showing
 // people as "confirmed" until the next deploy invalidated the cache.
@@ -74,7 +74,7 @@ interface AudienceFilter {
 /**
  * Fetch the lowercase email set of every customer who has ever placed a
  * non-pending order. Used to build the "buyers" and "non_buyers" segments.
- * At our scale this is a few hundred rows at most — cheap to do per request.
+ * At our scale this is a few hundred rows at most - cheap to do per request.
  */
 async function getBuyerEmails(
   supabase: ReturnType<typeof createAdminClient>,
@@ -92,7 +92,7 @@ async function getBuyerEmails(
 }
 
 /**
- * Filter subscribers by the buyer segment in JS — there's no clean way to
+ * Filter subscribers by the buyer segment in JS - there's no clean way to
  * express "email in (subselect over orders)" in PostgREST without a view.
  */
 function applySegment<T extends { email: string }>(
@@ -306,7 +306,7 @@ export async function POST(req: NextRequest) {
     const audience: AudienceFilter = body.audience || { status: "confirmed", locale: "all", segment: "all" };
     const segment: Segment = audience.segment || "all";
 
-    // Fetch deliverable rows — confirmed, optionally locale-filtered.
+    // Fetch deliverable rows - confirmed, optionally locale-filtered.
     let query = supabase
       .from("newsletter_subscribers")
       .select("id, email, locale, unsub_token")
@@ -405,7 +405,7 @@ export async function POST(req: NextRequest) {
   return json({ error: "unknown_action" }, { status: 400 });
 }
 
-// ─── DELETE — GDPR hard delete a subscriber row ──────────────────────────────
+// ─── DELETE - GDPR hard delete a subscriber row ──────────────────────────────
 
 export async function DELETE(req: NextRequest) {
   const uid = await verifyAdmin(req);

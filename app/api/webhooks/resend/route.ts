@@ -24,7 +24,7 @@ import { createAdminClient } from "@/lib/supabase";
 
 const SECRET = process.env.RESEND_WEBHOOK_SECRET || "";
 
-// Hardens against accidental misconfiguration — if no secret is set at all,
+// Hardens against accidental misconfiguration - if no secret is set at all,
 // refuse every request. We never want unsigned webhook bodies in prod.
 function requireSecret() {
   if (!SECRET || SECRET === "whsec_placeholder") {
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     has_click: !!data.click,
   });
   // Resend echoes back `tags` (not custom headers) in webhook payloads.
-  // Tags arrive as { name: value } — we send `campaign_id` from
+  // Tags arrive as { name: value } - we send `campaign_id` from
   // sendNewsletterCampaign. Fall back to legacy header shape for any
   // in-flight events sent before this change rolled out.
   const tags: Record<string, string> = (data.tags && typeof data.tags === "object")
@@ -178,7 +178,7 @@ async function incrementCampaignCounter(
   campaignId: string,
   column: string,
 ) {
-  // Read-then-write — fine at our scale; webhook events arrive serially per
+  // Read-then-write - fine at our scale; webhook events arrive serially per
   // campaign and the counter is informational, not transactional.
   const { data } = await supabase
     .from("newsletter_campaigns")

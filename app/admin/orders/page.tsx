@@ -25,7 +25,7 @@ interface Order {
   delivery_type: string | null;
   packeta_packet_id: string | null;
   packeta_tracking_number: string | null;
-  // Stripe invoice metadata — populated by the webhook the moment the
+  // Stripe invoice metadata - populated by the webhook the moment the
   // checkout session completes (see app/api/webhooks/stripe/route.ts).
   // Older rows pre-migration will have these null; the UI degrades silently.
   stripe_invoice_id:   string | null;
@@ -106,7 +106,7 @@ export default function AdminOrdersPage() {
     if (order.delivery_type === "pickup" && addr.point) {
       return {
         label: "Výdajné miesto",
-        detail: `${addr.point.name} — ${addr.point.street}, ${addr.point.city} ${addr.point.zip}`,
+        detail: `${addr.point.name} - ${addr.point.street}, ${addr.point.city} ${addr.point.zip}`,
       };
     }
     if (order.delivery_type === "home_delivery" && addr.address) {
@@ -198,8 +198,8 @@ export default function AdminOrdersPage() {
                       </div>
                     )}
 
-                    {/* Invoice — Stripe-generated. The hosted URL is stable;
-                        the PDF URL is signed and may expire — both are
+                    {/* Invoice - Stripe-generated. The hosted URL is stable;
+                        the PDF URL is signed and may expire - both are
                         offered so the admin gets the fastest path while it
                         works, and the permanent one as a fallback. */}
                     {(order.invoice_number || order.invoice_hosted_url || order.invoice_pdf_url) && (

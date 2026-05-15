@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/newsletter/invalid", req.url));
   }
 
-  // Already-confirmed re-click — succeed silently without resending welcome.
+  // Already-confirmed re-click - succeed silently without resending welcome.
   if (row.status === "confirmed") {
     return NextResponse.redirect(new URL("/newsletter/confirmed", req.url));
   }
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     console.error("[newsletter/confirm] welcome email failed:", err);
-    // Don't fail the redirect — they're confirmed.
+    // Don't fail the redirect - they're confirmed.
   }
 
   return NextResponse.redirect(new URL("/newsletter/confirmed", req.url));

@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setSidebarOpen(false);
   }, [pathname]);
 
-  // Login page — no layout chrome
+  // Login page - no layout chrome
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
@@ -154,7 +154,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         lg:translate-x-0
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
-        {/* Logo — hidden on mobile (top bar has it) */}
+        {/* Logo - hidden on mobile (top bar has it) */}
         <div className="p-5 border-b border-white/5 hidden lg:block">
           <Link href="/" target="_blank" className="block">
             <img src="/logo.png" alt="Lexxbrush" className="h-6 opacity-50 hover:opacity-80 transition-opacity" />

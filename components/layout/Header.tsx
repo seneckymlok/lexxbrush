@@ -30,7 +30,7 @@ const SUIT_GLOW: Record<SuitKey, string> = {
   spade:   "drop-shadow(0 0 5px rgba(30,80,255,0.85))",
 };
 
-/** Pre-calculated fan positions — { x offset px, rotation deg } — per slot */
+/** Pre-calculated fan positions - { x offset px, rotation deg } - per slot */
 const FAN_POS: Record<number, Array<{ x: number; rot: number }>> = {
   1: [{ x:   0, rot:   0 }],
   2: [{ x:  -8, rot: -16 }, { x:  8, rot:  16 }],
@@ -50,7 +50,7 @@ function getSuit(product: Product, isFav: boolean): SuitKey {
 /**
  * Derives which suits to render for the current cart:
  * - 0 items  → ghost deck (all 4 at low opacity)
- * - 1–3      → actual product suits, deduplicated, filled to match count
+ * - 1-3      → actual product suits, deduplicated, filled to match count
  * - 4+       → full hand (all 4 suits, regardless of products)
  */
 function resolveHand(
@@ -194,7 +194,7 @@ export function Header() {
   // Auto-close the mobile menu on route change. The route-transition overlay
   // intercepts link clicks in the capture phase and stops propagation, so the
   // Link's own `onClick={closeMenu}` never fires. Watching pathname instead
-  // guarantees the menu always closes once navigation completes — no matter
+  // guarantees the menu always closes once navigation completes - no matter
   // how the navigation was triggered.
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -224,7 +224,7 @@ export function Header() {
           // Bg fills from top: 0 (covers iOS status bar area cleanly when
           // scrolled), but the nav content sits below the safe-area inset
           // so it never gets clipped by the notch / Dynamic Island.
-          // `constant()` is the legacy iOS 11.0–11.1 syntax; `env()` is
+          // `constant()` is the legacy iOS 11.0-11.1 syntax; `env()` is
           // the modern one. `max()` falls back to 0 on non-notched devices.
           paddingTop:
             "max(env(safe-area-inset-top, 0px), constant(safe-area-inset-top, 0px), 0px)",
@@ -277,7 +277,7 @@ export function Header() {
               <UserIcon />
             </Link>
 
-            {/* Cart — hand of cards */}
+            {/* Cart - hand of cards */}
             <Link
               href="/cart"
               className="flex items-center justify-center h-9 transition-opacity duration-200 hover:opacity-75"
@@ -293,7 +293,7 @@ export function Header() {
               <UserIcon size={18} />
             </Link>
             
-            {/* Cart — hand of cards (mobile) */}
+            {/* Cart - hand of cards (mobile) */}
             <Link
               href="/cart"
               className="flex items-center justify-center transition-opacity duration-200 hover:opacity-75"
@@ -316,7 +316,7 @@ export function Header() {
       </header>
 
       {/* ═══════════════════════════════════════════════════════════
-          FULL-SCREEN MOBILE MENU — The Ultimate Premium Experience
+          FULL-SCREEN MOBILE MENU - The Ultimate Premium Experience
       ═══════════════════════════════════════════════════════════ */}
       <div
         className={`fixed inset-0 z-40 lg:hidden overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -348,7 +348,7 @@ export function Header() {
           />
         </div>
 
-        {/* Character art — full right panel */}
+        {/* Character art - full right panel */}
         <div
           className={`absolute top-0 right-0 w-[65%] h-full pointer-events-none select-none transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${
             mobileMenuOpen ? "opacity-[0.18]" : "opacity-0"

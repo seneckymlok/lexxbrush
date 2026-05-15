@@ -1,5 +1,5 @@
 /**
- * Vibrant accent gradient extraction — v3
+ * Vibrant accent gradient extraction - v3
  *
  * Problem with naive approaches: `count × avgSaturation` rewards large fabric
  * areas (white shirt, black hoodie, brown acid-wash) over the small but vivid
@@ -19,26 +19,26 @@
  *    fabric is amplified, not just measured.
  *
  * ③ SMOOTH LIGHTNESS PENALTY
- *    sin(L · π)^1.5 — a smooth curve that peaks at L = 0.5 and fades
+ *    sin(L · π)^1.5 - a smooth curve that peaks at L = 0.5 and fades
  *    gracefully to 0 at pure black (L = 0) and pure white (L = 1). No harsh
  *    cutoffs that accidentally kill chrome art (L ≈ 0.55) or pastel accents.
  *
  * Combined pixel weight: S² × dist_from_fabric × sin(L·π)^1.5
  *
  * Other improvements over v2:
- *   • 128 × 128 sample (vs 80) — preserves fine art details
- *   • 24 hue buckets (15° each, vs 30°) — distinguishes red vs orange, etc.
+ *   • 128 × 128 sample (vs 80) - preserves fine art details
+ *   • 24 hue buckets (15° each, vs 30°) - distinguishes red vs orange, etc.
  *   • Score = Σ(weights) per bucket, not count × avgSat
- *   • "to" color requires only 60° gap (4 buckets) — related but distinct
- *   • Lower MIN_SCORE_RATIO (0.08) — don't miss secondary colors on busy art
+ *   • "to" color requires only 60° gap (4 buckets) - related but distinct
+ *   • Lower MIN_SCORE_RATIO (0.08) - don't miss secondary colors on busy art
  *   • Triadic (+120°) hue shift fallback when no second cluster qualifies
  */
 
 const FALLBACK_FROM   = "#8800CC";
 const FALLBACK_TO     = "#0088FF";
-const SAMPLE_SIZE     = 128;     // px — larger than v2 (80) for finer art detail
+const SAMPLE_SIZE     = 128;     // px - larger than v2 (80) for finer art detail
 const HUE_BUCKETS     = 24;      // 15° per bucket
-const MIN_HUE_GAP     = 4;       // 60° — minimum bucket distance for `to`
+const MIN_HUE_GAP     = 4;       // 60° - minimum bucket distance for `to`
 const MIN_SCORE_RATIO = 0.08;    // `to` bucket must be ≥ 8% of `from` bucket score
 const FABRIC_S_CUTOFF = 0.22;    // pixels below this saturation define "fabric"
 
@@ -132,11 +132,11 @@ export async function extractAccentGradient(source: string | File | Blob): Promi
 
     const [h, s, l] = rgbToHsl(r, g, b);
 
-    // ① Smooth lightness penalty — sin curve peaks at L=0.5
+    // ① Smooth lightness penalty - sin curve peaks at L=0.5
     const lumPenalty = Math.sin(l * Math.PI) ** 1.5;
-    if (lumPenalty < 0.05) continue;   // near-black or near-white — skip
+    if (lumPenalty < 0.05) continue;   // near-black or near-white - skip
 
-    // ② Distance from fabric (normalized 0–1)
+    // ② Distance from fabric (normalized 0-1)
     const dr = r - fR, dg = g - fG, db = b - fB;
     const distFromFabric = Math.sqrt(dr * dr + dg * dg + db * db) * normFactor;
 
@@ -168,7 +168,7 @@ export async function extractAccentGradient(source: string | File | Blob): Promi
     .sort((a, b) => b.score - a.score);
 
   if (ranked.length === 0) {
-    // Fully greyscale — synthesise gradient from best pixel or fallbacks
+    // Fully greyscale - synthesise gradient from best pixel or fallbacks
     const from = rgbToHex(...topPixelRgb);
     return topPixelW > 0.001
       ? { from, to: shiftHue(from, 120) }
@@ -178,7 +178,7 @@ export async function extractAccentGradient(source: string | File | Blob): Promi
   const first  = ranked[0];
   const fromHex = weightedBucketToHex(first);
 
-  // ── Phase 4: Find `to` — hue-distant, strong enough ──────────────────────
+  // ── Phase 4: Find `to` - hue-distant, strong enough ──────────────────────
   let toHex: string | null = null;
   for (const b of ranked.slice(1)) {
     const gap   = circularGap(first.index, b.index, HUE_BUCKETS);

@@ -8,7 +8,7 @@ interface Props {
   to:   string;                          // hex or ""
   onFromChange: (hex: string) => void;
   onToChange:   (hex: string) => void;
-  /** First image — File for new uploads, URL for saved products. */
+  /** First image - File for new uploads, URL for saved products. */
   source?: string | File | null;
 }
 
@@ -34,7 +34,7 @@ export function AccentColorField({ from, to, onFromChange, onToChange, source }:
       onFromChange(f);
       onToChange(t);
     } catch {
-      setError("Could not extract — image may be cross-origin.");
+      setError("Could not extract - image may be cross-origin.");
     } finally {
       setExtracting(false);
     }

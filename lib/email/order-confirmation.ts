@@ -6,8 +6,8 @@
 //                 prepared by hand." Full order summary, delivery, invoice PDF
 //                 attached when available.
 //
-//   • ADMIN     → cinematic, diamond-cyan lit. "New order — €X." Compact,
-//                 urgent, functional — designed for a glance from a phone.
+//   • ADMIN     → cinematic, diamond-cyan lit. "New order - €X." Compact,
+//                 urgent, functional - designed for a glance from a phone.
 //
 // Both share the same Lexxbrush cinematic frame (see `_design.ts`) so the
 // brand voice is identical even though the moods differ.
@@ -29,7 +29,7 @@ import {
   FONTS,
 } from "./_design";
 
-// ─── Types (PUBLIC API — do not break callers) ──────────────────────────────
+// ─── Types (PUBLIC API - do not break callers) ──────────────────────────────
 
 export interface OrderEmailItem {
   /** Display name (English, since email needs a stable canonical form) */
@@ -38,7 +38,7 @@ export interface OrderEmailItem {
   size?: string | null;
   /** Per-unit price in cents */
   priceCents: number;
-  /** Optional product image URL — absolute, https */
+  /** Optional product image URL - absolute, https */
   imageUrl?: string | null;
   /** Optional link to the product page */
   productUrl?: string | null;
@@ -52,7 +52,7 @@ export interface OrderEmailDelivery {
 
 export interface OrderEmailPayload {
   orderId:           string;
-  /** Short reference shown to the customer — typically order id slice */
+  /** Short reference shown to the customer - typically order id slice */
   reference:         string;
   customerEmail:     string;
   customerName?:     string;
@@ -62,9 +62,9 @@ export interface OrderEmailPayload {
   shippingCents:     number;
   totalCents:        number;
   delivery:          OrderEmailDelivery | null;
-  /** Base site URL — used for "manage your order" link */
+  /** Base site URL - used for "manage your order" link */
   siteUrl:           string;
-  /** Stripe invoice PDF buffer — attached when available */
+  /** Stripe invoice PDF buffer - attached when available */
   invoicePdf?:       Buffer;
   invoiceNumber?:    string;
 }
@@ -80,7 +80,7 @@ function renderCustomerHtml(p: OrderEmailPayload): string {
     ${row(label("Order · Confirmed", "heart"), "0 0 18px 0")}
     ${row(headline(greeting),                  "0 0 18px 0")}
     ${row(paragraph(
-      "Your piece is now in our hands. Every Lexxbrush garment is hand-airbrushed — give us a few days while we finish the work properly. You'll hear from us again the moment it ships."
+      "Your piece is now in our hands. Every Lexxbrush garment is hand-airbrushed - give us a few days while we finish the work properly. You'll hear from us again the moment it ships."
     ), "0 0 36px 0")}
     ${row(divider("heart"), "0 0 32px 0")}
   `;
@@ -132,7 +132,7 @@ function renderCustomerHtml(p: OrderEmailPayload): string {
       ${row(label("Delivery", "heart"), "0 0 12px 0")}
       ${row(`<div style="font-family:${FONTS.SANS};font-size:13px;color:#dcdcdc;line-height:1.65;">
         <div style="font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:11px;color:#aaaaaa;margin-bottom:6px;">
-          ${esc(p.delivery.type === "pickup" ? "Packeta — Pickup Point" : "Packeta — Home Delivery")}
+          ${esc(p.delivery.type === "pickup" ? "Packeta - Pickup Point" : "Packeta - Home Delivery")}
         </div>
         <div style="font-size:14px;color:#dcdcdc;">${esc(p.delivery.summary)}</div>
       </div>`, "0 0 32px 0")}
@@ -145,9 +145,9 @@ function renderCustomerHtml(p: OrderEmailPayload): string {
   // touch: the numbered marker is the accent color, ghosted to 30%.
   const steps: Array<[string, string]> = [
     ["01", "We've received your order."],
-    ["02", "Your piece is prepared and packaged by hand — usually 1–3 business days."],
+    ["02", "Your piece is prepared and packaged by hand - usually 1-3 business days."],
     ["03", "Tracking arrives the moment the courier collects it."],
-    ["04", "You wear it. Tag @lexxbrush if you do — we always reshare."],
+    ["04", "You wear it. Tag @lexxbrush if you do - we always reshare."],
   ];
 
   const stepsHtml = steps
@@ -169,7 +169,7 @@ function renderCustomerHtml(p: OrderEmailPayload): string {
   `;
 
   // ── CTA ─────────────────────────────────────────────────────────────────
-  const ctaUrl = `${p.siteUrl.replace(/\/$/, "")}/account/orders`;
+  const ctaUrl = `${p.siteUrl.replace(/\/$/, "")}/order/${p.orderId}`;
   const ctaBlock = `
     <tr><td align="center" style="padding:0 0 16px 0;">
       ${button("View your order", ctaUrl, "heart")}
@@ -195,7 +195,7 @@ function renderCustomerHtml(p: OrderEmailPayload): string {
 
   return cinematicFrame({
     accent:       "heart",
-    preheader:    `${firstName ? `${firstName}, your` : "Your"} Lexxbrush order ${p.reference} is confirmed — ${eur(p.totalCents)}.`,
+    preheader:    `${firstName ? `${firstName}, your` : "Your"} Lexxbrush order ${p.reference} is confirmed - ${eur(p.totalCents)}.`,
     bodyHtml:     body,
     locale:       "en",
     siteUrl:      p.siteUrl,
@@ -207,12 +207,12 @@ function renderCustomerText(p: OrderEmailPayload): string {
   const lines: string[] = [];
   const firstName = p.customerName?.trim().split(/\s+/)[0];
 
-  lines.push(`LEXXBRUSH — ORDER · CONFIRMED`);
+  lines.push(`LEXXBRUSH - ORDER · CONFIRMED`);
   lines.push(``);
   lines.push(firstName ? `Thank you, ${firstName}.` : `Thank you.`);
   lines.push(``);
   lines.push(`Your piece is now in our hands. Every Lexxbrush garment is`);
-  lines.push(`hand-airbrushed — give us a few days while we finish the work`);
+  lines.push(`hand-airbrushed - give us a few days while we finish the work`);
   lines.push(`properly. You'll hear from us again the moment it ships.`);
   lines.push(``);
   lines.push(`────────────────────────────────────────`);
@@ -238,17 +238,17 @@ function renderCustomerText(p: OrderEmailPayload): string {
   if (p.delivery) {
     lines.push(``);
     lines.push(`DELIVERY`);
-    lines.push(p.delivery.type === "pickup" ? "Packeta — Pickup Point" : "Packeta — Home Delivery");
+    lines.push(p.delivery.type === "pickup" ? "Packeta - Pickup Point" : "Packeta - Home Delivery");
     lines.push(p.delivery.summary);
   }
   lines.push(``);
   lines.push(`WHAT HAPPENS NEXT`);
   lines.push(`01  We've received your order.`);
-  lines.push(`02  Your piece is prepared and packaged by hand (1–3 business days).`);
+  lines.push(`02  Your piece is prepared and packaged by hand (1-3 business days).`);
   lines.push(`03  Tracking arrives the moment the courier collects it.`);
   lines.push(`04  You wear it. Tag @lexxbrush if you do.`);
   lines.push(``);
-  lines.push(`View your order:  ${p.siteUrl.replace(/\/$/, "")}/account/orders`);
+  lines.push(`View your order:  ${p.siteUrl.replace(/\/$/, "")}/order/${p.orderId}`);
   if (p.invoicePdf) lines.push(`Invoice attached as PDF.`);
   lines.push(``);
   lines.push(`Questions?  ${ADMIN_EMAIL}`);
@@ -262,7 +262,7 @@ function renderCustomerText(p: OrderEmailPayload): string {
 // information hierarchy. Designed to be readable in 2 seconds on a phone.
 
 function renderAdminHtml(p: OrderEmailPayload): string {
-  // Big total — the first thing visible after the logo.
+  // Big total - the first thing visible after the logo.
   const totalBlock = `
     ${row(label("New order · Incoming", "diamond"), "0 0 18px 0")}
     ${row(`<div style="font-family:${FONTS.SERIF};font-style:italic;font-size:54px;line-height:1;color:#ffffff;font-weight:400;letter-spacing:-0.02em;">
@@ -274,7 +274,7 @@ function renderAdminHtml(p: OrderEmailPayload): string {
     ${row(divider("diamond"), "0 0 28px 0")}
   `;
 
-  // Customer block — name, email, phone.
+  // Customer block - name, email, phone.
   const phoneRow = p.customerPhone
     ? `${row(thinRule(), "0")}${row(infoRow("Phone", p.customerPhone, { mono: true }), "0")}`
     : "";
@@ -287,7 +287,7 @@ function renderAdminHtml(p: OrderEmailPayload): string {
     ${row(divider("diamond"), "20px 0 28px 0")}
   `;
 
-  // Items — same component, cyan-themed.
+  // Items - same component, cyan-themed.
   const itemsHtml = p.items
     .map((it, i) => {
       const rowHtml = itemRow({
@@ -309,7 +309,7 @@ function renderAdminHtml(p: OrderEmailPayload): string {
     ${row(divider("diamond"), "16px 0 28px 0")}
   `;
 
-  // Totals breakdown — admin needs to see the split.
+  // Totals breakdown - admin needs to see the split.
   const shippingValue = p.shippingCents === 0 ? "Free" : eur(p.shippingCents);
   const totalsBlock = `
     ${row(infoRow("Subtotal", eur(p.subtotalCents)),                                       "0")}
@@ -319,13 +319,13 @@ function renderAdminHtml(p: OrderEmailPayload): string {
     ${row(divider("diamond"), "16px 0 28px 0")}
   `;
 
-  // Delivery — emphasized for the admin since they need to know how to ship.
+  // Delivery - emphasized for the admin since they need to know how to ship.
   const deliveryBlock = p.delivery
     ? `
       ${row(label("Delivery", "diamond"), "0 0 12px 0")}
       ${row(`<div style="font-family:${FONTS.SANS};font-size:13px;color:#dcdcdc;line-height:1.65;">
         <div style="font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:11px;color:#aaaaaa;margin-bottom:6px;">
-          ${esc(p.delivery.type === "pickup" ? "Packeta — Pickup Point" : "Packeta — Home Delivery")}
+          ${esc(p.delivery.type === "pickup" ? "Packeta - Pickup Point" : "Packeta - Home Delivery")}
         </div>
         <div style="font-size:14px;color:#dcdcdc;">${esc(p.delivery.summary)}</div>
       </div>`, "0 0 32px 0")}
@@ -333,7 +333,7 @@ function renderAdminHtml(p: OrderEmailPayload): string {
     `
     : "";
 
-  // CTA — straight into the admin panel.
+  // CTA - straight into the admin panel.
   const adminUrl = `${p.siteUrl.replace(/\/$/, "")}/admin/orders`;
   const ctaBlock = `
     <tr><td align="center" style="padding:0;">
@@ -352,7 +352,7 @@ function renderAdminHtml(p: OrderEmailPayload): string {
 
   return cinematicFrame({
     accent:       "diamond",
-    preheader:    `New order ${p.reference} — ${eur(p.totalCents)} · ${p.customerName || p.customerEmail}`,
+    preheader:    `New order ${p.reference} - ${eur(p.totalCents)} · ${p.customerName || p.customerEmail}`,
     bodyHtml:     body,
     locale:       "en",
     siteUrl:      p.siteUrl,
@@ -366,7 +366,7 @@ function renderAdminText(p: OrderEmailPayload): string {
     .join(", ");
 
   return [
-    `LEXXBRUSH — NEW ORDER · INCOMING`,
+    `LEXXBRUSH - NEW ORDER · INCOMING`,
     ``,
     `${eur(p.totalCents)}`,
     `Order ${p.reference}`,
@@ -382,7 +382,7 @@ function renderAdminText(p: OrderEmailPayload): string {
     `Shipping:   ${p.shippingCents === 0 ? "Free" : eur(p.shippingCents)}`,
     `Total:      ${eur(p.totalCents)}`,
     ``,
-    p.delivery ? `Delivery:   ${p.delivery.type === "pickup" ? "Pickup" : "Home delivery"} — ${p.delivery.summary}` : "",
+    p.delivery ? `Delivery:   ${p.delivery.type === "pickup" ? "Pickup" : "Home delivery"} - ${p.delivery.summary}` : "",
     ``,
     `View in admin: ${p.siteUrl.replace(/\/$/, "")}/admin/orders`,
   ].filter(Boolean).join("\n");
@@ -404,11 +404,11 @@ const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
  */
 export async function sendOrderConfirmation(payload: OrderEmailPayload) {
   if (!process.env.RESEND_API_KEY) {
-    console.warn("[email] RESEND_API_KEY not set — skipping order confirmation");
+    console.warn("[email] RESEND_API_KEY not set - skipping order confirmation");
     return null;
   }
   if (!payload.customerEmail) {
-    console.warn("[email] No customer email on order — skipping confirmation");
+    console.warn("[email] No customer email on order - skipping confirmation");
     return null;
   }
 
@@ -418,7 +418,7 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
       from:    FROM_EMAIL,
       to:      payload.customerEmail,
       replyTo: ADMIN_EMAIL,
-      subject: `Order confirmed · ${payload.reference} — Lexxbrush`,
+      subject: `Order confirmed · ${payload.reference} - Lexxbrush`,
       html:    renderCustomerHtml(payload),
       text:    renderCustomerText(payload),
       headers: { "X-Entity-Ref-ID": payload.orderId },
@@ -431,11 +431,11 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
     });
 
     // ── Admin notification ─────────────────────────────────────────────────
-    // Fire-and-forget — never block or throw on admin notify failure.
+    // Fire-and-forget - never block or throw on admin notify failure.
     resend.emails.send({
       from:    FROM_EMAIL,
       to:      ADMIN_EMAIL,
-      subject: `New order · ${eur(payload.totalCents)} — ${payload.reference}`,
+      subject: `New order · ${eur(payload.totalCents)} - ${payload.reference}`,
       html:    renderAdminHtml(payload),
       text:    renderAdminText(payload),
       headers: { "X-Entity-Ref-ID": `${payload.orderId}-admin` },

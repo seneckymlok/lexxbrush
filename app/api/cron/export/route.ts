@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     const buffer = await buildMonthlyExportBuffer(range);
 
     if (!process.env.RESEND_API_KEY) {
-      console.warn("[cron] RESEND_API_KEY not set — cannot send email");
+      console.warn("[cron] RESEND_API_KEY not set - cannot send email");
       return NextResponse.json({ error: "RESEND_API_KEY not configured" }, { status: 500 });
     }
 

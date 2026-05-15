@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     // CHECKOUT_TEST_TOKEN env var, shipping is waived (€0) so live-key
     // smoke tests don't burn real shipping fees. Cannot be brute-forced
     // (token is compared as-is, server-only env). Has no effect for normal
-    // customers — they never know it exists.
+    // customers - they never know it exists.
     const isTestMode =
       !!testToken &&
       !!process.env.CHECKOUT_TEST_TOKEN &&
@@ -54,13 +54,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No available products in cart" }, { status: 400 });
     }
 
-    // Cart subtotal (cents) — used to evaluate the free-shipping threshold.
+    // Cart subtotal (cents) - used to evaluate the free-shipping threshold.
     const subtotalCents = (lineItems as Array<{
       price_data: { unit_amount: number };
       quantity: number;
     }>).reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0);
 
-    // Cart weight (kg) — sums per-category defaults from the Packeta pricelist
+    // Cart weight (kg) - sums per-category defaults from the Packeta pricelist
     // so the shipping rate matches the actual carrier cost.
     const weightKg = cartWeightKg(
       items.map((item: any) => {
@@ -99,14 +99,14 @@ export async function POST(req: NextRequest) {
     // Build session config.
     //
     // We deliberately do NOT set `payment_method_types`. Omitting it switches
-    // Stripe Checkout into "dynamic payment methods" mode — Stripe shows
+    // Stripe Checkout into "dynamic payment methods" mode - Stripe shows
     // every method enabled in Dashboard → Settings → Payment methods that's
     // eligible for the customer's country, currency, and cart total. This is
     // how Apple Pay, Google Pay, Link, Klarna, SEPA, iDEAL etc. light up as
     // "Express Checkout" buttons above the card form. With `["card"]` set
     // we'd force the card form only and suppress every wallet.
     //
-    // NO Stripe Tax / no automatic_tax / no tax_behavior — Lexxbrush is
+    // NO Stripe Tax / no automatic_tax / no tax_behavior - Lexxbrush is
     // registered under §7a of the Slovak VAT Act, which means we have an
     // IČ DPH for cross-border B2B reverse-charge purposes only and we are
     // NOT a VAT payer (§4) on our own sales. Invoices to customers MUST
@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
             shipping_rate_data: {
               type: "fixed_amount" as const,
               fixed_amount: { amount: 0, currency: "eur" },
-              display_name: "TEST — Free shipping",
+              display_name: "TEST - Free shipping",
               delivery_estimate: {
                 minimum: { unit: "business_day" as const, value: 1 },
                 maximum: { unit: "business_day" as const, value: 3 },

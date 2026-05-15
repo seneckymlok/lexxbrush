@@ -22,7 +22,7 @@ const content = {
       },
       {
         heading: "4. Shipping",
-        text: `We ship across the European Union. Delivery times vary depending on your location, typically 5–10 business days within the EU.\n\nShipping costs are calculated at checkout based on destination. Risk of loss passes to you upon delivery to the carrier.\n\nFor more details, please see our Shipping & Returns page.`,
+        text: `We ship across the European Union. Delivery times vary depending on your location, typically 5-10 business days within the EU.\n\nShipping costs are calculated at checkout based on destination. Risk of loss passes to you upon delivery to the carrier.\n\nFor more details, please see our Shipping & Returns page.`,
       },
       {
         heading: "5. Right of Withdrawal",
@@ -68,7 +68,7 @@ const content = {
       },
       {
         heading: "4. Doprava",
-        text: `Doručujeme po celej Európskej únii. Dodacie lehoty sa líšia v závislosti od vašej lokality, zvyčajne 5–10 pracovných dní v rámci EÚ.\n\nNáklady na dopravu sú vypočítané pri pokladni na základe destinácie. Riziko straty prechádza na vás pri odovzdaní prepravcovi.\n\nViac informácií nájdete na stránke Doprava a vrátenie.`,
+        text: `Doručujeme po celej Európskej únii. Dodacie lehoty sa líšia v závislosti od vašej lokality, zvyčajne 5-10 pracovných dní v rámci EÚ.\n\nNáklady na dopravu sú vypočítané pri pokladni na základe destinácie. Riziko straty prechádza na vás pri odovzdaní prepravcovi.\n\nViac informácií nájdete na stránke Doprava a vrátenie.`,
       },
       {
         heading: "5. Právo na odstúpenie od zmluvy",

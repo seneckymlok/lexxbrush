@@ -63,7 +63,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen pt-28 pb-24 px-5 md:px-10 w-full max-w-[1200px] mx-auto">
-      {/* Account Header — editorial */}
+      {/* Account Header - editorial */}
       <div className="mb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
@@ -184,7 +184,7 @@ export default function AccountPage() {
 
               return (
                 <div key={order.id} className="border border-white/[0.06] transition-colors duration-300 hover:border-white/[0.1]">
-                  {/* Order header — clickable */}
+                  {/* Order header - clickable */}
                   <button
                     onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                     className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left"

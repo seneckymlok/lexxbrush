@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "Lexxbrush — Hand-Airbrushed Wearable Art",
+    title: "Lexxbrush - Hand-Airbrushed Wearable Art",
     description:
       "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand.",
     url: baseUrl,
@@ -81,13 +81,13 @@ export const metadata: Metadata = {
         url: "/logo-new.png",
         width: 1200,
         height: 675,
-        alt: "Lexxbrush — Hand-Airbrushed Wearable Art",
+        alt: "Lexxbrush - Hand-Airbrushed Wearable Art",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lexxbrush — Hand-Airbrushed Wearable Art",
+    title: "Lexxbrush - Hand-Airbrushed Wearable Art",
     description:
       "Every piece is unique. Hand-airbrushed streetwear painted entirely by hand.",
     images: ["/logo-new.png"],
@@ -123,7 +123,7 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: `[data-animate]{visibility:hidden!important}html.intro-pending body{visibility:hidden}html.intro-pending [data-intro]{visibility:visible}` }} />
         {/* Synchronously decide whether the intro is about to play.
             If yes, mark <html> so the body is invisible until the Intro overlay paints.
-            Runs before body parses — no flash of homepage content. */}
+            Runs before body parses - no flash of homepage content. */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{if(location.pathname==='/'&&!sessionStorage.getItem('lexxbrush:intro-seen')){document.documentElement.classList.add('intro-pending')}}catch(e){}})();`,

@@ -5,9 +5,9 @@
 //   inline styles, table layout, 600px max, plain-text fallback.
 //
 // Templates:
-//   • confirmOptIn     — bare double-opt-in confirmation, one button
-//   • welcome          — sent after the user clicks the confirm link
-//   • campaign         — full drop announcement, used by /admin/newsletter
+//   • confirmOptIn     - bare double-opt-in confirmation, one button
+//   • welcome          - sent after the user clicks the confirm link
+//   • campaign         - full drop announcement, used by /admin/newsletter
 //
 // Every email includes the List-Unsubscribe header (RFC 8058 one-click).
 
@@ -55,7 +55,7 @@ interface CampaignPayload {
   locale:       Locale;
   subject:      string;
   preheader?:   string;
-  /** Body HTML (already inside the framed layout — passed through verbatim) */
+  /** Body HTML (already inside the framed layout - passed through verbatim) */
   bodyHtml:     string;
   /** Body plain-text fallback */
   bodyText:     string;
@@ -72,15 +72,15 @@ const COPY = {
       preheader: "Tap to confirm your email and join the drop list.",
       eyebrow:   "♥   One last step",
       headline:  "Confirm your spot.",
-      body:      "You'll only hear from us when something new drops — usually once a month, never more. Tap the button below and you're on the list.",
+      body:      "You'll only hear from us when something new drops - usually once a month, never more. Tap the button below and you're on the list.",
       cta:       "Confirm my email",
-      footnote:  "Didn't sign up? Ignore this email — nothing will happen without your click.",
+      footnote:  "Didn't sign up? Ignore this email - nothing will happen without your click.",
     },
     welcome: {
       preheader: "You're on the list. Welcome to the drop.",
       eyebrow:   "♠   You're in",
       headline:  "Welcome to the drop.",
-      body:      "Every piece on Lexxbrush is hand-airbrushed — most are one-of-one. When the next drop is ready, you'll be the first to know. We promise to be worth the inbox space.",
+      body:      "Every piece on Lexxbrush is hand-airbrushed - most are one-of-one. When the next drop is ready, you'll be the first to know. We promise to be worth the inbox space.",
       cta:       "Browse the collection",
     },
     common: {
@@ -94,15 +94,15 @@ const COPY = {
       preheader: "Klikni a potvrď svoj e-mail.",
       eyebrow:   "♥   Ešte jeden krok",
       headline:  "Potvrď svoje miesto.",
-      body:      "Ozveme sa len keď príde niečo nové — zvyčajne raz za mesiac, nikdy viac. Klikni nižšie a si na zozname.",
+      body:      "Ozveme sa len keď príde niečo nové - zvyčajne raz za mesiac, nikdy viac. Klikni nižšie a si na zozname.",
       cta:       "Potvrdiť e-mail",
-      footnote:  "Neregistroval si sa? Tento e-mail môžeš ignorovať — bez tvojho kliknutia sa nič nestane.",
+      footnote:  "Neregistroval si sa? Tento e-mail môžeš ignorovať - bez tvojho kliknutia sa nič nestane.",
     },
     welcome: {
       preheader: "Si na zozname. Vitaj.",
       eyebrow:   "♠   Si na zozname",
       headline:  "Vitaj v drope.",
-      body:      "Každý kus na Lexxbrush je ručne airbrushovaný — väčšina je unikát. Keď bude pripravený ďalší drop, dozvieš sa to ako prvý.",
+      body:      "Každý kus na Lexxbrush je ručne airbrushovaný - väčšina je unikát. Keď bude pripravený ďalší drop, dozvieš sa to ako prvý.",
       cta:       "Pozrieť kolekciu",
     },
     common: {
@@ -190,7 +190,7 @@ function frameLayout(opts: {
 
 export async function sendNewsletterConfirm(p: ConfirmOptInPayload) {
   if (!process.env.RESEND_API_KEY) {
-    console.warn("[newsletter] RESEND_API_KEY not set — skipping confirm email");
+    console.warn("[newsletter] RESEND_API_KEY not set - skipping confirm email");
     return null;
   }
 

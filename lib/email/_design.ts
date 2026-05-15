@@ -8,12 +8,12 @@
 // Each email type gets its own accent (from the suit-symbol identity system)
 // so the email's mood matches its purpose:
 //
-//   • Order confirmation (customer) → HEART purple    — intimate, romantic
-//   • Admin new-order alert         → DIAMOND cyan    — electric, urgent
-//   • Shipped notification          → SPADE blue      — settled, in motion
-//   • Promotional / future          → CLUB yellow     — attention
+//   • Order confirmation (customer) → HEART purple    - intimate, romantic
+//   • Admin new-order alert         → DIAMOND cyan    - electric, urgent
+//   • Shipped notification          → SPADE blue      - settled, in motion
+//   • Promotional / future          → CLUB yellow     - attention
 //
-// All output is pure string-template HTML — no React, no env reads, no DB.
+// All output is pure string-template HTML - no React, no env reads, no DB.
 // Renders identically server-side or in any preview pane. Inline styles only,
 // table layout where alignment matters, web-safe fonts, max-width 600px.
 
@@ -38,7 +38,7 @@ export const eur = (cents: number): string =>
 // ── Accent palette per email type ───────────────────────────────────────────
 //
 // rgb is exposed as a separate string so we can compose rgba() values inline
-// without runtime parsing — keeps the template purely string-concat.
+// without runtime parsing - keeps the template purely string-concat.
 
 export interface Accent {
   hex:     string;  // solid color for borders, type
@@ -81,7 +81,7 @@ export const ACCENTS = {
 
 export type AccentKey = keyof typeof ACCENTS;
 
-// ── Fonts (web-safe stacks only — every email client renders these) ────────
+// ── Fonts (web-safe stacks only - every email client renders these) ────────
 
 const SERIF = `'Times New Roman', Times, Georgia, serif`;
 const SANS  = `'Helvetica Neue', Helvetica, Arial, sans-serif`;
@@ -94,11 +94,11 @@ export interface CinematicFrameOpts {
   preheader:    string;
   /** Suit-color theme key. */
   accent:       AccentKey;
-  /** Body HTML — content drops directly into the centered 600px column. */
+  /** Body HTML - content drops directly into the centered 600px column. */
   bodyHtml:     string;
   /** Locale for footer copy. */
   locale?:      "en" | "sk";
-  /** Public site URL — used in footer links. */
+  /** Public site URL - used in footer links. */
   siteUrl:      string;
   /** Contact email shown in the footer. */
   contactEmail: string;
@@ -135,7 +135,7 @@ export function cinematicFrame(opts: CinematicFrameOpts): string {
   const logoUrl = `${opts.siteUrl.replace(/\/$/, "")}/email/logo.png`;
 
   // The "stage lighting" is a CSS radial-gradient overlaid on near-black.
-  // Modern clients (Gmail web, Apple Mail, iOS Mail) render it — Outlook
+  // Modern clients (Gmail web, Apple Mail, iOS Mail) render it - Outlook
   // strips the gradient and falls back to the solid bg color. We accept
   // that gracefully.
   const bgGradient = `radial-gradient(ellipse 720px 540px at 50% -120px, ${a.soft} 0%, rgba(0,0,0,0) 70%), radial-gradient(ellipse 600px 800px at 50% 100%, rgba(${a.rgb}, 0.05) 0%, rgba(0,0,0,0) 65%), #040404`;
@@ -162,7 +162,7 @@ export function cinematicFrame(opts: CinematicFrameOpts): string {
     ${esc(opts.preheader)}
   </div>
 
-  <!-- Outer canvas — solid bg color for Outlook, radial gradient overlaid for the rest -->
+  <!-- Outer canvas - solid bg color for Outlook, radial gradient overlaid for the rest -->
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:${bgGradient};">
     <tr>
       <td align="center" style="padding:56px 16px 40px 16px;">
@@ -184,7 +184,7 @@ export function cinematicFrame(opts: CinematicFrameOpts): string {
             </td>
           </tr>
 
-          <!-- Spacer below logo — suit label removed; accent colour carries the mood. -->
+          <!-- Spacer below logo - suit label removed; accent colour carries the mood. -->
           <tr>
             <td style="padding:0 0 48px 0;font-size:0;line-height:0;">&nbsp;</td>
           </tr>
@@ -242,20 +242,20 @@ export function cinematicFrame(opts: CinematicFrameOpts): string {
 //
 // Composed by individual email templates. Each returns a string of HTML that
 // can be concatenated into the frame's `bodyHtml`. None of these wrap themselves
-// in <tr> — callers compose them inside their own table rows.
+// in <tr> - callers compose them inside their own table rows.
 
-/** Caps label — the 0.32em-spaced tiny header used throughout. */
+/** Caps label - the 0.32em-spaced tiny header used throughout. */
 export function label(text: string, accent: AccentKey): string {
   const a = ACCENTS[accent];
   return `<div style="font-family:${SANS};font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:${a.hex};font-weight:700;">${esc(text)}</div>`;
 }
 
-/** Large editorial serif headline — the "scene title" of the email. */
+/** Large editorial serif headline - the "scene title" of the email. */
 export function headline(text: string): string {
   return `<div style="font-family:${SERIF};font-style:italic;font-size:34px;line-height:1.15;color:#ffffff;font-weight:400;letter-spacing:-0.01em;">${esc(text)}</div>`;
 }
 
-/** Body paragraph — Helvetica, 15px, soft chrome color. */
+/** Body paragraph - Helvetica, 15px, soft chrome color. */
 export function paragraph(text: string): string {
   return `<div style="font-family:${SANS};font-size:15px;line-height:1.65;color:#bbbbbb;font-weight:400;">${esc(text)}</div>`;
 }
@@ -318,7 +318,7 @@ export function infoRow(
 }
 
 /**
- * Item line — used in the "in the box" section. 64×64 image, name + size, price.
+ * Item line - used in the "in the box" section. 64×64 image, name + size, price.
  */
 export interface LineItem {
   name:        string;
@@ -365,7 +365,7 @@ export function itemRow(item: LineItem, _accent: AccentKey): string {
 }
 
 /**
- * Generic table row wrapper — converts a body fragment into a frame-compatible
+ * Generic table row wrapper - converts a body fragment into a frame-compatible
  * <tr><td> with consistent vertical rhythm. Use this to slot primitives into
  * the cinematicFrame body.
  */

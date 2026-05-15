@@ -7,7 +7,7 @@ export default function CheckoutCancelPage() {
         <div className="text-5xl mb-6">🤔</div>
         <h1 className="text-2xl font-bold text-white mb-3">Checkout Cancelled</h1>
         <p className="text-white/50 text-sm leading-relaxed mb-8">
-          No worries — your cart is still saved. Come back whenever you&apos;re ready.
+          No worries - your cart is still saved. Come back whenever you&apos;re ready.
         </p>
         <Link
           href="/cart"

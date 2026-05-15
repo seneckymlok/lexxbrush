@@ -1,7 +1,7 @@
 // ─── Newsletter email frame ──────────────────────────────────────────────────
 //
 // The dark, suit-themed shell that wraps every newsletter-class email.
-// Pure string-template — no env access, no React, no DB — so it can run
+// Pure string-template - no env access, no React, no DB - so it can run
 // on both the server (real sends) and inside the admin composer's preview
 // pane. Identical bytes either way, guaranteed by sharing this module.
 
@@ -38,7 +38,7 @@ export interface WrapInFrameOpts {
   locale:      Locale;
   /** Public unsubscribe URL. Falsy → unsub link is omitted. */
   unsubUrl?:   string | null;
-  /** Public site URL — `https://lexxbrush.eu` by default in callers. */
+  /** Public site URL - `https://lexxbrush.eu` by default in callers. */
   siteUrl:     string;
   /** Reply-to / contact address shown in the footer. */
   contactEmail:string;

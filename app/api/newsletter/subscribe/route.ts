@@ -10,14 +10,14 @@ import { sendNewsletterConfirm } from "@/lib/email/newsletter";
 //   • Validates email shape.
 //   • Upserts a `newsletter_subscribers` row.
 //   • If row already exists:
-//       – status='confirmed'    → return 200 { alreadySubscribed: true }
-//       – status='unsubscribed' → re-open: status='pending', new tokens, resend confirm.
-//       – status='bounced'/'complained' → silently 200 (don't expose suppression list)
-//       – status='pending'      → resend the confirm email (idempotent retry).
+//       - status='confirmed'    → return 200 { alreadySubscribed: true }
+//       - status='unsubscribed' → re-open: status='pending', new tokens, resend confirm.
+//       - status='bounced'/'complained' → silently 200 (don't expose suppression list)
+//       - status='pending'      → resend the confirm email (idempotent retry).
 //   • Otherwise inserts a fresh pending row + sends confirm email.
 //
-// We never reveal whether an email is already on the list — same response
-// shape for "new signup" and "existing confirmed" — to avoid leaking the
+// We never reveal whether an email is already on the list - same response
+// shape for "new signup" and "existing confirmed" - to avoid leaking the
 // subscriber list via signup form probing.
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -16,7 +16,7 @@ import PacketaWidget from "@/components/checkout/PacketaWidget";
 
 // Default export is a thin Suspense wrapper. `useSearchParams` (used inside
 // CheckoutPageInner) requires a Suspense boundary above it during prerender
-// in Next.js 16 — without one, `next build` fails on this route.
+// in Next.js 16 - without one, `next build` fails on this route.
 export default function CheckoutPage() {
   return (
     <Suspense fallback={null}>
@@ -32,7 +32,7 @@ function CheckoutPageInner() {
   const searchParams = useSearchParams();
   // Test-mode token from URL (?test=<secret>). Forwarded verbatim to the
   // checkout API, which validates it against CHECKOUT_TEST_TOKEN env.
-  // Never displayed in UI — admin-only feature.
+  // Never displayed in UI - admin-only feature.
   const testToken = searchParams?.get("test") || null;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -188,7 +188,7 @@ function CheckoutPageInner() {
 
         <form onSubmit={handleSubmit} autoComplete="on" noValidate>
           <div className="grid md:grid-cols-[1fr_340px] gap-12 md:gap-16">
-            {/* Left — Form */}
+            {/* Left - Form */}
             <div className="space-y-10">
               {/* Contact */}
               <div>
@@ -314,7 +314,7 @@ function CheckoutPageInner() {
                 <p className="text-red-400/80 text-sm mt-8">{error}</p>
               )}
 
-              {/* Submit — visible on desktop */}
+              {/* Submit - visible on desktop */}
               <div className="hidden md:block">
               <div className="flex justify-center">
               <MagneticButton>
@@ -336,7 +336,7 @@ function CheckoutPageInner() {
               </div>
             </div>
 
-            {/* Right — Order Summary */}
+            {/* Right - Order Summary */}
             <div>
               <div className="sticky top-24">
                 <h2 className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] uppercase text-chrome-bright mb-6">
@@ -391,7 +391,7 @@ function CheckoutPageInner() {
                   </span>
                 </div>
 
-                {/* Submit — visible on mobile only */}
+                {/* Submit - visible on mobile only */}
                 <div className="md:hidden mt-8 flex justify-center">
                   <button
                     type="submit"

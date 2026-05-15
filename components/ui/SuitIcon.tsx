@@ -12,7 +12,7 @@ const SUIT_FILES: Record<SuitType, string> = {
 interface SuitIconProps {
   suit: SuitType;
   className?: string;
-  /** Kept for API compat — unused with PNG files */
+  /** Kept for API compat - unused with PNG files */
   glow?: boolean;
 }
 

@@ -40,7 +40,7 @@ async function verifyAdmin(req: NextRequest) {
   return !!user;
 }
 
-// GET — list products, orders, custom_orders, or stats
+// GET - list products, orders, custom_orders, or stats
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const table = searchParams.get("table");
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(data);
 }
 
-// POST — insert a row
+// POST - insert a row
 export async function POST(req: NextRequest) {
   if (!(await verifyAdmin(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(result);
 }
 
-// PATCH — update a row
+// PATCH - update a row
 export async function PATCH(req: NextRequest) {
   if (!(await verifyAdmin(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -144,7 +144,7 @@ export async function PATCH(req: NextRequest) {
         });
       }
     } catch (err) {
-      // Never fail the PATCH for an email issue — the DB already updated.
+      // Never fail the PATCH for an email issue - the DB already updated.
       console.error("[admin] Shipped email dispatch failed:", err);
     }
   }
@@ -152,7 +152,7 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
-// DELETE — delete a row
+// DELETE - delete a row
 export async function DELETE(req: NextRequest) {
   if (!(await verifyAdmin(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -36,7 +36,7 @@ async function adminFetch(url: string, options?: RequestInit) {
     ...options,
     // Subscriber state changes asynchronously (Gmail one-click unsub,
     // Resend webhooks, etc.). The browser HTTP cache must not serve a
-    // stale roster — pair this with no-store response headers server-side.
+    // stale roster - pair this with no-store response headers server-side.
     cache: "no-store",
     headers: {
       ...options?.headers,
@@ -183,7 +183,7 @@ export default function AdminNewsletterPage() {
       refreshHistory();
     }
     if (tab === "subscribers") {
-      // Pull both — stats stays in sync with the list view so the header
+      // Pull both - stats stays in sync with the list view so the header
       // counts reflect a fresh unsubscribe right after the row updates.
       refreshSubscribers();
       refreshStats();
@@ -192,7 +192,7 @@ export default function AdminNewsletterPage() {
 
   // ─── Derived render output ─────────────────────────────────────────────────
   // Live HTML/text built from the block model + product data. Recomputed on
-  // every keystroke — block renderers are pure string-builders, so this is
+  // every keystroke - block renderers are pure string-builders, so this is
   // cheap even for 50+ blocks.
 
   const renderCtx = useMemo(() => {
@@ -214,7 +214,7 @@ export default function AdminNewsletterPage() {
     [blocks, renderCtx],
   );
 
-  // Fully framed preview HTML — mirrors what subscribers receive.
+  // Fully framed preview HTML - mirrors what subscribers receive.
   const previewSrcDoc = useMemo(() => {
     return wrapInFrame({
       preheader:    preheader || subject || "",
@@ -400,7 +400,7 @@ export default function AdminNewsletterPage() {
                   </select>
                 </div>
                 <span className="text-xs text-white/40">
-                  {audienceCount === null ? "—" : `${audienceCount} príjemcov`}
+                  {audienceCount === null ? "-" : `${audienceCount} príjemcov`}
                 </span>
               </div>
             </Field>
@@ -506,7 +506,7 @@ export default function AdminNewsletterPage() {
                                                 "bg-red-500/10 text-red-400"
                   }`}>{s.status}</span>
                 </div>
-                <div className="text-white/40 text-xs truncate">{s.source || "—"}</div>
+                <div className="text-white/40 text-xs truncate">{s.source || "-"}</div>
                 <div className="text-white/30 text-xs">{new Date(s.created_at).toLocaleDateString()}</div>
                 <button
                   onClick={() => deleteSubscriber(s.id)}
@@ -540,7 +540,7 @@ export default function AdminNewsletterPage() {
                       <p className="text-sm text-white/80 truncate">{c.subject}</p>
                       {c.preheader && <p className="text-xs text-white/30 mt-0.5 truncate">{c.preheader}</p>}
                       <p className="text-[10px] text-white/30 mt-2 uppercase tracking-wider flex items-center gap-2 flex-wrap">
-                        <span>{c.sent_at ? new Date(c.sent_at).toLocaleString() : "—"} · {c.status}</span>
+                        <span>{c.sent_at ? new Date(c.sent_at).toLocaleString() : "-"} · {c.status}</span>
                         {seg && seg !== "all" && (
                           <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/50">
                             {seg === "buyers" ? "Kupujúci" : "Nekúpili"}

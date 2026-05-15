@@ -95,17 +95,6 @@ function SuitCard({
         />
       </div>
 
-      {/* Label — fades in on hover */}
-      <span
-        className="font-[family-name:var(--font-display)] text-[9px] tracking-[0.25em] uppercase transition-all duration-300"
-        style={{
-          color:   hovered ? "#ffffff" : "rgba(255,255,255,0.2)",
-          opacity: visible ? 1 : 0,
-          transitionDelay: visible ? `${index * 120 + 200}ms` : "0ms",
-        }}
-      >
-        {suit.label}
-      </span>
     </Link>
   );
 }
@@ -113,7 +102,7 @@ function SuitCard({
 export default function NotFound() {
   const [visible, setVisible] = useState(false);
 
-  // Stagger-in after mount — no GSAP needed, pure CSS transitions
+  // Stagger-in after mount - no GSAP needed, pure CSS transitions
   useEffect(() => {
     const t = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(t);
@@ -140,7 +129,7 @@ export default function NotFound() {
         className="mt-6 mb-16 font-[family-name:var(--font-display)] text-[10px] tracking-[0.3em] uppercase transition-all duration-700 delay-150 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
           opacity:   visible ? 1 : 0,
-          color:     "rgba(255,255,255,0.2)",
+          color:     "rgba(255,255,255,0.4)",
           transform: visible ? "translateY(0)" : "translateY(12px)",
         }}
       >
@@ -148,7 +137,7 @@ export default function NotFound() {
       </p>
 
       {/* Four suits */}
-      <div className="flex items-end justify-center gap-5 md:gap-10 mb-20">
+      <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-10 mb-20 flex-wrap md:flex-nowrap scale-90 sm:scale-100">
         {SUITS.map((suit, i) => (
           <SuitCard key={suit.label} suit={suit} index={i} visible={visible} />
         ))}
@@ -157,7 +146,7 @@ export default function NotFound() {
       {/* Back link */}
       <Link
         href="/"
-        className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.25em] uppercase text-white/15 hover:text-white/50 transition-colors duration-300 border-b border-white/10 hover:border-white/30 pb-px"
+        className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.25em] uppercase text-white/40 hover:text-white transition-colors duration-300 border-b border-white/20 hover:border-white/50 pb-px"
         style={{
           opacity:         visible ? 1 : 0,
           transitionDelay: "600ms",

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-// Newsletter signup intentionally removed from the public web — the client
+// Newsletter signup intentionally removed from the public web - the client
 // doesn't want to use it. Admin tooling and the existing campaign/confirm
 // API endpoints stay intact so manually managed broadcasts still work.
 export function Footer() {
@@ -34,7 +34,7 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Spacer — newsletter slot intentionally removed. Keeps the
+          {/* Spacer - newsletter slot intentionally removed. Keeps the
               three-column footer rhythm without leaving a yawning empty box. */}
           <div className="flex-1 hidden md:block" aria-hidden="true" />
 
@@ -68,7 +68,7 @@ export function Footer() {
               </Link>
             </div>
 
-            {/* Social — club = community */}
+            {/* Social - club = community */}
             <a
               href="https://www.instagram.com/lexxbrush"
               target="_blank"

@@ -76,7 +76,7 @@ export default function CustomOrderPage() {
   return (
     <div className="page-enter relative min-h-screen overflow-hidden">
 
-      {/* Character art — right side */}
+      {/* Character art - right side */}
       <img
         src="/characters/typecek2(png).webp"
         alt=""
@@ -85,7 +85,7 @@ export default function CustomOrderPage() {
         style={{ filter: "invert(1) brightness(1.5) contrast(1.1)" }}
       />
 
-      {/* Character art — left side accent */}
+      {/* Character art - left side accent */}
       <img
         src="/characters/typecek1(png).webp"
         alt=""

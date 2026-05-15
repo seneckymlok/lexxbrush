@@ -3,7 +3,7 @@
 // A small content-block system for the admin composer. Every block has:
 //   • A shape (TS interface)
 //   • A default factory (used when adding the block)
-//   • An HTML renderer (table-row, inline styles only — Outlook/Gmail safe)
+//   • An HTML renderer (table-row, inline styles only - Outlook/Gmail safe)
 //   • A plain-text renderer (for the text/* mime part)
 //
 // The composer maintains an array of these blocks. Saving / sending just
@@ -63,7 +63,7 @@ export interface ImageBlock {
   url:      string;
   alt:      string;
   caption?: string;
-  /** Optional URL — wraps the image in an anchor. */
+  /** Optional URL - wraps the image in an anchor. */
   link?:    string;
 }
 
@@ -105,9 +105,9 @@ export interface RenderProduct {
   name:     string;            // already localized (or English fallback)
   /** Per-unit price in cents. */
   priceCents:number;
-  /** First image URL — must be absolute https. */
+  /** First image URL - must be absolute https. */
   imageUrl: string | null;
-  /** Whether the product is sold out — adds a visual badge. */
+  /** Whether the product is sold out - adds a visual badge. */
   isSold:   boolean;
 }
 
@@ -141,7 +141,7 @@ function nl2br(s: string) {
 }
 
 function randId() {
-  // Short ids are enough — they only exist client-side as React keys and DnD
+  // Short ids are enough - they only exist client-side as React keys and DnD
   // anchors. Don't need crypto strength.
   return Math.random().toString(36).slice(2, 10);
 }
@@ -214,7 +214,7 @@ function renderQuote(b: QuoteBlock): string {
           </div>
           ${b.attribution ? `
           <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#6a6a6a;margin-top:12px;">
-            — ${esc(b.attribution)}
+            - ${esc(b.attribution)}
           </div>` : ""}
         </div>
       </td>
@@ -393,7 +393,7 @@ export function renderBlocksToText(blocks: Block[], ctx: RenderContext): string 
         break;
       case "quote":
         if (b.text.trim()) {
-          parts.push(`"${b.text}"${b.attribution ? `\n— ${b.attribution}` : ""}`);
+          parts.push(`"${b.text}"${b.attribution ? `\n- ${b.attribution}` : ""}`);
         }
         break;
       case "products": {
@@ -401,13 +401,13 @@ export function renderBlocksToText(blocks: Block[], ctx: RenderContext): string 
         for (const id of b.productIds) {
           const p = ctx.products[id];
           if (!p) continue;
-          parts.push(`• ${p.name} — ${eur(p.priceCents)}\n  ${ctx.siteUrl}/product/${p.id}`);
+          parts.push(`• ${p.name} - ${eur(p.priceCents)}\n  ${ctx.siteUrl}/product/${p.id}`);
         }
         break;
       }
       case "image":
         if (b.url) {
-          parts.push(`[${b.alt || "image"}]${b.caption ? ` — ${b.caption}` : ""}`);
+          parts.push(`[${b.alt || "image"}]${b.caption ? ` - ${b.caption}` : ""}`);
           if (b.link) parts.push(b.link);
         }
         break;
@@ -418,7 +418,7 @@ export function renderBlocksToText(blocks: Block[], ctx: RenderContext): string 
         parts.push(`-----`);
         break;
       case "spacer":
-        // Intentional — produces a blank line via the join below.
+        // Intentional - produces a blank line via the join below.
         parts.push(``);
         break;
     }

@@ -13,7 +13,7 @@ interface ProductCardProps {
   index: number;
 }
 
-/** Heart suit — outline when idle, filled with glow when favorited. */
+/** Heart suit - outline when idle, filled with glow when favorited. */
 function FavoriteIcon({ active }: { active: boolean }) {
   return (
     <div className={`relative w-7 h-7 transition-all duration-400 ${active ? "scale-110" : "scale-100"}`}>
@@ -40,7 +40,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
 
   const isFav = isFavorite(product.id);
 
-  // Cleanup on unmount — prevent RAF/timeout leaks
+  // Cleanup on unmount - prevent RAF/timeout leaks
   useEffect(() => {
     return () => {
       cancelAnimationFrame(rafRef.current);
@@ -78,10 +78,10 @@ export function ProductCard({ product, index }: ProductCardProps) {
   /**
    * Parallax on mouse move.
    *
-   * Image wrapper drifts OPPOSITE the cursor (max ±6x / ±4y px) — feels close,
+   * Image wrapper drifts OPPOSITE the cursor (max ±6x / ±4y px) - feels close,
    * floating in front of the plane.
    *
-   * Info block drifts WITH the cursor (max ±2x / ±1.5y px) — feels further back,
+   * Info block drifts WITH the cursor (max ±2x / ±1.5y px) - feels further back,
    * reinforcing the illusion of depth between layers.
    *
    * RAF-batched so it never blocks paint or layout.
@@ -89,7 +89,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // Capture before RAF — React may recycle the synthetic event object
+    // Capture before RAF - React may recycle the synthetic event object
     const clientX = e.clientX;
     const clientY = e.clientY;
 
@@ -147,7 +147,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* ── Favorite — outside Link so clicks don't navigate ── */}
+      {/* ── Favorite - outside Link so clicks don't navigate ── */}
       <button
         onClick={handleFavClick}
         className="absolute top-2 right-2 md:top-3 md:right-3 z-30 w-9 h-9 flex items-center justify-center transition-all duration-300 hover:scale-110"
@@ -158,14 +158,14 @@ export function ProductCard({ product, index }: ProductCardProps) {
 
       <Link href={`/product/${product.id}`} className="block">
 
-        {/* ── Cell — uniform square ── */}
+        {/* ── Cell - uniform square ── */}
         <div className="relative aspect-square isolate">
 
           {/* ── Ambient color halo ────────────────────────────────────────────
               A scaled-up, heavily blurred duplicate of the product image
               bleeds its actual color palette outward as atmospheric glow.
               Invisible at rest, fades in on hover (700ms ease-out).
-              Decorative only — pointer-events disabled.                   */}
+              Decorative only - pointer-events disabled.                   */}
           <div
             className="absolute inset-0 z-0 opacity-20 md:opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
             aria-hidden="true"
@@ -179,7 +179,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
             />
           </div>
 
-          {/* ── Product image — parallax target ───────────────────────────────
+          {/* ── Product image - parallax target ───────────────────────────────
               Wrapped in its own div so the JS translate (parallax)
               and the CSS translateY hover lift (product-float) live on
               separate elements and compose naturally without conflict.    */}
@@ -196,7 +196,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
             />
           </div>
 
-          {/* ── Badges — diamond = ONE OF ONE · spade = SOLD ── */}
+          {/* ── Badges - diamond = ONE OF ONE · spade = SOLD ── */}
           <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col gap-0.5 z-20">
             {product.isOneOfAKind && (
               <div className="group/badge relative cursor-pointer" onClick={handleDiamondClick}>
@@ -222,7 +222,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
 
         </div>
 
-        {/* ── Info — counter-parallax: drifts with cursor (further plane) ── */}
+        {/* ── Info - counter-parallax: drifts with cursor (further plane) ── */}
         <div ref={infoRef} className="mt-4 px-1 will-change-transform text-center md:text-left">
           <h3 className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-wide uppercase product-name-shimmer">
             {product.name[locale as Locale]}

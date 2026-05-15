@@ -65,13 +65,13 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
   // ── Title shimmer ─────────────────────────────────────────────────────────
   // Shared logic: remove the class, force a reflow so the browser registers
-  // the removal, then re-add it — animation restarts from the beginning.
+  // the removal, then re-add it - animation restarts from the beginning.
   const playTitleShimmer = useCallback(() => {
     const el = titleRef.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     el.classList.remove("product-title-shimmer--animate");
-    void el.offsetWidth; // trigger reflow — required to restart CSS animation
+    void el.offsetWidth; // trigger reflow - required to restart CSS animation
     el.classList.add("product-title-shimmer--animate");
   }, []);
 
@@ -92,7 +92,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   }, [playTitleShimmer]);
 
   // ── Parallax on hero image ────────────────────────────────────────────────
-  // Stronger range than product cards (±10px / ±7px) — the image is much
+  // Stronger range than product cards (±10px / ±7px) - the image is much
   // larger so the motion reads as more dramatic while staying proportional.
   const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -104,7 +104,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
       const rect = imageRef.current.getBoundingClientRect();
       const dx = (clientX - rect.left  - rect.width  / 2) / (rect.width  / 2);
       const dy = (clientY - rect.top   - rect.height / 2) / (rect.height / 2);
-      // Image drifts opposite the cursor — reads as floating in front of the plane
+      // Image drifts opposite the cursor - reads as floating in front of the plane
       heroImageWrapRef.current.style.transform =
         `translate(${(-dx * 10).toFixed(2)}px, ${(-dy * 7).toFixed(2)}px)`;
     });
@@ -140,7 +140,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
       if (e.key === "Escape") setIsLightboxOpen(false);
     };
 
-    // Save position, pin body — the only approach that reliably stops
+    // Save position, pin body - the only approach that reliably stops
     // scroll-bleed on iOS Safari and momentum-based trackpads.
     const scrollY = window.scrollY;
     const body = document.body;
@@ -183,7 +183,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   useGSAP(() => {
     if (loading || !product) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // clipPath on the image wrapper only — the halo (a sibling div) is never
+    // clipPath on the image wrapper only - the halo (a sibling div) is never
     // clipped, so its blur bleeds freely beyond the square boundary.
     // onComplete clears the clipPath so drop-shadow renders without constraint.
     gsap.fromTo(heroImageWrapRef.current,
@@ -245,7 +245,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     // lightbox lives at document.body so it stays visible, but the GPU no
     // longer composites the blur-[80px] halo, the drop-shadow on the hero
     // image, or any other paint work behind the overlay. This is what makes
-    // zoom feel snappy — the browser is rendering ONE image, not two layers.
+    // zoom feel snappy - the browser is rendering ONE image, not two layers.
     ...(isLightboxOpen ? { visibility: "hidden" as const, contentVisibility: "hidden" as const } : null),
   } as React.CSSProperties;
 
@@ -273,7 +273,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
         {/* ── Image column ── */}
         <div className="-mx-6 lg:mx-0">
-          {/* Main image cell — mousemove area for parallax, click for lightbox */}
+          {/* Main image cell - mousemove area for parallax, click for lightbox */}
           <div
             ref={imageRef}
             className="aspect-[4/5] lg:aspect-auto lg:h-full relative cursor-zoom-in group"
@@ -283,7 +283,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           >
             {/* ── Ambient color halo ──────────────────────────────────────────
                 Always present at 18% (atmospheric presence even at rest).
-                Blooms to 65% on hover — the shirt's palette floods the space.
+                Blooms to 65% on hover - the shirt's palette floods the space.
                 Updates with activeImage so each angle has its own aura.
                 Negative scale (2×) + 80px blur = wide, soft spread.
                 Desktop-only: on mobile this 80px blur has no hover bloom
@@ -303,11 +303,11 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               />
             </div>
 
-            {/* ── Product image — parallax target ──────────────────────────────
+            {/* ── Product image - parallax target ──────────────────────────────
                 Wrapped in its own div so JS translate (parallax) and the CSS
                 drop-shadow (product-float-hero) live on separate elements.
                 The ±10 / ±7px translate range is stronger than the grid cards
-                (±6 / ±4px) — proportional to the much larger display size.   */}
+                (±6 / ±4px) - proportional to the much larger display size.   */}
             <div
               ref={heroImageWrapRef}
               className="absolute inset-0 z-10 will-change-transform"
@@ -322,9 +322,9 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               />
             </div>
 
-            {/* ── Favorite — top-right, no chip, matches grid card language ──
+            {/* ── Favorite - top-right, no chip, matches grid card language ──
                 Same heart icon, same positioning logic, same drop-shadow
-                for legibility. w-12 h-12 (vs grid's w-9 h-9) — larger target
+                for legibility. w-12 h-12 (vs grid's w-9 h-9) - larger target
                 on a larger image. Sits above halo (z-20) and image (z-10).   */}
             <button
               onClick={(e) => {
@@ -346,7 +346,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               </div>
             </button>
 
-            {/* Prev / next arrows — only when multiple images */}
+            {/* Prev / next arrows - only when multiple images */}
             {hasMultipleImages && (
               <>
                 <button
@@ -370,7 +370,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               </>
             )}
 
-            {/* Zoom hint — bottom-right so it never conflicts with favorite (top-right) */}
+            {/* Zoom hint - bottom-right so it never conflicts with favorite (top-right) */}
             <div className="absolute bottom-4 right-4 w-9 h-9 bg-black/30 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-white opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -413,7 +413,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         {/* ── Info column ── */}
         <div ref={infoRef} className="flex flex-col items-center lg:items-start text-center lg:text-left pt-2 pb-8 lg:py-4">
 
-          {/* Badge row — diamond = ONE OF ONE · spade = SOLD */}
+          {/* Badge row - diamond = ONE OF ONE · spade = SOLD */}
           {(product.isOneOfAKind || product.isSold) && (
             <div className="flex items-center gap-3 mb-5">
               {product.isOneOfAKind && (
@@ -439,7 +439,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             </div>
           )}
 
-          {/* Title — clamp keeps it from overflowing on any phone width */}
+          {/* Title - clamp keeps it from overflowing on any phone width */}
           <h1
             ref={titleRef}
             className="font-[family-name:var(--font-display)] text-[clamp(1rem,7vw,3.5rem)] lg:text-4xl font-extrabold tracking-tight uppercase product-title-shimmer cursor-default leading-[0.92] mb-5 w-full break-words"
@@ -447,7 +447,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             {product.name[locale as Locale]}
           </h1>
 
-          {/* Price — split for typographic weight contrast */}
+          {/* Price - split for typographic weight contrast */}
           <div className="flex items-baseline gap-0.5 mb-7">
             <span className="font-[family-name:var(--font-display)] text-xl font-bold text-white/60">
               &euro;
@@ -471,7 +471,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             {product.description[locale as Locale]}
           </p>
 
-          {/* Size selector — div/p instead of fieldset/legend (legend ignores text-center) */}
+          {/* Size selector - div/p instead of fieldset/legend (legend ignores text-center) */}
           {product.sizes && (
             <div className="w-full mb-8" role="group" aria-label="Select size">
               <p className="font-[family-name:var(--font-display)] text-[10px] font-bold tracking-[0.25em] uppercase text-chrome mb-3">
@@ -510,7 +510,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             </div>
           )}
 
-          {/* Add to cart — full width on mobile */}
+          {/* Add to cart - full width on mobile */}
           <MagneticButton>
             <button
               onClick={handleAddToCart}
@@ -547,7 +547,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         </div>
       </div>
 
-      {/* ── Lightbox — rendered via portal so it sits at document.body level,
+      {/* ── Lightbox - rendered via portal so it sits at document.body level,
            outside any ancestor with overflow constraints or transforms.       */}
       {mounted && isLightboxOpen && product.images.length > 0 && createPortal(
         <div

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getProduct, getProducts } from "@/lib/products";
 import { ProductPageClient } from "./ProductPageClient";
 
-// ISR — regenerate each product page at most once every 60 seconds so edits
+// ISR - regenerate each product page at most once every 60 seconds so edits
 // in the admin propagate without a redeploy. Admin mutations also call
 // `revalidatePath('/product/[id]', 'page')` for instant updates.
 export const revalidate = 60;

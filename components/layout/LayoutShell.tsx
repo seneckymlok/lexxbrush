@@ -18,7 +18,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <RouteTransitionProvider>
       <div className="flex flex-col flex-1 relative z-10">
-        {/* Dim overlay for inner pages — keeps hero-bg visible but more subdued */}
+        {/* Dim overlay for inner pages - keeps hero-bg visible but more subdued */}
         {isInnerPage && (
           <div
             className="fixed inset-0 pointer-events-none z-[1]"

@@ -17,9 +17,9 @@ export interface Product {
   sizes?: string[];
   isOneOfAKind: boolean;
   isSold: boolean;
-  /** Gradient start hex — dominant accent extracted from first image. Falls back to brand purple. */
+  /** Gradient start hex - dominant accent extracted from first image. Falls back to brand purple. */
   accentColor?: string;
-  /** Gradient end hex — hue-distant secondary accent. Falls back to a triadic shift of accentColor. */
+  /** Gradient end hex - hue-distant secondary accent. Falls back to a triadic shift of accentColor. */
   accentColorSecondary?: string;
 }
 

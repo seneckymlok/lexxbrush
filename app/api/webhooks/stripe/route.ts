@@ -19,7 +19,7 @@ function deliverySummary(deliveryType: string | null, data: any): OrderEmailDeli
     const p = data.point;
     return {
       type: "pickup",
-      summary: `${p.name} — ${p.street}, ${p.zip} ${p.city}`,
+      summary: `${p.name} - ${p.street}, ${p.zip} ${p.city}`,
     };
   }
   if (deliveryType === "home_delivery" && data.address) {
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret || secret === "whsec_placeholder") {
     console.error(
-      "[stripe-webhook] STRIPE_WEBHOOK_SECRET is missing or placeholder — webhook cannot verify. " +
+      "[stripe-webhook] STRIPE_WEBHOOK_SECRET is missing or placeholder - webhook cannot verify. " +
         "Set the real value from Stripe dashboard → Developers → Webhooks → your endpoint → Signing secret.",
     );
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       // Test-mode flag set by the checkout API when the admin test token
       // matched. Suppresses ONLY the billable Packeta packet creation.
       // The order row, the confirmation email, and the one-of-a-kind
-      // "mark as sold" inventory lock still fire — those are free side
+      // "mark as sold" inventory lock still fire - those are free side
       // effects that need to be exercised end-to-end to validate the flow.
       const isTestMode = session.metadata?.test_mode === "true";
 
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
         .select("id, name_en, images, price")
         .in("id", productIds);
 
-      // Build enriched items — flat format readable by both account page and admin.
+      // Build enriched items - flat format readable by both account page and admin.
       const enrichedItems = items.map((item: any, i: number) => {
         const fullId  = productIds[i];
         const product = productRows?.find((p: any) => p.id === fullId);
@@ -116,8 +116,8 @@ export async function POST(req: NextRequest) {
       });
 
       // Create order in database with Packeta delivery info.
-      // We still create the order row in test mode — that's how you verify
-      // the pipeline works — but it's clearly tagged.
+      // We still create the order row in test mode - that's how you verify
+      // the pipeline works - but it's clearly tagged.
       const { data: order, error: insertError } = await supabase.from("orders").insert({
         stripe_session_id: session.id,
         user_id: session.metadata?.user_id || null,
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
         console.log("[stripe-webhook] order inserted", { orderId: order?.id });
       }
 
-      // Mark one-of-a-kind products as sold. Runs in test mode too —
+      // Mark one-of-a-kind products as sold. Runs in test mode too -
       // the inventory lock is a real business effect we want to verify,
       // and it costs nothing.
       for (const id of productIds) {
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
               const invoice = await stripe.invoices.retrieve(session.invoice as string);
               invoiceNumber = invoice.number ?? undefined;
 
-              // Persist invoice metadata. Fire-and-forget by design — a
+              // Persist invoice metadata. Fire-and-forget by design - a
               // failure here must not break the email flow below.
               await supabase
                 .from("orders")
@@ -225,7 +225,7 @@ export async function POST(req: NextRequest) {
             invoiceNumber,
           });
         } catch (emailErr) {
-          // Never fail the webhook for an email issue — the order is valid.
+          // Never fail the webhook for an email issue - the order is valid.
           console.error("Order confirmation email failed:", emailErr);
         }
       }
@@ -233,7 +233,7 @@ export async function POST(req: NextRequest) {
       // ── Newsletter opt-in ──────────────────────────────────────────────
       // Customer ticked the "email me when new pieces drop" box at checkout.
       // We only act on it AFTER a successful payment so abandoned carts
-      // never pollute the list. Real orders only — test mode skipped.
+      // never pollute the list. Real orders only - test mode skipped.
       if (!isTestMode && session.metadata?.newsletter_opt_in === "true") {
         const optInEmail = session.customer_details?.email?.toLowerCase().trim();
         if (optInEmail) {
@@ -302,7 +302,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Auto-create Packeta packet after payment — REAL ORDERS ONLY.
+      // Auto-create Packeta packet after payment - REAL ORDERS ONLY.
       if (deliveryData && order?.id) {
         try {
           const rawName = customerName || session.customer_details?.name || "Customer";
@@ -345,7 +345,7 @@ export async function POST(req: NextRequest) {
 
           console.log(`Packeta packet created: ${packetId} for order ${order.id}`);
         } catch (packetaError) {
-          // Don't fail the webhook — order is still valid, admin can retry manually
+          // Don't fail the webhook - order is still valid, admin can retry manually
           console.error("Packeta packet creation failed:", packetaError);
         }
       }

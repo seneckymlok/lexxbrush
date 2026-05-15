@@ -6,7 +6,7 @@
 // needs to close that month's books. See app/api/admin/exports/route.ts for
 // the bundle contents.
 //
-// Designed to be boring — this page exists to save 2h/month of manual
+// Designed to be boring - this page exists to save 2h/month of manual
 // CSV stitching, not to be a dashboard. The "current month" prominent at
 // the top + the 12 prior months as a grid is the entire UX.
 
@@ -48,7 +48,7 @@ export default function AdminExportsPage() {
     setError(null);
     setDownloading(monthKey);
     try {
-      // Auth — same Bearer-token pattern as the rest of /admin
+      // Auth - same Bearer-token pattern as the rest of /admin
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       if (!token) {
@@ -103,7 +103,7 @@ export default function AdminExportsPage() {
         </div>
       )}
 
-      {/* Current month — prominent */}
+      {/* Current month - prominent */}
       <div className="mb-10 p-5 rounded-xl bg-white/[0.03] border border-white/10">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
@@ -180,7 +180,7 @@ export default function AdminExportsPage() {
         <div className="space-y-3 text-sm text-white/50 leading-relaxed">
           <div className="flex gap-3">
             <code className="text-[11px] text-white/70 bg-white/5 px-1.5 py-0.5 rounded h-5 mt-0.5 flex-shrink-0">orders-YYYY-MM.csv</code>
-            <span>Všetky uhradené objednávky — dátum, zákazník, suma, číslo faktúry, stav.</span>
+            <span>Všetky uhradené objednávky - dátum, zákazník, suma, číslo faktúry, stav.</span>
           </div>
           <div className="flex gap-3">
             <code className="text-[11px] text-white/70 bg-white/5 px-1.5 py-0.5 rounded h-5 mt-0.5 flex-shrink-0">stripe-fees-YYYY-MM.csv</code>

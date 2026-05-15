@@ -72,7 +72,7 @@
 
   @media (max-width: 767px) {
     html {
-      /* Remove the html-level background image on mobile —
+      /* Remove the html-level background image on mobile -
          we render it via a fixed pseudo-element below so it
          always matches the viewport regardless of page height
          (iOS Safari ignores background-attachment: fixed). */
@@ -82,7 +82,7 @@
     body::before {
       content: "";
       position: fixed;
-      /* Lock to LARGE viewport height (max possible — address bar collapsed).
+      /* Lock to LARGE viewport height (max possible - address bar collapsed).
          Using `inset: 0` would let the element resize when the mobile browser's
          address bar shows/hides, causing `background-size: cover` to recompute
          and the image to visibly "zoom". With `100lvh` the bg is always sized
@@ -134,7 +134,7 @@
     color: var(--color-white);
   }
 
-  /* Override browser autofill background — the only reliable method is
+  /* Override browser autofill background - the only reliable method is
      an inset box-shadow that paints over the UA-injected background color.
      background-color itself is ignored by browsers for autofilled fields. */
   input:-webkit-autofill,
@@ -176,7 +176,7 @@
 
 
 @layer components {
-  /* Concrete noise texture — no solid bg, lets fixed artwork show through */
+  /* Concrete noise texture - no solid bg, lets fixed artwork show through */
   .concrete-bg {
     position: relative;
   }
@@ -192,7 +192,7 @@
     z-index: 1;
   }
 
-  /* Chrome gradient text — tinted chrome matching the logo's metallic finish */
+  /* Chrome gradient text - tinted chrome matching the logo's metallic finish */
   .chrome-text {
     background: linear-gradient(
       180deg,
@@ -212,7 +212,7 @@
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) drop-shadow(0 -1px 0 rgba(255,255,255,0.05));
   }
 
-  /* Chrome shimmer — animated chrome with a warm sweeping highlight */
+  /* Chrome shimmer - animated chrome with a warm sweeping highlight */
   .chrome-shimmer {
     background: linear-gradient(
       110deg,
@@ -234,7 +234,7 @@
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   }
 
-  /* Product name shimmer — one-shot chrome sweep triggered by group hover.
+  /* Product name shimmer - one-shot chrome sweep triggered by group hover.
      At rest the gradient is parked off-screen left so text reads as flat #E0E0E0.
      On hover the animation sweeps the bright peak across left-to-right in 550ms. */
   .product-name-shimmer {
@@ -259,7 +259,7 @@
     }
   }
 
-  /* Product detail page title shimmer — richer chrome gradient matching chrome-text.
+  /* Product detail page title shimmer - richer chrome gradient matching chrome-text.
      Parked at -150% at rest (flat chrome). JS adds --animate to replay on load
      and on mouseenter. animation: forwards parks at 150% (also flat chrome). */
   .product-title-shimmer {
@@ -324,7 +324,7 @@
     filter: blur(0.5px);
   }
 
-  /* Marquee — product images, slower pace */
+  /* Marquee - product images, slower pace */
   .animate-marquee {
     animation: marquee 40s linear infinite;
   }
@@ -338,7 +338,7 @@
     animation: fadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
-  /* Stencil badge — "new" = club yellow attention color */
+  /* Stencil badge - "new" = club yellow attention color */
   .stencil-badge {
     border: 1px solid rgba(238, 255, 0, 0.35);
     color: var(--color-attention);
@@ -358,7 +358,7 @@
     text-shadow: 0 0 8px rgba(136, 0, 204, 0.3);
   }
 
-  /* Brand CTA button — heart purple with prismatic shimmer */
+  /* Brand CTA button - heart purple with prismatic shimmer */
   .btn-brand {
     position: relative;
     overflow: hidden;
@@ -372,7 +372,7 @@
     border: 1px solid rgba(136, 0, 204, 0.3);
   }
 
-  /* Shimmer sweep — light that travels across the button */
+  /* Shimmer sweep - light that travels across the button */
   .btn-brand::before {
     content: '';
     position: absolute;
@@ -518,7 +518,7 @@
     }
   }
 
-  /* Overflow art — character PNGs bleeding off viewport edges */
+  /* Overflow art - character PNGs bleeding off viewport edges */
   .overflow-art {
     position: absolute;
     pointer-events: none;
@@ -601,7 +601,7 @@
     animation: suit-drift-4 22s ease-in-out infinite;
   }
 
-  /* Divider — subtle 4-suit spectrum */
+  /* Divider - subtle 4-suit spectrum */
   .suit-divider {
     position: relative;
     background: linear-gradient(
@@ -615,7 +615,7 @@
     );
   }
 
-  /* Divider marquee — slower than product marquee */
+  /* Divider marquee - slower than product marquee */
   .animate-divider-marquee {
     animation: divider-marquee 35s linear infinite;
   }
@@ -630,7 +630,7 @@
                 box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Floating product — transparent PNG with realistic two-layer shadow.
+  /* Floating product - transparent PNG with realistic two-layer shadow.
      Close shadow defines surface contact, far shadow defines ambient depth.
      Drop-shadow follows the actual silhouette of the PNG, not a bounding box. */
   .product-float {
@@ -654,11 +654,11 @@
     }
   }
 
-  /* Hero variant for the product detail page — bigger image, bigger shadow,
+  /* Hero variant for the product detail page - bigger image, bigger shadow,
      stays in place (no lift) since the image is the focal point of the page.
      Desktop-only: three stacked drop-shadows (the largest at 60px blur radius)
      re-rasterize on every pinch-zoom frame on mobile, which makes the gesture
-     stutter. Mobile gets the bare image — fast, clean. */
+     stutter. Mobile gets the bare image - fast, clean. */
   .product-float-hero {
     transform: translateZ(0);
   }
@@ -679,7 +679,7 @@
   50% { background-position: -200% center; }
 }
 
-/* One-shot chrome sweep — plays once on card hover, then settles back to flat chrome */
+/* One-shot chrome sweep - plays once on card hover, then settles back to flat chrome */
 @keyframes name-shimmer {
   0%   { background-position: -150% center; }
   100% { background-position:  150% center; }

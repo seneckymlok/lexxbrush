@@ -200,7 +200,7 @@ export async function buildMonthlyExportBuffer(range: { startIso: string; endIso
   zip.file(
     "README.txt",
     [
-      `Lexxbrush, s. r. o. — Účtovný export · ${range.label}`,
+      `Lexxbrush, s. r. o. - Účtovný export · ${range.label}`,
       ``,
       `Obsah:`,
       `  orders-${range.label}.csv      Zoznam zaplatených objednávok za daný mesiac.`,
@@ -210,7 +210,7 @@ export async function buildMonthlyExportBuffer(range: { startIso: string; endIso
       `  invoices/                      PDF faktúr vystavených zákazníkom za daný mesiac.`,
       ``,
       `Spoločnosť Lexxbrush, s. r. o. nie je platiteľom DPH podľa §4`,
-      `zákona č. 222/2004 Z. z. — IČ DPH SK2122713032 je registrované podľa §7a.`,
+      `zákona č. 222/2004 Z. z. - IČ DPH SK2122713032 je registrované podľa §7a.`,
       ``,
       `Vygenerované: ${new Date().toISOString()}`,
     ].join("\n"),

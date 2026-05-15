@@ -82,7 +82,7 @@ export default function AdminDashboard() {
             <tbody>
               {stats.recentOrders.map((order) => (
                 <tr key={order.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                  <td className="px-5 py-3 text-sm text-white/70">{order.customer_email || "—"}</td>
+                  <td className="px-5 py-3 text-sm text-white/70">{order.customer_email || "-"}</td>
                   <td className="px-5 py-3 text-sm text-white/70">€{(order.total / 100).toFixed(2)}</td>
                   <td className="px-5 py-3"><StatusBadge status={order.status} /></td>
                   <td className="px-5 py-3 text-sm text-white/40 text-right">{new Date(order.created_at).toLocaleDateString()}</td>

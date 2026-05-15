@@ -33,7 +33,7 @@ async function unsubscribeByToken(token: string | null) {
     return { ok: false, status: 404 } as const;
   }
 
-  // Idempotent — already unsubscribed is still success.
+  // Idempotent - already unsubscribed is still success.
   if (row.status === "unsubscribed") {
     return { ok: true, status: 200 } as const;
   }
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // List-Unsubscribe-Post=One-Click — Gmail sends an empty body.
+  // List-Unsubscribe-Post=One-Click - Gmail sends an empty body.
   const token = new URL(req.url).searchParams.get("token");
   const result = await unsubscribeByToken(token);
   return NextResponse.json({ ok: result.ok }, { status: result.status });

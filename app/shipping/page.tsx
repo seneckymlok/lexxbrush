@@ -13,7 +13,7 @@ const content = {
         subsections: [
           {
             heading: "Shipping Provider",
-            text: `All orders are shipped via Packeta, a leading European delivery service. At checkout, you can choose between:\n\n• Pickup Point — collect your order from thousands of Packeta pickup points and Z-BOXes across Europe\n• Home Delivery — delivered directly to your door`,
+            text: `All orders are shipped via Packeta, a leading European delivery service. At checkout, you can choose between:\n\n• Pickup Point - collect your order from thousands of Packeta pickup points and Z-BOXes across Europe\n• Home Delivery - delivered directly to your door`,
           },
           {
             heading: "Shipping Zones",
@@ -21,7 +21,7 @@ const content = {
           },
           {
             heading: "Delivery Times",
-            text: `• Slovakia: 2–4 business days\n• Czech Republic: 2–4 business days\n• Other EU countries (DE, AT, PL, HU): 5–10 business days\n\nPlease note that delivery times are estimates and may vary due to carrier delays or peak seasons.`,
+            text: `• Slovakia: 2-4 business days\n• Czech Republic: 2-4 business days\n• Other EU countries (DE, AT, PL, HU): 5-10 business days\n\nPlease note that delivery times are estimates and may vary due to carrier delays or peak seasons.`,
           },
           {
             heading: "Shipping Costs",
@@ -29,7 +29,7 @@ const content = {
           },
           {
             heading: "Order Processing",
-            text: `Orders are typically processed within 1–3 business days. As all products are hand-airbrushed, custom orders may require additional processing time, which will be communicated to you upon order confirmation.`,
+            text: `Orders are typically processed within 1-3 business days. As all products are hand-airbrushed, custom orders may require additional processing time, which will be communicated to you upon order confirmation.`,
           },
           {
             heading: "Tracking",
@@ -46,7 +46,7 @@ const content = {
           },
           {
             heading: "Return Conditions",
-            text: `• Items must be in their original condition — unworn, unwashed, and undamaged\n• Items must be returned in their original packaging\n• Return shipping costs are the responsibility of the buyer\n• Refunds are processed within 14 days of receiving the returned item`,
+            text: `• Items must be in their original condition - unworn, unwashed, and undamaged\n• Items must be returned in their original packaging\n• Return shipping costs are the responsibility of the buyer\n• Refunds are processed within 14 days of receiving the returned item`,
           },
           {
             heading: "Custom Orders",
@@ -58,7 +58,7 @@ const content = {
           },
           {
             heading: "Refund Method",
-            text: `Refunds are processed to the original payment method used during purchase. Please allow 5–10 business days for the refund to appear on your statement after processing.`,
+            text: `Refunds are processed to the original payment method used during purchase. Please allow 5-10 business days for the refund to appear on your statement after processing.`,
           },
         ],
       },
@@ -73,7 +73,7 @@ const content = {
         subsections: [
           {
             heading: "Prepravca",
-            text: `Všetky objednávky doručujeme prostredníctvom Packeta, poprednej európskej doručovacej služby. Pri pokladni si môžete vybrať:\n\n• Odberné miesto — vyzdvihnite si objednávku z tisícok Packeta odberných miest a Z-BOXov po celej Európe\n• Doručenie na adresu — doručenie priamo k vašim dverám`,
+            text: `Všetky objednávky doručujeme prostredníctvom Packeta, poprednej európskej doručovacej služby. Pri pokladni si môžete vybrať:\n\n• Odberné miesto - vyzdvihnite si objednávku z tisícok Packeta odberných miest a Z-BOXov po celej Európe\n• Doručenie na adresu - doručenie priamo k vašim dverám`,
           },
           {
             heading: "Oblasti doručenia",
@@ -81,7 +81,7 @@ const content = {
           },
           {
             heading: "Dodacie lehoty",
-            text: `• Slovensko: 2–4 pracovné dni\n• Česko: 2–4 pracovné dni\n• Ostatné krajiny EÚ (DE, AT, PL, HU): 5–10 pracovných dní\n\nUpozorňujeme, že dodacie lehoty sú orientačné a môžu sa líšiť v dôsledku meškania prepravcu alebo špičkového obdobia.`,
+            text: `• Slovensko: 2-4 pracovné dni\n• Česko: 2-4 pracovné dni\n• Ostatné krajiny EÚ (DE, AT, PL, HU): 5-10 pracovných dní\n\nUpozorňujeme, že dodacie lehoty sú orientačné a môžu sa líšiť v dôsledku meškania prepravcu alebo špičkového obdobia.`,
           },
           {
             heading: "Náklady na dopravu",
@@ -89,7 +89,7 @@ const content = {
           },
           {
             heading: "Spracovanie objednávky",
-            text: `Objednávky sú zvyčajne spracované do 1–3 pracovných dní. Keďže všetky produkty sú ručne airbrushované, zákazky na mieru môžu vyžadovať dodatočný čas spracovania, o čom vás budeme informovať.`,
+            text: `Objednávky sú zvyčajne spracované do 1-3 pracovných dní. Keďže všetky produkty sú ručne airbrushované, zákazky na mieru môžu vyžadovať dodatočný čas spracovania, o čom vás budeme informovať.`,
           },
           {
             heading: "Sledovanie",
@@ -106,7 +106,7 @@ const content = {
           },
           {
             heading: "Podmienky vrátenia",
-            text: `• Tovar musí byť v pôvodnom stave — nenosený, nepraný a nepoškodený\n• Tovar musí byť vrátený v pôvodnom balení\n• Náklady na vrátenie znáša kupujúci\n• Refundácie sú spracované do 14 dní od prijatia vráteného tovaru`,
+            text: `• Tovar musí byť v pôvodnom stave - nenosený, nepraný a nepoškodený\n• Tovar musí byť vrátený v pôvodnom balení\n• Náklady na vrátenie znáša kupujúci\n• Refundácie sú spracované do 14 dní od prijatia vráteného tovaru`,
           },
           {
             heading: "Zákazky na mieru",
@@ -118,7 +118,7 @@ const content = {
           },
           {
             heading: "Spôsob refundácie",
-            text: `Refundácie sú spracované na pôvodný platobný spôsob použitý pri nákupe. Po spracovaní počítajte s 5–10 pracovnými dňami, kým sa refundácia zobrazí na vašom výpise.`,
+            text: `Refundácie sú spracované na pôvodný platobný spôsob použitý pri nákupe. Po spracovaní počítajte s 5-10 pracovnými dňami, kým sa refundácia zobrazí na vašom výpise.`,
           },
         ],
       },

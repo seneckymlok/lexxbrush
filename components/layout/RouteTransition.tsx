@@ -126,7 +126,7 @@ export function RouteTransitionProvider({ children }: { children: React.ReactNod
     );
   }, [finishTransition]);
 
-  // start — stable reference: never depends on phase state directly.
+  // start - stable reference: never depends on phase state directly.
   // Uses phaseRef to read current phase inside callbacks without being
   // listed as a dep (avoids re-registering the click listener every phase).
   const start = useCallback(
@@ -156,7 +156,7 @@ export function RouteTransitionProvider({ children }: { children: React.ReactNod
           setPhase("hold");
           holdStart.current = Date.now();
 
-          // Navigate — if it throws, reset so future transitions work.
+          // Navigate - if it throws, reset so future transitions work.
           try {
             router.push(href);
           } catch {
@@ -170,18 +170,18 @@ export function RouteTransitionProvider({ children }: { children: React.ReactNod
       // Hard safety: if the page never resolves, force exit after MAX_HOLD.
       timers.current.push(
         setTimeout(() => {
-          // Use phaseRef — reading state here from closure is stale.
+          // Use phaseRef - reading state here from closure is stale.
           if (inFlight.current && phaseRef.current !== "out") {
             exitNow();
           }
         }, IN_DURATION + MAX_HOLD),
       );
     },
-    // exitNow and router are stable. No phase/phaseRef in deps — phaseRef is a ref.
+    // exitNow and router are stable. No phase/phaseRef in deps - phaseRef is a ref.
     [router, exitNow],
   );
 
-  // Watch pathname — when it matches the target during HOLD, schedule exit.
+  // Watch pathname - when it matches the target during HOLD, schedule exit.
   useEffect(() => {
     if (phaseRef.current !== "hold") return;
     if (!targetPath.current) return;
@@ -193,7 +193,7 @@ export function RouteTransitionProvider({ children }: { children: React.ReactNod
     timers.current.push(setTimeout(exitNow, remaining));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, exitNow]);
-  // NOTE: phase intentionally omitted — phaseRef is the authority here,
+  // NOTE: phase intentionally omitted - phaseRef is the authority here,
   // avoids retriggering this effect on every phase change.
 
   // Global anchor interceptor.
@@ -228,7 +228,7 @@ export function RouteTransitionProvider({ children }: { children: React.ReactNod
 
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  // start is now stable — won't re-register on every phase change.
+  // start is now stable - won't re-register on every phase change.
   }, [start]);
 
   return (
@@ -277,7 +277,7 @@ function TransitionOverlay({ phase, suit }: { phase: Phase; suit: SuitKey }) {
     veilOpacity = 0;
   }
 
-  // hold uses 0 transition duration so the suit doesn't move — it's already
+  // hold uses 0 transition duration so the suit doesn't move - it's already
   // at center from "in". out/in use their own durations.
   const sweepDur =
     phase === "in"   ? IN_DURATION  :

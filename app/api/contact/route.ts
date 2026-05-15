@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
           <h2 style="color: #333;">New Contact Message</h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject || "—"}</p>
+          <p><strong>Subject:</strong> ${subject || "-"}</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
           <p style="white-space: pre-wrap;">${message}</p>
         </div>
