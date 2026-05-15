@@ -25,7 +25,7 @@ interface CustomOrder {
 }
 
 const STATUSES = ["new", "reviewed", "in_progress", "done"];
-const STATUS_LABELS: Record<string, string> = { new: "New", reviewed: "Reviewed", in_progress: "In Progress", done: "Done" };
+const STATUS_LABELS: Record<string, string> = { new: "Nové", reviewed: "Prezreté", in_progress: "V procese", done: "Hotové" };
 
 export default function AdminCustomOrdersPage() {
   const [orders, setOrders] = useState<CustomOrder[]>([]);
@@ -48,13 +48,13 @@ export default function AdminCustomOrdersPage() {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Loading...</div></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Načítavam...</div></div>;
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-white mb-8">Custom Orders</h1>
+      <h1 className="text-xl font-semibold text-white mb-8">Na mieru</h1>
       {orders.length === 0 ? (
-        <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-16 text-center"><p className="text-white/30 text-sm">No custom order requests yet</p></div>
+        <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-16 text-center"><p className="text-white/30 text-sm">Zatiaľ žiadne požiadavky</p></div>
       ) : (
         <div className="space-y-2">
           {orders.map((order) => {
@@ -75,10 +75,10 @@ export default function AdminCustomOrdersPage() {
                 </button>
                 {expandedId === order.id && (
                   <div className="px-5 pb-4 border-t border-white/5 pt-3">
-                    <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Description</p>
+                    <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Popis</p>
                     <p className="text-sm text-white/60 whitespace-pre-wrap leading-relaxed">{order.description}</p>
                     <div className="mt-3">
-                      <a href={`mailto:${order.email}?subject=Your Custom Order Request - Lexxbrush`} className="text-xs text-blue-400/70 hover:text-blue-400 transition-colors">Reply via Email</a>
+                      <a href={`mailto:${order.email}?subject=Vaša požiadavka - Lexxbrush`} className="text-xs text-blue-400/70 hover:text-blue-400 transition-colors">Odpovedať e-mailom</a>
                     </div>
                   </div>
                 )}

@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8">
           <img src="/logo.png" alt="Lexxbrush" className="h-8 mx-auto mb-6 opacity-60" />
           <h1 className="text-lg font-semibold text-white/90 tracking-wide uppercase">
-            Admin Panel
+            Administrácia
           </h1>
         </div>
 
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
             disabled={loading}
             className="w-full bg-white text-black font-semibold text-sm py-3 rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Prihlasujem..." : "Prihlásiť sa"}
           </button>
         </form>
       </div>

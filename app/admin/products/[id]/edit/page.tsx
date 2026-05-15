@@ -152,25 +152,25 @@ export default function EditProductPage() {
   const inputClass = "w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none focus:border-white/25 transition-colors";
   const labelClass = "block text-[11px] font-medium text-white/40 uppercase tracking-wider mb-2";
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Loading...</div></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Načítavam...</div></div>;
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-white mb-8">Edit Product</h1>
+      <h1 className="text-xl font-semibold text-white mb-8">Upraviť produkt</h1>
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="grid grid-cols-2 gap-4">
-          <div><label className={labelClass}>Name (English)</label><input required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} className={inputClass} /></div>
-          <div><label className={labelClass}>Name (Slovak)</label><input required value={form.name_sk} onChange={(e) => setForm({ ...form, name_sk: e.target.value })} className={inputClass} /></div>
+          <div><label className={labelClass}>Názov (EN)</label><input required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} className={inputClass} /></div>
+          <div><label className={labelClass}>Názov (SK)</label><input required value={form.name_sk} onChange={(e) => setForm({ ...form, name_sk: e.target.value })} className={inputClass} /></div>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div><label className={labelClass}>Description (EN)</label><textarea rows={3} value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} className={`${inputClass} resize-none`} /></div>
-          <div><label className={labelClass}>Description (SK)</label><textarea rows={3} value={form.description_sk} onChange={(e) => setForm({ ...form, description_sk: e.target.value })} className={`${inputClass} resize-none`} /></div>
+          <div><label className={labelClass}>Popis (EN)</label><textarea rows={3} value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} className={`${inputClass} resize-none`} /></div>
+          <div><label className={labelClass}>Popis (SK)</label><textarea rows={3} value={form.description_sk} onChange={(e) => setForm({ ...form, description_sk: e.target.value })} className={`${inputClass} resize-none`} /></div>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div><label className={labelClass}>Price (€)</label><input required type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputClass} /></div>
-          <div><label className={labelClass}>Category</label><CustomSelect value={form.category} onChange={(val) => setForm({ ...form, category: val })} options={CATEGORIES.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))} /></div>
+          <div><label className={labelClass}>Cena (€)</label><input required type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputClass} /></div>
+          <div><label className={labelClass}>Kategória</label><CustomSelect value={form.category} onChange={(val) => setForm({ ...form, category: val })} options={CATEGORIES.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))} /></div>
         </div>
-        <div><label className={labelClass}>Sizes</label>
+        <div><label className={labelClass}>Veľkosti</label>
           {(() => {
               const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
               const selectedSizes = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
@@ -203,7 +203,7 @@ export default function EditProductPage() {
                     <input
                       type="text"
                       className={inputClass}
-                      placeholder="Custom size, press Enter"
+                      placeholder="Vlastná veľkosť, stlač Enter"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -233,17 +233,17 @@ export default function EditProductPage() {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <button type="button" onClick={() => setForm({ ...form, is_one_of_a_kind: !form.is_one_of_a_kind })} className={`w-10 h-5 rounded-full transition-colors ${form.is_one_of_a_kind ? "bg-green-500" : "bg-white/10"}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_one_of_a_kind ? "translate-x-5" : ""}`} /></button>
-            <span className="text-sm text-white/50">One of a kind</span>
+            <span className="text-sm text-white/50">Jeden kus (unikát)</span>
           </div>
           <div className="flex items-center gap-3">
             <button type="button" onClick={() => setForm({ ...form, is_sold: !form.is_sold })} className={`w-10 h-5 rounded-full transition-colors ${form.is_sold ? "bg-red-500" : "bg-white/10"}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_sold ? "translate-x-5" : ""}`} /></button>
-            <span className="text-sm text-white/50">Sold</span>
+            <span className="text-sm text-white/50">Predané</span>
           </div>
         </div>
 
         {/* Accent Color */}
         <div>
-          <label className={labelClass}>Accent color</label>
+          <label className={labelClass}>Akcentová farba</label>
           <AccentColorField
             from={form.accent_color}
             to={form.accent_color_secondary}
@@ -252,13 +252,13 @@ export default function EditProductPage() {
             source={form.images[0] || newFiles[0] || null}
           />
           <p className="text-[11px] text-white/30 mt-2">
-            Tints the product page (halo, button, accents). Hit ↻ to re-extract from the current first image.
+            Podfarbuje produktovú stránku (halo, tlačidlo, akcenty). Klikni ↻ pre re-extrakciu z prvého obrázku.
           </p>
         </div>
 
         {/* Images section */}
         <div>
-          <label className={labelClass}>Images</label>
+          <label className={labelClass}>Obrázky</label>
 
           {/* Existing images */}
           {form.images.length > 0 && (
@@ -339,14 +339,14 @@ export default function EditProductPage() {
             onDragLeave={(e) => e.currentTarget.classList.remove("border-white/30")}
             onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove("border-white/30"); handleFileSelect(e.dataTransfer.files); }}
           >
-            + Add more images
+            + Pridať obrázky
             <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFileSelect(e.target.files)} />
           </label>
         </div>
 
         <div className="flex items-center gap-4 pt-4">
-          <button type="submit" disabled={saving} className="px-6 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50">{saving ? uploadProgress || "Saving..." : "Update Product"}</button>
-          <button type="button" onClick={() => router.back()} className="text-sm text-white/30 hover:text-white/50 transition-colors">Cancel</button>
+          <button type="submit" disabled={saving} className="px-6 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50">{saving ? uploadProgress || "Ukladám..." : "Uložiť produkt"}</button>
+          <button type="button" onClick={() => router.back()} className="text-sm text-white/30 hover:text-white/50 transition-colors">Zrušiť</button>
         </div>
       </form>
     </div>

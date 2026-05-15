@@ -235,7 +235,7 @@ export default function AdminNewsletterPage() {
   // ─── Actions ───────────────────────────────────────────────────────────────
   async function sendTest() {
     if (!subject.trim() || !bodyHtml.trim() || !bodyText.trim()) {
-      showToast("Add a subject and at least one block.", "error");
+      showToast("Pridaj predmet a aspoň jeden blok.", "error");
       return;
     }
     setSendingTest(true);
@@ -253,7 +253,7 @@ export default function AdminNewsletterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Test failed");
       setHasTested(true);
-      showToast(`Test sent → ${data.sentTo}`);
+      showToast(`Test odoslaný → ${data.sentTo}`);
     } catch (err: any) {
       showToast(err.message, "error");
     } finally {
@@ -263,11 +263,11 @@ export default function AdminNewsletterPage() {
 
   async function sendCampaign() {
     if (!hasTested) {
-      showToast("Send a test first.", "error");
+      showToast("Najprv odpošli test.", "error");
       return;
     }
     if (confirmTyped !== CONFIRM_PHRASE) {
-      showToast(`Type "${CONFIRM_PHRASE}" to confirm.`, "error");
+      showToast(`Napíš "${CONFIRM_PHRASE}" pre potvrdenie.`, "error");
       return;
     }
     setSending(true);
@@ -285,7 +285,7 @@ export default function AdminNewsletterPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Send failed");
-      showToast(`Sent to ${data.sent} subscriber(s). ${data.failed ? data.failed + " failed." : ""}`);
+      showToast(`Odoslané ${data.sent} odberateľom. ${data.failed ? data.failed + " zlyhalo." : ""}`);
       setSubject("");
       setPreheader("");
       setBlocks([]);
@@ -300,12 +300,12 @@ export default function AdminNewsletterPage() {
   }
 
   async function deleteSubscriber(id: string) {
-    if (!confirm("Permanently delete this subscriber row?")) return;
+    if (!confirm("Natrácne vymazať tohto odberateľa?")) return;
     try {
       const res = await adminFetch(`/api/admin/newsletter?id=${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("delete failed");
       setSubscribers((prev) => prev.filter((s) => s.id !== id));
-      showToast("Subscriber deleted.");
+      showToast("Odberateľ vymazaný.");
     } catch (err: any) {
       showToast(err.message, "error");
     }
@@ -326,10 +326,10 @@ export default function AdminNewsletterPage() {
         <h1 className="text-xl font-semibold text-white">Newsletter</h1>
         {stats && (
           <div className="flex items-center gap-5 text-xs">
-            <Stat label="Confirmed" value={stats.confirmed} accent="emerald" />
-            <Stat label="Pending" value={stats.pending} accent="amber" />
-            <Stat label="Unsubscribed" value={stats.unsubscribed} accent="slate" />
-            <Stat label="Suppressed" value={stats.suppressed} accent="red" />
+            <Stat label="Potvrdení" value={stats.confirmed} accent="emerald" />
+            <Stat label="Čakajú" value={stats.pending} accent="amber" />
+            <Stat label="Odhlásení" value={stats.unsubscribed} accent="slate" />
+            <Stat label="Blokovaní" value={stats.suppressed} accent="red" />
           </div>
         )}
       </div>
@@ -346,7 +346,7 @@ export default function AdminNewsletterPage() {
                 : "border-transparent text-white/40 hover:text-white/70"
             }`}
           >
-            {t}
+            {t === "compose" ? "Písať" : t === "subscribers" ? "Odberateľ" : "História"}
           </button>
         ))}
       </div>
@@ -355,7 +355,7 @@ export default function AdminNewsletterPage() {
         <div className="grid xl:grid-cols-[minmax(0,1fr)_minmax(0,540px)] gap-6">
           {/* Composer */}
           <div className="space-y-4 min-w-0">
-            <Field label="Subject" hint={`${subject.length}/200`}>
+            <Field label="Predmet" hint={`${subject.length}/200`}>
               <input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
@@ -365,7 +365,7 @@ export default function AdminNewsletterPage() {
               />
             </Field>
 
-            <Field label="Preheader (inbox preview text)" hint={`${preheader.length}/120`}>
+            <Field label="Preheader (náhľad v schranke)" hint={`${preheader.length}/120`}>
               <input
                 value={preheader}
                 onChange={(e) => setPreheader(e.target.value)}
@@ -375,7 +375,7 @@ export default function AdminNewsletterPage() {
               />
             </Field>
 
-            <Field label="Audience">
+            <Field label="Publikácia">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2 flex-wrap">
                   <select
@@ -384,9 +384,9 @@ export default function AdminNewsletterPage() {
                     className="bg-white/[0.02] border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none"
                     title="Who receives this campaign"
                   >
-                    <option value="all"        className="bg-[#1a1a1a]">All confirmed</option>
-                    <option value="buyers"     className="bg-[#1a1a1a]">Past buyers only</option>
-                    <option value="non_buyers" className="bg-[#1a1a1a]">Subscribers who haven't bought</option>
+                    <option value="all"        className="bg-[#1a1a1a]">Všetci potvrdení</option>
+                    <option value="buyers"     className="bg-[#1a1a1a]">Iba kupujúci</option>
+                    <option value="non_buyers" className="bg-[#1a1a1a]">Ešte nekúpili</option>
                   </select>
                   <select
                     value={locale}
@@ -394,27 +394,27 @@ export default function AdminNewsletterPage() {
                     className="bg-white/[0.02] border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none"
                     title="Language filter"
                   >
-                    <option value="all" className="bg-[#1a1a1a]">All languages</option>
-                    <option value="en"  className="bg-[#1a1a1a]">English only</option>
-                    <option value="sk"  className="bg-[#1a1a1a]">Slovak only</option>
+                    <option value="all" className="bg-[#1a1a1a]">Všetky jazyky</option>
+                    <option value="en"  className="bg-[#1a1a1a]">Iba angličtina</option>
+                    <option value="sk"  className="bg-[#1a1a1a]">Iba slovenčina</option>
                   </select>
                 </div>
                 <span className="text-xs text-white/40">
-                  {audienceCount === null ? "—" : `${audienceCount} recipient${audienceCount === 1 ? "" : "s"}`}
+                  {audienceCount === null ? "—" : `${audienceCount} príjemcov`}
                 </span>
               </div>
             </Field>
 
             {/* Composer toolbar */}
             <div className="flex items-center justify-between pt-2">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Content</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Obsah</p>
               {blocks.length === 0 && (
                 <button
                   type="button"
                   onClick={() => setBlocks(makeStarterBlocks())}
                   className="text-[10px] uppercase tracking-wider text-white/50 hover:text-white"
                 >
-                  Load drop template
+                  Načítať šablónu
                 </button>
               )}
             </div>
@@ -433,26 +433,26 @@ export default function AdminNewsletterPage() {
                 disabled={sendingTest || blocks.length === 0}
                 className="px-4 py-2 text-xs uppercase tracking-wider bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-white/80 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {sendingTest ? "Sending test…" : hasTested ? "Send another test" : "Send test"}
+                {sendingTest ? "Odosielam test…" : hasTested ? "Poslat ďalší test" : "Poslať test"}
               </button>
 
               <button
                 onClick={() => setConfirmOpen(true)}
                 disabled={!hasTested || !audienceCount || blocks.length === 0}
-                title={!hasTested ? "Send a test first" : !audienceCount ? "No recipients in audience" : ""}
+                title={!hasTested ? "Najprv odpošli test" : !audienceCount ? "Žiadni príjemcovia" : ""}
                 className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg transition-all ${
                   hasTested && audienceCount && blocks.length > 0
                     ? "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
                     : "bg-white/[0.03] border border-white/5 text-white/30 cursor-not-allowed"
                 }`}
               >
-                Send to {audienceCount ?? 0}
+                Odoslať ({audienceCount ?? 0})
               </button>
 
               <div className="flex-1" />
 
               <span className="text-[10px] uppercase tracking-wider text-white/30">
-                {blocks.length} block{blocks.length === 1 ? "" : "s"}
+                {blocks.length} {blocks.length === 1 ? "blok" : "blokov"}
               </span>
             </div>
           </div>
@@ -460,8 +460,8 @@ export default function AdminNewsletterPage() {
           {/* Preview */}
           <div className="xl:sticky xl:top-6 h-fit">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] text-white/40 uppercase tracking-wider">Preview</p>
-              <span className="text-[10px] text-white/30">Live · 600px wide</span>
+              <p className="text-[10px] text-white/40 uppercase tracking-wider">Náhľad</p>
+              <span className="text-[10px] text-white/30">Živé · 600px</span>
             </div>
             <div className="bg-[#050505] border border-white/10 rounded-lg overflow-hidden h-[760px]">
               <iframe
@@ -479,20 +479,20 @@ export default function AdminNewsletterPage() {
         <div className="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
             <div className="text-[10px] uppercase tracking-wider text-white/40">
-              {subscribers.length} {subscribers.length === 1 ? "row" : "rows"}
+              {subscribers.length} {subscribers.length === 1 ? "záznam" : "záznamov"}
             </div>
             <button
               onClick={() => { refreshSubscribers(); refreshStats(); }}
               className="text-[10px] uppercase tracking-wider text-white/50 hover:text-white border border-white/10 hover:border-white/30 rounded px-3 py-1 transition-colors"
             >
-              Refresh
+              Obnoviť
             </button>
           </div>
           <div className="grid grid-cols-[1fr_80px_120px_120px_140px_60px] px-5 py-3 border-b border-white/5 text-[10px] uppercase tracking-wider text-white/40">
-            <div>Email</div><div>Locale</div><div>Status</div><div>Source</div><div>Joined</div><div></div>
+            <div>Email</div><div>Jazyk</div><div>Stav</div><div>Zdroj</div><div>Prihlásený</div><div></div>
           </div>
           {subscribers.length === 0 ? (
-            <div className="px-5 py-16 text-center text-white/30 text-sm">No subscribers yet</div>
+            <div className="px-5 py-16 text-center text-white/30 text-sm">Zatiaľ žiadni odberateľia</div>
           ) : (
             subscribers.map((s) => (
               <div key={s.id} className="grid grid-cols-[1fr_80px_120px_120px_140px_60px] px-5 py-3 border-b border-white/5 last:border-b-0 items-center text-sm">
@@ -513,7 +513,7 @@ export default function AdminNewsletterPage() {
                   className="text-white/20 hover:text-red-400 text-xs justify-self-end"
                   aria-label="Delete subscriber"
                 >
-                  Delete
+                  Vymazať
                 </button>
               </div>
             ))
@@ -525,7 +525,7 @@ export default function AdminNewsletterPage() {
         <div className="space-y-2">
           {history.length === 0 ? (
             <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-16 text-center">
-              <p className="text-white/30 text-sm">No campaigns yet</p>
+              <p className="text-white/30 text-sm">Žiadne kampane</p>
             </div>
           ) : (
             history.map((c) => {
@@ -543,7 +543,7 @@ export default function AdminNewsletterPage() {
                         <span>{c.sent_at ? new Date(c.sent_at).toLocaleString() : "—"} · {c.status}</span>
                         {seg && seg !== "all" && (
                           <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/50">
-                            {seg === "buyers" ? "Buyers" : "Non-buyers"}
+                            {seg === "buyers" ? "Kupujúci" : "Nekúpili"}
                           </span>
                         )}
                         {loc && loc !== "all" && (
@@ -554,28 +554,28 @@ export default function AdminNewsletterPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-4 text-xs flex-shrink-0">
-                      <Metric label="Sent"     value={c.recipient_count} />
-                      <Metric label="Delivered" value={c.delivered_count} />
-                      <Metric label="Opened"    value={c.opened_count} />
-                      <Metric label="Clicked"   value={c.clicked_count} />
+                      <Metric label="Odoslané"   value={c.recipient_count} />
+                      <Metric label="Doručené" value={c.delivered_count} />
+                      <Metric label="Otvorené"    value={c.opened_count} />
+                      <Metric label="Kliknuté"   value={c.clicked_count} />
                       <Metric label="Bounce"    value={c.bounced_count} accent="red" />
-                      <Metric label="Unsub"     value={c.unsubscribed_count} accent="slate" />
+                      <Metric label="Odhlásení"     value={c.unsubscribed_count} accent="slate" />
                     </div>
                   </div>
                   {c.sent_at && (
                     <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
                       <span className="text-[10px] uppercase tracking-[0.25em] text-white/30">
-                        Attributed revenue · 7 days
+                        Priradene tržby · 7 dní
                       </span>
                       {orders > 0 ? (
                         <span className="text-emerald-400 font-medium">
                           €{revenue.toFixed(2)}
                           <span className="text-white/40 font-normal ml-2">
-                            ({orders} order{orders === 1 ? "" : "s"})
+                            ({orders} {orders === 1 ? "obj." : "obj."})
                           </span>
                         </span>
                       ) : (
-                        <span className="text-white/30">No attributed orders yet</span>
+                        <span className="text-white/30">Žiadne priradené objednávky</span>
                       )}
                     </div>
                   )}
@@ -590,15 +590,15 @@ export default function AdminNewsletterPage() {
       {confirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl max-w-md w-full p-6">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3">Final check</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3">Finálna kontrola</p>
             <h2 className="text-xl font-semibold text-white mb-2">
-              Send &ldquo;{subject || "(no subject)"}&rdquo; to {audienceCount} subscriber{audienceCount === 1 ? "" : "s"}?
+              Odoslať &ldquo;{subject || "(bez predmetu)"}&rdquo; pre {audienceCount} odberateľov?
             </h2>
             <p className="text-sm text-white/50 leading-relaxed mb-5">
-              This is irreversible. Once you click send, the email goes out. Subscribers will see it in their inbox within seconds.
+              Toto je nevratné. Po kliknutí sa e-mail odpošle všetkým.
             </p>
             <label className="text-[10px] uppercase tracking-wider text-white/40 mb-1.5 block">
-              Type <span className="text-white/80 font-mono">{CONFIRM_PHRASE}</span> to confirm
+              Napíš <span className="text-white/80 font-mono">{CONFIRM_PHRASE}</span> pre potvrdenie
             </label>
             <input
               autoFocus
@@ -612,14 +612,14 @@ export default function AdminNewsletterPage() {
                 onClick={() => { setConfirmOpen(false); setConfirmTyped(""); }}
                 className="px-4 py-2 text-xs uppercase tracking-wider text-white/60 hover:text-white"
               >
-                Cancel
+                Zrušiť
               </button>
               <button
                 onClick={sendCampaign}
                 disabled={sending || confirmTyped !== CONFIRM_PHRASE}
                 className="px-4 py-2 text-xs uppercase tracking-wider bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {sending ? "Sending…" : "Send"}
+                {sending ? "Odosielam…" : "Odoslať"}
               </button>
             </div>
           </div>

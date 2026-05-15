@@ -52,7 +52,7 @@ export default function AdminExportsPage() {
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       if (!token) {
-        setError("Not signed in. Refresh and try again.");
+        setError("Nie si prihlásený. Obnov stránku a skús znova.");
         return;
       }
 
@@ -90,7 +90,7 @@ export default function AdminExportsPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-white mb-2">Exports</h1>
+      <h1 className="text-xl font-semibold text-white mb-2">Exporty</h1>
       <p className="text-white/40 text-sm mb-8 max-w-2xl leading-relaxed">
         Mesačný balík pre účtovníka. Obsahuje zoznam objednávok, Stripe
         poplatky pre samozdanenie DPH (§7a), a PDF faktúr vystavených
@@ -108,11 +108,11 @@ export default function AdminExportsPage() {
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[10px] uppercase tracking-[0.18em] text-white/30 mb-1">
-              Current month
+              Aktuálny mesiac
             </p>
             <p className="text-lg font-medium text-white">{current.label}</p>
             <p className="text-xs text-white/40 mt-1">
-              Includes all paid orders so far this month.
+              Všetky uhradené objednávky tohto mesiaca.
             </p>
           </div>
           <button
@@ -123,7 +123,7 @@ export default function AdminExportsPage() {
             {downloading === current.key ? (
               <>
                 <span className="inline-block w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                Preparing...
+                Pripravujem...
               </>
             ) : (
               <>
@@ -132,7 +132,7 @@ export default function AdminExportsPage() {
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                Download ZIP
+                Stiahnuť ZIP
               </>
             )}
           </button>
@@ -141,7 +141,7 @@ export default function AdminExportsPage() {
 
       {/* Prior months */}
       <p className="text-[10px] uppercase tracking-[0.18em] text-white/30 mb-3">
-        Prior months
+        Predchádzajúce mesiace
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {prior.map((m) => (
@@ -175,24 +175,24 @@ export default function AdminExportsPage() {
       {/* What's inside */}
       <div className="mt-12 max-w-2xl">
         <p className="text-[10px] uppercase tracking-[0.18em] text-white/30 mb-3">
-          What's in each ZIP
+          Čo obsahuje každý ZIP
         </p>
         <div className="space-y-3 text-sm text-white/50 leading-relaxed">
           <div className="flex gap-3">
             <code className="text-[11px] text-white/70 bg-white/5 px-1.5 py-0.5 rounded h-5 mt-0.5 flex-shrink-0">orders-YYYY-MM.csv</code>
-            <span>Every paid order — date, customer, total, invoice number, status.</span>
+            <span>Všetky uhradené objednávky — dátum, zákazník, suma, číslo faktúry, stav.</span>
           </div>
           <div className="flex gap-3">
             <code className="text-[11px] text-white/70 bg-white/5 px-1.5 py-0.5 rounded h-5 mt-0.5 flex-shrink-0">stripe-fees-YYYY-MM.csv</code>
-            <span>Stripe fee + net payout per order. Basis for §7a reverse-charge DPH self-assessment.</span>
+            <span>Stripe poplatok + čistý výnos na objednávku. Podklad pre §7a samozdanenie DPH.</span>
           </div>
           <div className="flex gap-3">
             <code className="text-[11px] text-white/70 bg-white/5 px-1.5 py-0.5 rounded h-5 mt-0.5 flex-shrink-0">invoices/</code>
-            <span>PDF copy of every customer-facing invoice issued that month.</span>
+            <span>PDF kópie všetkých faktúr vystavených v danom mesiaci.</span>
           </div>
           <div className="flex gap-3">
             <code className="text-[11px] text-white/70 bg-white/5 px-1.5 py-0.5 rounded h-5 mt-0.5 flex-shrink-0">README.txt</code>
-            <span>Plain-Slovak summary for the účtovník explaining the bundle.</span>
+            <span>Zhrnutie pre účtovníka v slovenčine.</span>
           </div>
         </div>
       </div>

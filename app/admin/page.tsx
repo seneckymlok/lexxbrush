@@ -49,34 +49,34 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/30 text-sm">Loading dashboard...</div>
+        <div className="text-white/30 text-sm">Načítavam...</div>
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-white mb-8">Dashboard</h1>
+      <h1 className="text-xl font-semibold text-white mb-8">Prehľad</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <StatCard label="Revenue" value={`€${((stats?.totalRevenue || 0) / 100).toFixed(0)}`} sub="Total paid" />
-        <StatCard label="Orders" value={String(stats?.totalOrders || 0)} sub="All time" />
-        <StatCard label="Products" value={String(stats?.totalProducts || 0)} sub="In catalog" />
-        <StatCard label="Custom Requests" value={String(stats?.pendingCustomOrders || 0)} sub="Pending review" highlight={stats?.pendingCustomOrders ? stats.pendingCustomOrders > 0 : false} />
+        <StatCard label="Tržby" value={`€${((stats?.totalRevenue || 0) / 100).toFixed(0)}`} sub="Celkom" />
+        <StatCard label="Objednávky" value={String(stats?.totalOrders || 0)} sub="Celkom" />
+        <StatCard label="Produkty" value={String(stats?.totalProducts || 0)} sub="V katalógu" />
+        <StatCard label="Na mieru" value={String(stats?.pendingCustomOrders || 0)} sub="Čaká na review" highlight={stats?.pendingCustomOrders ? stats.pendingCustomOrders > 0 : false} />
       </div>
 
       <div className="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden">
         <div className="px-5 py-4 border-b border-white/5">
-          <h2 className="text-sm font-medium text-white/70">Recent Orders</h2>
+          <h2 className="text-sm font-medium text-white/70">Posledné objednávky</h2>
         </div>
         {stats?.recentOrders && stats.recentOrders.length > 0 ? (
           <table className="w-full">
             <thead>
               <tr className="text-[11px] text-white/30 uppercase tracking-wider border-b border-white/5">
-                <th className="text-left px-5 py-3 font-medium">Customer</th>
-                <th className="text-left px-5 py-3 font-medium">Total</th>
-                <th className="text-left px-5 py-3 font-medium">Status</th>
-                <th className="text-right px-5 py-3 font-medium">Date</th>
+                <th className="text-left px-5 py-3 font-medium">Zákazník</th>
+                <th className="text-left px-5 py-3 font-medium">Suma</th>
+                <th className="text-left px-5 py-3 font-medium">Stav</th>
+                <th className="text-right px-5 py-3 font-medium">Dátum</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
           </table>
         ) : (
           <div className="px-5 py-12 text-center text-sm text-white/20">
-            No orders yet. They&apos;ll appear here once customers start buying.
+            Zatiaľ žiadne objednávky.
           </div>
         )}
       </div>

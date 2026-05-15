@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 const NAV_ITEMS = [
   {
     href: "/admin",
-    label: "Dashboard",
+    label: "Prehľad",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/products",
-    label: "Products",
+    label: "Produkty",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" />
@@ -26,7 +26,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/orders",
-    label: "Orders",
+    label: "Objednávky",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" />
@@ -35,7 +35,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/custom-orders",
-    label: "Custom Orders",
+    label: "Na mieru",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" />
@@ -54,7 +54,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/exports",
-    label: "Exports",
+    label: "Exporty",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white/40 text-sm">Loading...</div>
+        <div className="text-white/40 text-sm">Načítavam...</div>
       </div>
     );
   }
@@ -200,7 +200,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
             </svg>
-            View Website
+            Zobraziť web
           </Link>
           <button
             onClick={async () => {
@@ -209,7 +209,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }}
             className="text-xs text-white/30 hover:text-white/60 transition-colors"
           >
-            Sign Out
+            Odhlásiť
           </button>
         </div>
       </aside>

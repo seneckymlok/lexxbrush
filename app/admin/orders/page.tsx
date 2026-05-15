@@ -64,14 +64,14 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ table: "orders", id, data: { status } }),
       });
 
-      if (!res.ok) throw new Error("Failed to update status");
+      if (!res.ok) throw new Error("Nepodarilo sa aktualizovať stav");
 
       setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
 
       if (status === "shipped") {
-        showToast("Order marked as Shipped. Notification email sent to customer.");
+        showToast("Označené ako odoslané. Zákazníkovi bol odoslaný e-mail.");
       } else {
-        showToast(`Order status updated to ${status}`);
+        showToast(`Stav objednávky zmenený na ${status}`);
       }
     } catch (err: any) {
       showToast(err.message || "Error updating status", "error");
@@ -86,12 +86,12 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ action: "create", orderId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create packet");
+      if (!res.ok) throw new Error(data.error || "Nepodarilo sa vytvoriť zásielku");
 
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? { ...o, packeta_packet_id: data.packetId } : o))
       );
-      showToast(`Packeta packet created: ${data.packetId}`);
+      showToast(`Zásielka vytvorená: ${data.packetId}`);
     } catch (err: any) {
       showToast(err.message, "error");
     } finally {
@@ -105,27 +105,27 @@ export default function AdminOrdersPage() {
 
     if (order.delivery_type === "pickup" && addr.point) {
       return {
-        label: "Pickup Point",
+        label: "Výdajné miesto",
         detail: `${addr.point.name} — ${addr.point.street}, ${addr.point.city} ${addr.point.zip}`,
       };
     }
     if (order.delivery_type === "home_delivery" && addr.address) {
       return {
-        label: "Home Delivery",
+        label: "Doručenie na adresu",
         detail: `${addr.address.street} ${addr.address.houseNumber}, ${addr.address.city} ${addr.address.postcode}, ${addr.address.country?.toUpperCase()}`,
       };
     }
     // Legacy orders with old format
     if (addr.line1) {
       return {
-        label: "Address",
+        label: "Adresa",
         detail: `${addr.line1}${addr.city ? `, ${addr.city}` : ""}${addr.country ? `, ${addr.country}` : ""}`,
       };
     }
     return null;
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Loading orders...</div></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-white/30 text-sm">Načítavam...</div></div>;
 
   return (
     <div className="relative">
@@ -142,9 +142,9 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      <h1 className="text-xl font-semibold text-white mb-8">Orders</h1>
+      <h1 className="text-xl font-semibold text-white mb-8">Objednávky</h1>
       {orders.length === 0 ? (
-        <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-16 text-center"><p className="text-white/30 text-sm">No orders yet</p></div>
+        <div className="bg-white/[0.02] border border-white/5 rounded-xl px-5 py-16 text-center"><p className="text-white/30 text-sm">Zatiaľ žiadne objednávky</p></div>
       ) : (
         <div className="space-y-2">
           {orders.map((order) => {
@@ -155,18 +155,18 @@ export default function AdminOrdersPage() {
                 <button onClick={() => setExpandedId(expandedId === order.id ? null : order.id)} className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm text-white/70">{order.customer_email || "Unknown"}</p>
+                      <p className="text-sm text-white/70">{order.customer_email || "Neznámy"}</p>
                       {order.delivery_type && (
                         <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                           order.delivery_type === "pickup"
                             ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
                             : "bg-purple-500/10 text-purple-400 border border-purple-500/20"
                         }`}>
-                          {order.delivery_type === "pickup" ? "Pickup" : "HD"}
+                          {order.delivery_type === "pickup" ? "Výdaj" : "Domov"}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-white/30 mt-0.5">{new Date(order.created_at).toLocaleString()} · {order.items?.length || 0} item(s)</p>
+                    <p className="text-xs text-white/30 mt-0.5">{new Date(order.created_at).toLocaleString()} · {order.items?.length || 0} ks</p>
                   </div>
                   <p className="text-sm font-medium text-white/80">€{(order.total / 100).toFixed(2)}</p>
                   <select value={order.status} onClick={(e) => e.stopPropagation()} onChange={(e) => updateStatus(order.id, e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/60 outline-none">
@@ -176,9 +176,9 @@ export default function AdminOrdersPage() {
                 </button>
                 {expandedId === order.id && (
                   <div className="px-5 pb-4 border-t border-white/5 pt-3">
-                    <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Items</p>
+                    <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Položky</p>
                     {order.items?.map((item: any, i: number) => {
-                      const name     = item.name ?? item.n ?? "Product";
+                      const name     = item.name ?? item.n ?? "Produkt";
                       const price    = item.price ?? item.product?.price ?? 0;
                       const quantity = item.quantity ?? item.qty ?? item.q ?? 1;
                       const size     = item.size ?? item.s ?? null;
@@ -204,7 +204,7 @@ export default function AdminOrdersPage() {
                         works, and the permanent one as a fallback. */}
                     {(order.invoice_number || order.invoice_hosted_url || order.invoice_pdf_url) && (
                       <div className="mt-3 pt-3 border-t border-white/5">
-                        <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Invoice</p>
+                        <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">Faktúra</p>
                         <div className="flex items-center gap-2 flex-wrap">
                           {order.invoice_number && (
                             <code className="text-xs text-white/60 bg-white/5 px-1.5 py-0.5 rounded">
@@ -218,7 +218,7 @@ export default function AdminOrdersPage() {
                               rel="noopener noreferrer"
                               className="text-[10px] text-blue-400 hover:text-blue-300 underline underline-offset-2"
                             >
-                              View
+                              Zobraziť
                             </a>
                           )}
                           {order.invoice_pdf_url && (
@@ -241,7 +241,7 @@ export default function AdminOrdersPage() {
                       {order.packeta_packet_id ? (
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-white/40">Packet ID:</span>
+                            <span className="text-xs text-white/40">ID zásielky:</span>
                             <code className="text-xs text-white/60 bg-white/5 px-1.5 py-0.5 rounded">{order.packeta_packet_id}</code>
                             <a
                               href={getTrackingUrl(order.packeta_packet_id)}
@@ -249,12 +249,12 @@ export default function AdminOrdersPage() {
                               rel="noopener noreferrer"
                               className="text-[10px] text-blue-400 hover:text-blue-300 underline underline-offset-2"
                             >
-                              Track
+                              Sledovať
                             </a>
                           </div>
                           {order.packeta_tracking_number && (
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-white/40">Courier #:</span>
+                              <span className="text-xs text-white/40">Kuriér č.:</span>
                               <code className="text-xs text-white/60 bg-white/5 px-1.5 py-0.5 rounded">{order.packeta_tracking_number}</code>
                             </div>
                           )}
@@ -265,7 +265,7 @@ export default function AdminOrdersPage() {
                           disabled={actionLoading === order.id}
                           className="text-xs bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded px-3 py-1.5 text-white/60 hover:text-white transition-all disabled:opacity-50"
                         >
-                          {actionLoading === order.id ? "Creating..." : "Create Packeta Packet"}
+                          {actionLoading === order.id ? "Vytvárám..." : "Vytvoriť zásielku"}
                         </button>
                       )}
                     </div>

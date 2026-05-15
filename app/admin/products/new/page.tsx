@@ -144,37 +144,37 @@ export default function NewProductPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-white mb-8">Add Product</h1>
+      <h1 className="text-xl font-semibold text-white mb-8">Pridať produkt</h1>
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Name (English)</label>
+            <label className={labelClass}>Názov (EN)</label>
             <input required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} className={inputClass} placeholder="Acid Hearts Tee" />
           </div>
           <div>
-            <label className={labelClass}>Name (Slovak)</label>
+            <label className={labelClass}>Názov (SK)</label>
             <input required value={form.name_sk} onChange={(e) => setForm({ ...form, name_sk: e.target.value })} className={inputClass} placeholder="Acid Hearts Tričko" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Description (English)</label>
+            <label className={labelClass}>Popis (EN)</label>
             <textarea rows={3} value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} className={`${inputClass} resize-none`} placeholder="Hand-airbrushed one-of-a-kind piece..." />
           </div>
           <div>
-            <label className={labelClass}>Description (Slovak)</label>
+            <label className={labelClass}>Popis (SK)</label>
             <textarea rows={3} value={form.description_sk} onChange={(e) => setForm({ ...form, description_sk: e.target.value })} className={`${inputClass} resize-none`} placeholder="Ručne airbrushovaný unikátny kúsok..." />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Price (€)</label>
+            <label className={labelClass}>Cena (€)</label>
             <input required type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputClass} placeholder="189" />
           </div>
           <div>
-            <label className={labelClass}>Category</label>
+            <label className={labelClass}>Kategória</label>
             <CustomSelect
               value={form.category}
               onChange={(val) => setForm({ ...form, category: val })}
@@ -183,7 +183,7 @@ export default function NewProductPage() {
           </div>
         </div>
         <div>
-          <label className={labelClass}>Sizes (comma-separated)</label>
+          <label className={labelClass}>Veľkosti</label>
           {(() => {
               const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
               const selectedSizes = form.sizes.split(",").map(s => s.trim()).filter(Boolean);
@@ -216,7 +216,7 @@ export default function NewProductPage() {
                     <input
                       type="text"
                       className={inputClass}
-                      placeholder="Custom size, press Enter"
+                      placeholder="Vlastná veľkosť, stlač Enter"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -248,12 +248,12 @@ export default function NewProductPage() {
           <button type="button" onClick={() => setForm({ ...form, is_one_of_a_kind: !form.is_one_of_a_kind })} className={`w-10 h-5 rounded-full transition-colors ${form.is_one_of_a_kind ? "bg-green-500" : "bg-white/10"}`}>
             <div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_one_of_a_kind ? "translate-x-5" : "translate-x-0"}`} />
           </button>
-          <span className="text-sm text-white/50">One of a kind</span>
+          <span className="text-sm text-white/50">Jeden kus (unikát)</span>
         </div>
 
         {/* Accent Color */}
         <div>
-          <label className={labelClass}>Accent color</label>
+          <label className={labelClass}>Akcentová farba</label>
           <AccentColorField
             from={form.accent_color}
             to={form.accent_color_secondary}
@@ -262,13 +262,13 @@ export default function NewProductPage() {
             source={imageFiles[0] || null}
           />
           <p className="text-[11px] text-white/30 mt-2">
-            Tints the product page (halo, button, accents). Auto-extracted from the first image — adjust to taste.
+            Podfarbuje produktovú stránku (halo, tlačidlo, akcenty). Auto-extrahované z prvého obrázku.
           </p>
         </div>
 
         {/* Image Upload */}
         <div>
-          <label className={labelClass}>Images</label>
+          <label className={labelClass}>Obrázky</label>
           <div className="flex flex-wrap gap-3 mb-3">
             {imagePreviews.map((src, i) => (
               <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden bg-white/5">
@@ -283,16 +283,16 @@ export default function NewProductPage() {
             onDragLeave={(e) => e.currentTarget.classList.remove("border-white/30")}
             onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove("border-white/30"); handleFileSelect(e.dataTransfer.files); }}
           >
-            Drop images here or click to browse
+            Pretiahni obrázky sem alebo klikni
             <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFileSelect(e.target.files)} />
           </label>
         </div>
 
         <div className="flex items-center gap-4 pt-4">
           <button type="submit" disabled={saving} className="px-6 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50">
-            {saving ? uploadProgress || "Saving..." : "Save Product"}
+            {saving ? uploadProgress || "Ukladám..." : "Uložiť produkt"}
           </button>
-          <button type="button" onClick={() => router.back()} className="text-sm text-white/30 hover:text-white/50 transition-colors">Cancel</button>
+          <button type="button" onClick={() => router.back()} className="text-sm text-white/30 hover:text-white/50 transition-colors">Zrušiť</button>
         </div>
       </form>
     </div>
