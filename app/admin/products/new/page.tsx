@@ -272,6 +272,8 @@ export default function NewProductPage() {
           <div className="flex flex-wrap gap-3 mb-3">
             {imagePreviews.map((src, i) => (
               <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden bg-white/5">
+                {/* Blob URL preview - next/image cannot fetch blob: */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={src} alt="" className="w-full h-full object-cover" />
                 <button type="button" onClick={() => removeImage(i)} className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/70 rounded-full text-white text-xs flex items-center justify-center hover:bg-red-500">×</button>
               </div>

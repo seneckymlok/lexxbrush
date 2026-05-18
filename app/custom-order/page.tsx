@@ -5,7 +5,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { supabase } from "@/lib/supabase";
 
 export default function CustomOrderPage() {
   const { t } = useLanguage();
@@ -19,6 +18,7 @@ export default function CustomOrderPage() {
     garment: "",
     description: "",
     budget: "",
+    website: "",
   });
 
   useGSAP(() => {
@@ -53,17 +53,21 @@ export default function CustomOrderPage() {
     setStatus("sending");
 
     try {
-      const { error } = await supabase.from("custom_orders").insert({
-        name: form.name,
-        email: form.email,
-        garment: form.garment,
-        description: form.description,
-        budget: form.budget,
+      const res = await fetch("/api/custom-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
-
-      if (error) throw error;
+      if (!res.ok) {
+        if (res.status === 429) {
+          setStatus("error");
+          setErrorMsg(t("custom.rateLimited") || "Too many requests. Please try again later.");
+          return;
+        }
+        throw new Error();
+      }
       setStatus("success");
-      setForm({ name: "", email: "", garment: "", description: "", budget: "" });
+      setForm({ name: "", email: "", garment: "", description: "", budget: "", website: "" });
     } catch {
       setStatus("error");
       setErrorMsg(t("custom.error") || "Something went wrong. Please try again.");
@@ -108,6 +112,19 @@ export default function CustomOrderPage() {
           </div>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-8">
+            {/* Honeypot: hidden from humans, filled by bots. */}
+            <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: "1px", height: "1px", overflow: "hidden" }}>
+              <label htmlFor="custom-website">Website</label>
+              <input
+                id="custom-website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={form.website}
+                onChange={(e) => setForm({ ...form, website: e.target.value })}
+              />
+            </div>
             <div className="form-reveal">
               <label htmlFor="custom-name" className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
                 {t("custom.name")}

@@ -192,6 +192,18 @@ export const translations = {
       subtitle: "Pick one and try again",
       back: "Back to shop",
     },
+    errorPage: {
+      title: "OUT OF INK.",
+      subtitle: "Something went wrong on our side. Try again or head back to the collection.",
+      retry: "Try again",
+      home: "Back to shop",
+    },
+    cookies: {
+      aria: "Cookie notice",
+      body: "We use only essential cookies to make this site work - no tracking, no ads.",
+      learnMore: "Privacy",
+      ok: "Got it",
+    },
   },
   sk: {
     nav: {
@@ -383,6 +395,18 @@ export const translations = {
       titleLine2: "KARTA.",
       subtitle: "Vyber si jednu a skús to znova",
       back: "Späť do obchodu",
+    },
+    errorPage: {
+      title: "DOŠLA FARBA.",
+      subtitle: "Niečo sa pokazilo na našej strane. Skús to znova alebo sa vráť do kolekcie.",
+      retry: "Skús to znova",
+      home: "Späť do obchodu",
+    },
+    cookies: {
+      aria: "Oznámenie o cookies",
+      body: "Používame iba nevyhnutné cookies pre funkčnosť stránky - žiadne sledovanie, žiadne reklamy.",
+      learnMore: "Súkromie",
+      ok: "Rozumiem",
     },
   },
 } as const;

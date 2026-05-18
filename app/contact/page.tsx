@@ -9,7 +9,7 @@ import type { Locale } from "@/lib/translations";
 export default function ContactPage() {
   const { locale, t } = useLanguage();
   const formRef = useRef<HTMLDivElement>(null);
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "", website: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -39,7 +39,7 @@ export default function ContactPage() {
       });
       if (!res.ok) throw new Error();
       setStatus("success");
-      setForm({ name: "", email: "", subject: "", message: "" });
+      setForm({ name: "", email: "", subject: "", message: "", website: "" });
     } catch {
       setStatus("error");
       setErrorMsg(t("contact.error") || "Something went wrong. Please try again.");
@@ -86,6 +86,19 @@ export default function ContactPage() {
           <div className="grid md:grid-cols-2 gap-16">
             {/* Form */}
             <form onSubmit={handleSubmit} autoComplete="on" noValidate className="space-y-8">
+              {/* Honeypot: hidden from humans, filled by bots. */}
+              <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: "1px", height: "1px", overflow: "hidden" }}>
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.website}
+                  onChange={(e) => setForm({ ...form, website: e.target.value })}
+                />
+              </div>
               <div className="form-reveal">
                 <label htmlFor="contact-name" className="block text-xs font-[family-name:var(--font-display)] font-bold tracking-[0.15em] uppercase text-chrome mb-1">
                   {t("contact.name")}

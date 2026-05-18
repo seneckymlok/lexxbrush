@@ -8,6 +8,7 @@ import { CartProvider } from "@/components/providers/CartProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { BackgroundStars } from "@/components/ui/BackgroundStars";
+import { CookieBanner } from "@/components/ui/CookieBanner";
 
 const syne = Syne({
   subsets: ["latin", "latin-ext"],
@@ -94,6 +95,14 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: baseUrl,
+    // Site serves both SK and EN from the same URL via a client-side switcher,
+    // so the hreflang variants all resolve to baseUrl. Signals to search
+    // engines that both languages are offered without creating duplicate URLs.
+    languages: {
+      "sk-SK": baseUrl,
+      "en": baseUrl,
+      "x-default": baseUrl,
+    },
   },
   robots: {
     index: true,
@@ -162,6 +171,7 @@ export default function RootLayout({
                 <ScrollProvider>
                   <LayoutShell>{children}</LayoutShell>
                 </ScrollProvider>
+                <CookieBanner />
               </CartProvider>
             </FavoritesProvider>
           </AuthProvider>

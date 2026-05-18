@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase";
 import { sendNewsletterConfirm } from "@/lib/email/newsletter";
+import { newsletterLimiter, checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/ratelimit";
 
 // ─── Public newsletter signup endpoint ──────────────────────────────────────
 //
@@ -36,6 +37,14 @@ function clientIp(req: NextRequest): string | null {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = await checkRateLimit(newsletterLimiter, getClientIp(req));
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "rate_limited" },
+      { status: 429, headers: rateLimitHeaders(rl) }
+    );
+  }
+
   let payload: {
     email?:   string;
     locale?:  string;

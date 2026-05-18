@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
 const NAV_ITEMS = [
@@ -135,7 +136,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
           </svg>
         </button>
-        <img src="/logo.png" alt="Lexxbrush" className="h-5 opacity-50" />
+        <Image src="/logo.png" alt="Lexxbrush" width={80} height={20} className="h-5 w-auto opacity-50" priority />
         <div className="w-8" />
       </div>
 
@@ -157,7 +158,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo - hidden on mobile (top bar has it) */}
         <div className="p-5 border-b border-white/5 hidden lg:block">
           <Link href="/" target="_blank" className="block">
-            <img src="/logo.png" alt="Lexxbrush" className="h-6 opacity-50 hover:opacity-80 transition-opacity" />
+            <Image src="/logo.png" alt="Lexxbrush" width={96} height={24} className="h-6 w-auto opacity-50 hover:opacity-80 transition-opacity" priority />
           </Link>
           <p className="text-[10px] text-white/25 mt-1.5 uppercase tracking-wider">Admin</p>
         </div>

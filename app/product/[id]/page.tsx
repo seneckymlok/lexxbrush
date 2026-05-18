@@ -61,9 +61,10 @@ export async function generateStaticParams() {
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
   const product = await getProduct(id);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 
   // JSON-LD Product structured data
-  const jsonLd = product
+  const productLd = product
     ? {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -89,12 +90,45 @@ export default async function ProductPage({ params }: Props) {
       }
     : null;
 
+  const breadcrumbLd = product
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Shop",
+            item: `${baseUrl}/#shop`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: product.name.en,
+            item: `${baseUrl}/product/${id}`,
+          },
+        ],
+      }
+    : null;
+
   return (
     <>
-      {jsonLd && (
+      {productLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }}
+        />
+      )}
+      {breadcrumbLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
       )}
       <ProductPageClient initialProduct={product} productId={id} />

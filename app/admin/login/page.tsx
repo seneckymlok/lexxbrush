@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
 export default function AdminLoginPage() {
@@ -33,7 +34,7 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <img src="/logo.png" alt="Lexxbrush" className="h-8 mx-auto mb-6 opacity-60" />
+          <Image src="/logo.png" alt="Lexxbrush" width={128} height={32} className="h-8 w-auto mx-auto mb-6 opacity-60" priority />
           <h1 className="text-lg font-semibold text-white/90 tracking-wide uppercase">
             Administrácia
           </h1>

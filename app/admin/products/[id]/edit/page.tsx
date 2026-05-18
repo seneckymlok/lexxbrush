@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { AccentColorField } from "@/components/admin/AccentColorField";
@@ -265,8 +266,8 @@ export default function EditProductPage() {
             <div className="flex flex-wrap gap-3 mb-3">
               {form.images.map((url, i) => (
                 <div key={`existing-${i}`} className="relative group">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-white/5 border border-white/10">
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-white/5 border border-white/10">
+                    <Image src={url} alt="" fill sizes="96px" className="object-cover" />
                   </div>
                   {/* Controls overlay */}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1">
@@ -315,6 +316,8 @@ export default function EditProductPage() {
               {newPreviews.map((src, i) => (
                 <div key={`new-${i}`} className="relative">
                   <div className="w-24 h-24 rounded-lg overflow-hidden bg-white/5 border border-dashed border-sage/30">
+                    {/* Blob URL preview - next/image cannot fetch blob: */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" className="w-full h-full object-cover" />
                   </div>
                   <button

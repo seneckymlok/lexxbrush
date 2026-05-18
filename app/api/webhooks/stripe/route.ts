@@ -72,6 +72,24 @@ export async function POST(req: NextRequest) {
     const supabase = createAdminClient();
 
     try {
+      // Idempotency: Stripe retries webhooks on any non-2xx (and sometimes on
+      // 2xx). If we've already processed this session, ack and return so we
+      // don't double-insert orders, re-mark inventory, re-send confirmation
+      // emails, or create a duplicate Packeta packet.
+      const { data: existingOrder } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("stripe_session_id", session.id)
+        .maybeSingle();
+
+      if (existingOrder) {
+        console.log("[stripe-webhook] duplicate session - already processed", {
+          sessionId: session.id,
+          orderId: existingOrder.id,
+        });
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+
       const items = JSON.parse(session.metadata?.items || "[]");
       const productIds = JSON.parse(session.metadata?.product_ids || "[]");
       const deliveryType = session.metadata?.delivery_type || null;

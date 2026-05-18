@@ -7,9 +7,15 @@ const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Lexxbrush <onboarding@resen
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 
 export async function GET(req: NextRequest) {
-  // Verify request is from Vercel Cron
+  // Verify request is from Vercel Cron. Fail-closed: a missing CRON_SECRET
+  // means anyone can trigger this endpoint, so refuse to run until it's set.
+  const secret = process.env.CRON_SECRET;
   const authHeader = req.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!secret) {
+    console.error("[cron/export] CRON_SECRET not configured - refusing to run");
+    return NextResponse.json({ error: "Not configured" }, { status: 503 });
+  }
+  if (authHeader !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
