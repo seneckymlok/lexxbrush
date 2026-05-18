@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import type { Locale } from "@/lib/translations";
 
 export default function ContactPage() {
@@ -137,10 +138,12 @@ export default function ContactPage() {
               </div>
 
               <div className="form-reveal pt-2">
-                <button type="submit" disabled={status === "sending"}
-                  className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50">
-                  {status === "sending" ? "..." : t("contact.send")}
-                </button>
+                <MagneticButton>
+                  <button type="submit" disabled={status === "sending"}
+                    className="w-full md:w-auto px-10 py-4 btn-brand text-sm font-bold rounded-full disabled:opacity-50">
+                    {status === "sending" ? "..." : t("contact.send")}
+                  </button>
+                </MagneticButton>
               </div>
 
               {status === "success" && (
