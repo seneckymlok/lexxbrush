@@ -8,7 +8,6 @@ import { CartProvider } from "@/components/providers/CartProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
 import { BackgroundStars } from "@/components/ui/BackgroundStars";
-import { CookieBanner } from "@/components/ui/CookieBanner";
 
 const syne = Syne({
   subsets: ["latin", "latin-ext"],
@@ -171,7 +170,6 @@ export default function RootLayout({
                 <ScrollProvider>
                   <LayoutShell>{children}</LayoutShell>
                 </ScrollProvider>
-                <CookieBanner />
               </CartProvider>
             </FavoritesProvider>
           </AuthProvider>

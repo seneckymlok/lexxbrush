@@ -198,12 +198,6 @@ export const translations = {
       retry: "Try again",
       home: "Back to shop",
     },
-    cookies: {
-      aria: "Cookie notice",
-      body: "We use only essential cookies to make this site work - no tracking, no ads.",
-      learnMore: "Privacy",
-      ok: "Got it",
-    },
   },
   sk: {
     nav: {
@@ -401,12 +395,6 @@ export const translations = {
       subtitle: "Niečo sa pokazilo na našej strane. Skús to znova alebo sa vráť do kolekcie.",
       retry: "Skús to znova",
       home: "Späť do obchodu",
-    },
-    cookies: {
-      aria: "Oznámenie o cookies",
-      body: "Používame iba nevyhnutné cookies pre funkčnosť stránky - žiadne sledovanie, žiadne reklamy.",
-      learnMore: "Súkromie",
-      ok: "Rozumiem",
     },
   },
 } as const;
