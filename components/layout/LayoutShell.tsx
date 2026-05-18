@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -10,6 +11,19 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
   const isInnerPage = !isAdmin && pathname !== "/";
+
+  // If the user is anywhere other than "/", mark the intro as seen so that
+  // any subsequent navigation home (logo, footer, "back to shop", 404, etc.)
+  // lands without replaying the intro. The intro is meant to fire once per
+  // session for first-time visitors landing on the homepage, not as a gate
+  // between internal pages.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (pathname === "/" || isAdmin) return;
+    try {
+      sessionStorage.setItem("lexxbrush:intro-seen", "1");
+    } catch {}
+  }, [pathname, isAdmin]);
 
   if (isAdmin) {
     return <>{children}</>;

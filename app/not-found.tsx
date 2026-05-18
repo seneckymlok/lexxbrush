@@ -5,14 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-// Mark the intro as already seen so navigating back to "/" from the 404
-// doesn't replay it. The session key is read synchronously in app/layout.tsx.
-function skipIntro() {
-  try {
-    sessionStorage.setItem("lexxbrush:intro-seen", "1");
-  } catch {}
-}
-
 const SUITS = [
   {
     src:      "/suits/heart.webp",
@@ -69,13 +61,10 @@ function SuitCard({
     ? { target: "_blank", rel: "noopener noreferrer" }
     : {};
 
-  const isInternalHome = !isExternal && suit.href === "/";
-
   return (
     <Link
       href={suit.href}
       {...linkProps}
-      onClick={isInternalHome ? skipIntro : undefined}
       className="flex flex-col items-center gap-3 group cursor-pointer select-none"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -159,7 +148,6 @@ export default function NotFound() {
       {/* Back link */}
       <Link
         href="/"
-        onClick={skipIntro}
         className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.25em] uppercase text-white/40 hover:text-white transition-colors duration-300 border-b border-white/20 hover:border-white/50 pb-px"
         style={{
           opacity:         visible ? 1 : 0,
