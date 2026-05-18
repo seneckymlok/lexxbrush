@@ -10,7 +10,8 @@ import { RouteTransitionProvider } from "@/components/layout/RouteTransition";
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
-  const isInnerPage = !isAdmin && pathname !== "/";
+  const isLock = pathname === "/lock";
+  const isInnerPage = !isAdmin && !isLock && pathname !== "/";
 
   // If the user is anywhere other than "/", mark the intro as seen so that
   // any subsequent navigation home (logo, footer, "back to shop", 404, etc.)
@@ -19,13 +20,13 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   // between internal pages.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (pathname === "/" || isAdmin) return;
+    if (pathname === "/" || isAdmin || isLock) return;
     try {
       sessionStorage.setItem("lexxbrush:intro-seen", "1");
     } catch {}
-  }, [pathname, isAdmin]);
+  }, [pathname, isAdmin, isLock]);
 
-  if (isAdmin) {
+  if (isAdmin || isLock) {
     return <>{children}</>;
   }
 
