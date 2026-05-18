@@ -138,8 +138,8 @@ export default function NotFound() {
         {t("notFound.subtitle")}
       </p>
 
-      {/* Four suits */}
-      <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-10 mb-20 flex-wrap md:flex-nowrap scale-90 sm:scale-100">
+      {/* Four suits - 2x2 grid on mobile, single row on sm+ */}
+      <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-8 sm:gap-6 md:gap-10 mb-20 place-items-center">
         {SUITS.map((suit, i) => (
           <SuitCard key={suit.label} suit={suit} index={i} visible={visible} />
         ))}
