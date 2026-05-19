@@ -10,7 +10,11 @@ import { RouteTransitionProvider } from "@/components/layout/RouteTransition";
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
-  const isLock = pathname === "/lock";
+  // The middleware rewrites "/" → "/lock" when locked, so pathname stays "/".
+  // Detect lock mode via the cookie the middleware sets on that rewrite.
+  const isLockCookie =
+    typeof document !== "undefined" && /lexx-locked=1/.test(document.cookie);
+  const isLock = pathname === "/lock" || isLockCookie;
   const isInnerPage = !isAdmin && !isLock && pathname !== "/";
 
   // If the user is anywhere other than "/", mark the intro as seen so that

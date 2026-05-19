@@ -97,15 +97,15 @@ export function LockScreen() {
 
 
       {/* ── Main content ── */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-4xl">
+      <div className="relative z-10 flex flex-col items-center text-center max-w-5xl">
 
 
         {/* Headline — "COMING SOON" character-staggered */}
         <h1
           className="font-[family-name:var(--font-display)] font-extrabold tracking-tight uppercase chrome-text leading-[0.88]"
           style={{
-            fontSize: "clamp(2.8rem, 12vw, 9rem)",
-            letterSpacing: "-0.02em",
+            fontSize: "clamp(3.5rem, 18vw, 14rem)",
+            letterSpacing: "-0.03em",
           }}
         >
           {words.map((word, wi) => (
