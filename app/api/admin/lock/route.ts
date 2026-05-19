@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("site_settings")
-    .select("lock_enabled, lock_title_en, lock_title_sk, lock_subtitle_en, lock_subtitle_sk")
+    .select("lock_enabled")
     .eq("id", 1)
     .maybeSingle();
 
@@ -36,32 +36,24 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: {
-    lock_enabled?: boolean;
-    lock_title_en?: string;
-    lock_title_sk?: string;
-    lock_subtitle_en?: string;
-    lock_subtitle_sk?: string;
-  };
+  let body: { lock_enabled?: boolean };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  if (typeof body.lock_enabled === "boolean") update.lock_enabled = body.lock_enabled;
-  for (const k of ["lock_title_en", "lock_title_sk", "lock_subtitle_en", "lock_subtitle_sk"] as const) {
-    if (typeof body[k] === "string") {
-      const v = (body[k] as string).slice(0, 500);
-      update[k] = v;
-    }
+  if (typeof body.lock_enabled !== "boolean") {
+    return NextResponse.json({ error: "lock_enabled must be a boolean" }, { status: 400 });
   }
 
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("site_settings")
-    .update(update)
+    .update({
+      lock_enabled: body.lock_enabled,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", 1)
     .select()
     .single();

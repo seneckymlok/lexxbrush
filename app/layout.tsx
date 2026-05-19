@@ -134,7 +134,7 @@ export default function RootLayout({
             Runs before body parses - no flash of homepage content. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(location.pathname==='/'&&!sessionStorage.getItem('lexxbrush:intro-seen')){document.documentElement.classList.add('intro-pending')}}catch(e){}})();`,
+            __html: `(function(){try{if(location.pathname==='/'&&!sessionStorage.getItem('lexxbrush:intro-seen')&&!/lexx-locked=1/.test(document.cookie)){document.documentElement.classList.add('intro-pending')}}catch(e){}})();`,
           }}
         />
         <link rel="preconnect" href="https://nfvocdkvtaittmvbmaoq.supabase.co" crossOrigin="anonymous" />

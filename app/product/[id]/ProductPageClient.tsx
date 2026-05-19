@@ -291,7 +291,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                 a barely-visible 18% effect. Killing it on mobile keeps the
                 zoom buttery.                                                 */}
             <div
-              className="absolute inset-0 z-0 pointer-events-none opacity-0 md:opacity-[0.18] md:group-hover:opacity-[0.65] transition-opacity duration-700 hidden md:block"
+              className="absolute -inset-20 z-0 pointer-events-none opacity-0 md:opacity-[0.18] md:group-hover:opacity-[0.65] transition-opacity duration-700 hidden md:block"
               aria-hidden="true"
             >
               <Image

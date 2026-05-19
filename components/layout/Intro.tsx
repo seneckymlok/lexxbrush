@@ -90,6 +90,13 @@ export function Intro() {
       document.documentElement.classList.remove("intro-pending");
       return;
     }
+    // When the lock page is active, middleware rewrites "/" → "/lock" but the
+    // pathname stays "/". The middleware sets a lexx-locked cookie so we know
+    // the lock screen is being served — skip the intro entirely.
+    if (/lexx-locked=1/.test(document.cookie)) {
+      document.documentElement.classList.remove("intro-pending");
+      return;
+    }
     setIsMobile(window.matchMedia("(max-width: 767px)").matches);
     setMounted(true);
     sessionStorage.setItem(STORAGE_KEY, "1");

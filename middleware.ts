@@ -48,16 +48,29 @@ export async function middleware(req: NextRequest) {
 
     const data = await res.json();
     if (data?.[0]?.lock_enabled === true) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/lock";
-      url.search = "";
-      return NextResponse.rewrite(url);
+      const lockUrl = req.nextUrl.clone();
+      lockUrl.pathname = "/lock";
+      lockUrl.search = "";
+      const resp = NextResponse.rewrite(lockUrl);
+      // Signal to the client that the lock page is active so the intro
+      // animation is suppressed (the URL stays as "/" on rewrite).
+      resp.cookies.set("lexx-locked", "1", { path: "/", httpOnly: false, sameSite: "lax" });
+      return resp;
     }
+
+    // Lock is off — clear the cookie if it lingers from a previous locked state.
+    const resp = NextResponse.next();
+    if (req.cookies.has("lexx-locked")) {
+      resp.cookies.delete("lexx-locked");
+    }
+    return resp;
   } catch {
     // Fail open.
   }
 
   return NextResponse.next();
+  // Note: the early return inside the lock-enabled block above already
+  // handles the non-locked case with cookie cleanup.
 }
 
 export const config = {
