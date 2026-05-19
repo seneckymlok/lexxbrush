@@ -16,7 +16,7 @@ export function LockScreen() {
   const [visible, setVisible] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const words = locale === "sk" ? ["ČOSKORO"] : ["COMING", "SOON"];
+  const words = locale === "sk" ? ["COMING SOON"] : ["COMING", "SOON"];
 
   // Suppress the intro animation — when the lock page is active the URL is
   // still "/" (middleware rewrite), so the Intro component might try to mount.
