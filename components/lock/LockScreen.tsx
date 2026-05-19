@@ -5,10 +5,10 @@ import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const SUITS = [
-  { src: "/suits/heart.webp",   label: "Heart",   glow: "rgba(136,0,204,0.7)",   rot: -8,  delay: 0 },
-  { src: "/suits/diamond.webp", label: "Diamond", glow: "rgba(0,220,255,0.7)",   rot: -3,  delay: 0.06 },
-  { src: "/suits/club.webp",    label: "Club",    glow: "rgba(238,255,0,0.6)",   rot: 3,   delay: 0.12 },
-  { src: "/suits/spade.webp",   label: "Spade",   glow: "rgba(30,80,255,0.7)",   rot: 8,   delay: 0.18 },
+  { src: "/suits/heart.webp", label: "Heart", glow: "rgba(136,0,204,0.7)", rot: -8, delay: 0 },
+  { src: "/suits/diamond.webp", label: "Diamond", glow: "rgba(0,220,255,0.7)", rot: -3, delay: 0.06 },
+  { src: "/suits/club.webp", label: "Club", glow: "rgba(238,255,0,0.6)", rot: 3, delay: 0.12 },
+  { src: "/suits/spade.webp", label: "Spade", glow: "rgba(30,80,255,0.7)", rot: 8, delay: 0.18 },
 ];
 
 export function LockScreen() {
@@ -25,7 +25,7 @@ export function LockScreen() {
     try {
       sessionStorage.setItem("lexxbrush:intro-seen", "1");
       document.documentElement.classList.remove("intro-pending");
-    } catch {}
+    } catch { }
   }, []);
 
   // Stagger entrance
@@ -102,31 +102,26 @@ export function LockScreen() {
 
         {/* Headline — "COMING SOON" character-staggered */}
         <h1
-          className="font-[family-name:var(--font-display)] font-extrabold tracking-tight uppercase chrome-text leading-[0.88]"
+          className="font-[family-name:var(--font-display)] font-extrabold tracking-tight uppercase leading-[0.88] whitespace-nowrap flex justify-center"
           style={{
-            fontSize: "clamp(3.5rem, 18vw, 14rem)",
+            // 10vw ensures an 11-character string fits perfectly across a mobile screen
+            fontSize: "clamp(2rem, 10vw, 12rem)",
             letterSpacing: "-0.03em",
           }}
         >
-          {words.map((word, wi) => (
-            <span key={wi} className="block">
-              {[...word].map((ch, ci) => {
-                const totalDelay = wi * 6 + ci;
-                return (
-                  <span
-                    key={`${wi}-${ci}`}
-                    className="inline-block will-change-transform"
-                    style={{
-                      transform: visible ? "translateY(0) rotateX(0deg)" : "translateY(48px) rotateX(-40deg)",
-                      opacity: visible ? 1 : 0,
-                      transition: `transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) ${0.3 + totalDelay * 0.04}s, opacity 0.7s ease-out ${0.3 + totalDelay * 0.04}s`,
-                      transformOrigin: "50% 100%",
-                    }}
-                  >
-                    {ch}
-                  </span>
-                );
-              })}
+          {/* Join words with a non-breaking space (\u00A0) to guarantee a single line */}
+          {words.join("\u00A0").split("").map((ch, ci) => (
+            <span
+              key={ci}
+              className="inline-block will-change-transform chrome-text"
+              style={{
+                transform: visible ? "translateY(0) rotateX(0deg)" : "translateY(48px) rotateX(-40deg)",
+                opacity: visible ? 1 : 0,
+                transition: `transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) ${0.3 + ci * 0.04}s, opacity 0.7s ease-out ${0.3 + ci * 0.04}s`,
+                transformOrigin: "50% 100%",
+              }}
+            >
+              {ch}
             </span>
           ))}
         </h1>
