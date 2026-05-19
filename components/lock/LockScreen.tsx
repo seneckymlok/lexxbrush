@@ -104,8 +104,9 @@ export function LockScreen() {
         <h1
           className="font-[family-name:var(--font-display)] font-extrabold tracking-tight uppercase leading-[0.88] whitespace-nowrap flex justify-center"
           style={{
-            // 10vw ensures an 11-character string fits perfectly across a mobile screen
-            fontSize: "clamp(2rem, 10vw, 12rem)",
+            // Dialed back to 7vw. Because Syne Extrabold is a very wide font,
+            // 7vw ensures it comfortably fills ~85% of the screen without clipping.
+            fontSize: "clamp(2rem, 7vw, 9.5rem)",
             letterSpacing: "-0.03em",
           }}
         >
