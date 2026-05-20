@@ -96,15 +96,14 @@ export default function AdminLockPage() {
             disabled={saving}
             onClick={toggle}
             className={`relative h-9 w-16 rounded-full transition-colors disabled:opacity-50 cursor-pointer flex-shrink-0 ${
-              enabled ? "bg-red-500/80" : "bg-white/15"
+              enabled ? "bg-white/30" : "bg-white/15"
             }`}
             aria-pressed={enabled}
             aria-label="Toggle site lock"
           >
             <span
-              className={`absolute top-1 h-7 w-7 rounded-full bg-white transition-transform ${
-                enabled ? "translate-x-8" : "translate-x-1"
-              }`}
+              className="absolute top-1 left-1 h-7 w-7 rounded-full bg-white transition-transform duration-200"
+              style={{ transform: enabled ? "translateX(28px)" : "translateX(0)" }}
             />
           </button>
         </div>
