@@ -251,7 +251,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
   return (
     <div
-      className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 overflow-x-hidden w-full lg:flex-1 lg:flex lg:flex-col lg:min-h-0"
+      className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 [overflow-x:clip] w-full lg:flex-1 lg:flex lg:flex-col lg:min-h-0"
       style={accentStyle}
       aria-hidden={isLightboxOpen}
     >

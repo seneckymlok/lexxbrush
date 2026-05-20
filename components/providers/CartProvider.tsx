@@ -43,23 +43,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // 2. Load DB Cart on Login and Merge
   useEffect(() => {
     if (!user || !initialLoaded) return;
-    
+
     const fetchDbCart = async () => {
       const { data } = await supabase.from("carts").select("items").eq("user_id", user.id).single();
       if (data?.items) {
         const dbItems = data.items as CartItem[];
+
+        // Filter out products that no longer exist in the DB
+        const productIds = dbItems.map(i => i.product.id);
+        const { data: existingProducts } = await supabase
+          .from("products")
+          .select("id")
+          .in("id", productIds);
+        const validIds = new Set((existingProducts ?? []).map((p: { id: string }) => p.id));
+        const validDbItems = dbItems.filter(i => validIds.has(i.product.id));
+
         setItems(prev => {
-          if (prev.length === 0) return dbItems;
-          const newItems = [...dbItems];
+          const base = validDbItems;
+          if (prev.length === 0) return base;
+          const newItems = [...base];
           let changed = false;
           prev.forEach(localItem => {
+            if (!validIds.has(localItem.product.id)) return; // skip stale local items too
             const exists = newItems.some(i => i.product.id === localItem.product.id && i.size === localItem.size);
             if (!exists) {
               newItems.push(localItem);
               changed = true;
             }
           });
-          return changed ? newItems : dbItems;
+          return changed ? newItems : base;
         });
       } else if (items.length > 0) {
         // User has no DB cart -> save local cart to DB
