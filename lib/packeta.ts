@@ -151,6 +151,91 @@ export async function getPacketTracking(packetId: string): Promise<string> {
   return response;
 }
 
+// Packeta packetStatus numeric codes that matter to us.
+// Full list at https://wiki.packeta.com/main/external-tools/api/rest-api-en
+// We only need to distinguish three buckets: in-transit, delivered, terminal-other.
+export const PACKETA_STATUS = {
+  RECEIVED_DATA:      1,  // Data received, no physical handover yet → keep as "paid"
+  ACCEPTED:           2,  // Accepted at depot → "shipped"
+  ON_WAY_TO_TARGET:   3,  // → "shipped"
+  READY_FOR_PICKUP:   4,  // At pickup point, awaiting customer → "shipped"
+  DELIVERED:          5,  // Handed to consignee → "delivered"
+  RETURNING:          6,  // → keep current status
+  RETURNED:           7,  // Returned to sender → terminal, do not auto-mark delivered
+  CANCELLED:          9,
+  HANDED_TO_CARRIER: 12,  // Home-delivery carrier pickup → "shipped"
+} as const;
+
+const SHIPPED_CODES   = new Set<number>([2, 3, 4, 12]);
+const DELIVERED_CODES = new Set<number>([5]);
+
+export interface PacketTrackingRecord {
+  statusCode: number;
+  statusText: string;
+  dateTime:   string | null;
+}
+
+export interface PacketTrackingSummary {
+  /** Highest "progress" code seen across all records (delivered > shipped > received). */
+  latestCode:   number | null;
+  latestText:   string | null;
+  /** Normalised bucket the cron uses to decide order.status. */
+  bucket:       "received" | "shipped" | "delivered" | "returned" | "cancelled" | "unknown";
+  records:      PacketTrackingRecord[];
+}
+
+/**
+ * Parse the XML returned by getPacketTracking into a normalised summary.
+ * The Packeta response wraps multiple <record> entries inside <packetTrackingResult>.
+ * We treat the highest progress code as authoritative: once 5 (delivered) appears
+ * it never goes back to "shipped" even if a later record is administrative noise.
+ */
+export function parsePacketStatus(xml: string): PacketTrackingSummary {
+  const records: PacketTrackingRecord[] = [];
+  const recordRe = /<record[^>]*>([\s\S]*?)<\/record>/g;
+  let m: RegExpExecArray | null;
+  while ((m = recordRe.exec(xml)) !== null) {
+    const inner = m[1];
+    const codeStr = parseXmlValue(inner, "statusCode");
+    if (!codeStr) continue;
+    records.push({
+      statusCode: Number(codeStr),
+      statusText: parseXmlValue(inner, "statusText") || parseXmlValue(inner, "codeText") || "",
+      dateTime:   parseXmlValue(inner, "dateTime"),
+    });
+  }
+
+  if (records.length === 0) {
+    return { latestCode: null, latestText: null, bucket: "unknown", records };
+  }
+
+  const codes = records.map(r => r.statusCode);
+  const hasDelivered = codes.some(c => DELIVERED_CODES.has(c));
+  const hasReturned  = codes.includes(PACKETA_STATUS.RETURNED);
+  const hasCancelled = codes.includes(PACKETA_STATUS.CANCELLED);
+  const hasShipped   = codes.some(c => SHIPPED_CODES.has(c));
+
+  // Pick a representative "latest" — prefer the most advanced progress event,
+  // not just the last entry in the array (which can be administrative).
+  let latest = records[records.length - 1];
+  if (hasDelivered)      latest = records.find(r => DELIVERED_CODES.has(r.statusCode))!;
+  else if (hasShipped)   latest = [...records].reverse().find(r => SHIPPED_CODES.has(r.statusCode))!;
+
+  let bucket: PacketTrackingSummary["bucket"] = "unknown";
+  if (hasDelivered)      bucket = "delivered";
+  else if (hasCancelled) bucket = "cancelled";
+  else if (hasReturned)  bucket = "returned";
+  else if (hasShipped)   bucket = "shipped";
+  else                   bucket = "received";
+
+  return {
+    latestCode: latest.statusCode,
+    latestText: latest.statusText || null,
+    bucket,
+    records,
+  };
+}
+
 // ── packetCourierNumber (for home delivery / external carriers) ──
 
 export async function getPacketCourierNumber(packetId: string): Promise<string | null> {
