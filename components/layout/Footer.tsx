@@ -142,7 +142,7 @@ export function Footer() {
               href="https://filiphegedus.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-[family-name:var(--font-accent)] text-xs text-chrome hover:text-[#7C3AED] transition-colors duration-300"
+              className="font-[family-name:var(--font-accent)] text-xs text-[#E85D04] md:text-chrome md:hover:text-[#E85D04] transition-colors duration-300"
             >
               Filip Hegedűs
             </a>
