@@ -4,6 +4,7 @@ import { contactLimiter, checkRateLimit, getClientIp, rateLimitHeaders } from "@
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "info@lexxbrush.eu";
+const CC_EMAIL = process.env.ADMIN_CC_EMAIL ?? "lexxbrush44@gmail.com";
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Lexxbrush Contact <onboarding@resend.dev>";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     await resend.emails.send({
       from: FROM_EMAIL,
-      to: CONTACT_EMAIL,
+      to: [CONTACT_EMAIL, CC_EMAIL],
       replyTo: email,
       subject: `[Contact] ${(subject || "No subject").slice(0, 200)}`,
       html: `

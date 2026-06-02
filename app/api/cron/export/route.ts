@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { monthRange, buildMonthlyExportBuffer } from "@/lib/exports";
+import { ADMIN_EMAILS } from "@/lib/email/admin-recipients";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Lexxbrush <onboarding@resend.dev>";
-const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 
 export async function GET(req: NextRequest) {
   // Verify request is from Vercel Cron. Fail-closed: a missing CRON_SECRET
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
 
     await resend.emails.send({
       from: FROM_EMAIL,
-      to: ADMIN_EMAIL,
+      to: ADMIN_EMAILS,
       subject: `Lexxbrush Monthly Export: ${range.label}`,
       text: `Dobrý deň,\n\nv prílohe nájdete mesačný účtovný export za obdobie ${range.label}.\n\nS pozdravom,\nLexxbrush systém`,
       attachments: [

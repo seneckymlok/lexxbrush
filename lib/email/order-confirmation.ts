@@ -13,6 +13,7 @@
 // brand voice is identical even though the moods differ.
 
 import { Resend } from "resend";
+import { ADMIN_EMAIL, ADMIN_EMAILS } from "@/lib/email/admin-recipients";
 import {
   cinematicFrame,
   label,
@@ -395,7 +396,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL || "Lexxbrush <onboarding@resend.dev>";
 
-const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 
 /**
  * Send the order confirmation email to the customer + admin notification.
@@ -434,7 +434,7 @@ export async function sendOrderConfirmation(payload: OrderEmailPayload) {
     // Fire-and-forget - never block or throw on admin notify failure.
     resend.emails.send({
       from:    FROM_EMAIL,
-      to:      ADMIN_EMAIL,
+      to:      ADMIN_EMAILS,
       subject: `New order · ${eur(payload.totalCents)} - ${payload.reference}`,
       html:    renderAdminHtml(payload),
       text:    renderAdminText(payload),
