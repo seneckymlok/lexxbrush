@@ -251,7 +251,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
 
   return (
     <div
-      className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 [overflow-x:clip] w-full lg:flex-1 lg:flex lg:flex-col lg:min-h-0"
+      className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-20 pb-8 md:pt-24 md:pb-16 [overflow-x:clip] w-full lg:flex-1 lg:flex lg:flex-col"
       style={accentStyle}
       aria-hidden={isLightboxOpen}
     >
@@ -269,7 +269,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         {t("product.backToShop")}
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 lg:flex-1">
 
         {/* ── Image column ── */}
         <div className="-mx-6 lg:mx-0">
@@ -283,15 +283,14 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           >
             {/* ── Ambient color halo ──────────────────────────────────────────
                 Always present at 18% (atmospheric presence even at rest).
-                Blooms to 65% on hover - the shirt's palette floods the space.
-                Updates with activeImage so each angle has its own aura.
-                Negative scale (2×) + 80px blur = wide, soft spread.
-                Desktop-only: on mobile this 80px blur has no hover bloom
-                (no :hover on touch) and tanks pinch-zoom performance for
-                a barely-visible 18% effect. Killing it on mobile keeps the
-                zoom buttery.                                                 */}
+                Blooms to 42% on hover - tightened from 65% to avoid the
+                glow overpowering the image at large screen sizes.
+                scale-[1.5] (down from 2×) + -inset-10 (down from -inset-20)
+                keeps the spread close to the product silhouette.
+                Desktop-only: on mobile this blur has no hover bloom and
+                tanks pinch-zoom performance. Killing it keeps zoom buttery. */}
             <div
-              className="absolute -inset-20 z-0 pointer-events-none opacity-0 md:opacity-[0.18] md:group-hover:opacity-[0.65] transition-opacity duration-700 hidden md:block"
+              className="absolute -inset-10 z-0 pointer-events-none opacity-0 md:opacity-[0.18] md:group-hover:opacity-[0.42] transition-opacity duration-700 hidden md:block"
               aria-hidden="true"
             >
               <Image
@@ -299,7 +298,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                 alt=""
                 fill
                 sizes="50vw"
-                className="object-contain scale-[2] blur-[80px] brightness-[0.65] saturate-[2.3]"
+                className="object-contain scale-[1.5] blur-[60px] brightness-[0.65] saturate-[2.3]"
               />
             </div>
 
