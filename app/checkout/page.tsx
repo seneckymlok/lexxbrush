@@ -181,7 +181,10 @@ function CheckoutPageInner() {
   return (
     <div className="page-enter max-w-[1440px] mx-auto px-6 md:px-10 pt-18 pb-12 md:pt-24 md:pb-24">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
+        {/* clamp: Syne uppercase is ~1.15em/glyph, so SK "Objednávka" at a
+            fixed text-4xl is wider than small phones - 7.5vw keeps the single
+            unbreakable word inside the viewport on any device. */}
+        <h1 className="font-[family-name:var(--font-display)] text-[clamp(1.375rem,7vw,2.25rem)] md:text-5xl font-extrabold tracking-tight uppercase chrome-text">
           {t("checkout.title")}
         </h1>
         <div className="w-10 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-4 mb-12" />
