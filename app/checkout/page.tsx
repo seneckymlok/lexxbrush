@@ -392,7 +392,7 @@ function CheckoutPageInner() {
                 </div>
 
                 {/* Submit - visible on mobile only */}
-                <div className="md:hidden mt-8 flex justify-center">
+                <div className="md:hidden mt-8 flex flex-col items-center">
                   <button
                     type="submit"
                     disabled={submitting}
