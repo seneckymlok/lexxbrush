@@ -128,6 +128,15 @@ export async function POST(req: NextRequest) {
     if (type === "reauthentication") {
       // OTP-only flow: no link, just the code.
       await sendAuthEmail({ type, otp: email_data.token, toEmail, siteUrl: SITE_URL });
+    } else if (type === "recovery") {
+      // Password reset must verify CLIENT-side so the browser holds the recovery
+      // session that updateUser() needs - so the link goes straight to the
+      // reset page (which calls verifyOtp itself), not the server confirm route.
+      const url = new URL("/auth/reset-password", SITE_URL);
+      url.searchParams.set("token_hash", email_data.token_hash);
+      url.searchParams.set("type", "recovery");
+
+      await sendAuthEmail({ type, actionUrl: url.toString(), toEmail, siteUrl: SITE_URL });
     } else {
       const next = safeNext(email_data.redirect_to, NEXT_DEFAULT[type]);
       const url = new URL("/api/auth/confirm", SITE_URL);

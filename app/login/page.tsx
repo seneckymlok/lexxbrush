@@ -192,6 +192,15 @@ export default function LoginPage() {
                 </svg>
               )}
             </button>
+            {/* Forgot password */}
+            <div className="mt-3 text-right">
+              <Link
+                href="/auth/forgot-password"
+                className="text-[11px] text-white/30 hover:text-white/60 transition-colors duration-300 font-[family-name:var(--font-display)] tracking-[0.12em] uppercase"
+              >
+                {t("auth.forgot.link")}
+              </Link>
+            </div>
           </div>
 
           {/* Submit */}
