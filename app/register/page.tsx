@@ -6,6 +6,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
+// Canonical post-confirmation target. Prefer the configured public site URL so
+// the redirect after verification always lands on production - never on the
+// localhost the user happened to sign up from. The Send Email hook builds its
+// own link from this same origin; this value is the fallback for the default
+// (non-hook) Supabase email path.
+function confirmRedirect(): string {
+  const base = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
+  return `${base}/auth/confirmed`;
+}
+
 export default function RegisterPage() {
   const { t } = useLanguage();
   const [email, setEmail] = useState("");
@@ -44,7 +54,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/account`,
+        emailRedirectTo: confirmRedirect(),
       },
     });
 
@@ -66,7 +76,7 @@ export default function RegisterPage() {
       type: "signup",
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/account`,
+        emailRedirectTo: confirmRedirect(),
       },
     });
   }, [cooldown, email]);

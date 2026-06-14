@@ -260,6 +260,29 @@ export function paragraph(text: string): string {
   return `<div style="font-family:${SANS};font-size:15px;line-height:1.65;color:#bbbbbb;font-weight:400;">${esc(text)}</div>`;
 }
 
+/**
+ * The four suit glyphs in their identity colors, centered - a brand-true,
+ * asset-free flourish that ties the whole suit system together. Unicode chars
+ * (BMP) render in every email client, with an accent text-shadow glow that
+ * modern clients honor and Outlook gracefully drops. Used as the signature
+ * mark atop the welcome / account emails.
+ */
+export function suitRow(size = 18): string {
+  const order: Array<[string, AccentKey]> = [
+    ["♥", "heart"],   // ♥
+    ["♦", "diamond"], // ♦
+    ["♣", "club"],    // ♣
+    ["♠", "spade"],   // ♠
+  ];
+  const glyphs = order
+    .map(([ch, k]) => {
+      const a = ACCENTS[k];
+      return `<span style="display:inline-block;margin:0 9px;font-size:${size}px;line-height:1;color:${a.hex};text-shadow:0 0 12px ${a.glow}, 0 0 22px rgba(${a.rgb},0.35);">${ch}</span>`;
+    })
+    .join("");
+  return `<div style="text-align:center;font-family:${SANS};">${glyphs}</div>`;
+}
+
 /** Accent hairline divider (full width, accent-glow gradient). */
 export function divider(accent: AccentKey, opacity = 0.35): string {
   const a = ACCENTS[accent];
