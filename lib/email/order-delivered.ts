@@ -36,7 +36,7 @@ function renderHtml(p: OrderDeliveredPayload): string {
     ${row(label("Delivered · Arrived", "club"), "0 0 18px 0")}
     ${row(headline(greeting), "0 0 18px 0")}
     ${row(paragraph(
-      "Your Lexxbrush piece has landed. Unbox it slowly — the first moment matters. If anything feels off, reply to this email; we read every line."
+      "Your Lexxbrush piece has landed. Unbox it slowly, the first moment matters. If anything feels off, reply to this email; we read every line."
     ), "0 0 36px 0")}
     ${row(divider("club"), "0 0 32px 0")}
   `;
@@ -56,7 +56,7 @@ function renderHtml(p: OrderDeliveredPayload): string {
   const closingBlock = `
     ${row(divider("club"), "48px 0 28px 0")}
     ${row(`<div style="font-family:${FONTS.SERIF};font-style:italic;font-size:14px;line-height:1.7;color:#888888;text-align:center;">
-      Tag <a href="https://www.instagram.com/lexxbrush" style="color:#dcdcdc;text-decoration:none;border-bottom:1px solid rgba(46, 160, 67, 0.45);padding-bottom:1px;">@lexxbrush</a> when you style it — we always reshare.
+      Tag <a href="https://www.instagram.com/lexxbrush" style="color:#dcdcdc;text-decoration:none;border-bottom:1px solid rgba(46, 160, 67, 0.45);padding-bottom:1px;">@lexxbrush</a> when you style it. We always reshare.
     </div>`, "0")}
   `;
 
@@ -101,7 +101,7 @@ const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "info@lexxbrush.eu";
 
 /**
  * Send the "your order arrived" email.
- * Never throws — the cron must continue regardless of Resend failures.
+ * Never throws; the cron must continue regardless of Resend failures.
  */
 export async function sendOrderDelivered(payload: OrderDeliveredPayload) {
   if (!process.env.RESEND_API_KEY) {

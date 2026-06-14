@@ -88,7 +88,7 @@ const CONFIG: Record<Exclude<AuthEmailType, "reauthentication">, TypeConfig> = {
     subject: "Confirm your email · Lexxbrush",
     eyebrow: "Welcome · Lexxbrush",
     headline: "Welcome to the table.",
-    lead: "You're one tap from your Lexxbrush account. Confirm your email and the deck is yours — hand-airbrushed, one-of-one wearable art, and a front-row seat to every drop.",
+    lead: "You're one tap from your Lexxbrush account. Confirm your email and the deck is yours. Hand-airbrushed, one-of-one wearable art, and a front-row seat to every drop.",
     cta: "Confirm my email",
   },
   magiclink: {
@@ -96,7 +96,7 @@ const CONFIG: Record<Exclude<AuthEmailType, "reauthentication">, TypeConfig> = {
     subject: "Your sign-in link · Lexxbrush",
     eyebrow: "Sign in · Lexxbrush",
     headline: "Your way in.",
-    lead: "Tap the button below to sign in to Lexxbrush. No password needed — this link does the work.",
+    lead: "Tap the button below to sign in to Lexxbrush. No password needed. This link does the work.",
     cta: "Sign in to Lexxbrush",
   },
   recovery: {
@@ -104,7 +104,7 @@ const CONFIG: Record<Exclude<AuthEmailType, "reauthentication">, TypeConfig> = {
     subject: "Reset your password · Lexxbrush",
     eyebrow: "Password reset · Lexxbrush",
     headline: "Let's get you back in.",
-    lead: "We received a request to reset your Lexxbrush password. Tap below to choose a new one. If it wasn't you, nothing has changed — just ignore this email.",
+    lead: "We received a request to reset your Lexxbrush password. Tap below to choose a new one. If it wasn't you, nothing has changed, so just ignore this email.",
     cta: "Choose a new password",
   },
   email_change: {
@@ -174,7 +174,7 @@ function renderSignupHtml(input: AuthEmailInput): string {
   // "What your account unlocks" - the editorial ladder, mirroring the order
   // email's "what happens next", but selling the value of confirming.
   const perks: Array<[string, string]> = [
-    ["01", "Track every order — from the first brushstroke to your doorstep."],
+    ["01", "Track every order, from the first brushstroke to your doorstep."],
     ["02", "Save the one-of-ones you love before someone else takes them home."],
     ["03", "First access to fresh drops. Each piece exists exactly once."],
   ];
@@ -194,7 +194,7 @@ function renderSignupHtml(input: AuthEmailInput): string {
     ${row(label("What your account unlocks", a), "0 0 8px 0")}
     ${row(perksHtml, "0")}
     ${row(divider(a), "32px 0 28px 0")}
-    ${securityNote("Didn't sign up for Lexxbrush? You can safely ignore this email — no account is created until it's confirmed.")}
+    ${securityNote("Didn't sign up for Lexxbrush? You can safely ignore this email. No account is created until it's confirmed.")}
   `;
 
   const body = `${header}${ctaBlock}${perksBlock}`;
@@ -228,7 +228,7 @@ function renderGenericHtml(input: AuthEmailInput): string {
 
   const note =
     input.type === "recovery"
-      ? "Didn't request this? Your password is unchanged — you can ignore this email."
+      ? "Didn't request this? Your password is unchanged, so you can ignore this email."
       : input.type === "magiclink"
         ? "Didn't try to sign in? You can safely ignore this email."
         : input.type === "invite"
@@ -291,7 +291,7 @@ function renderOtpHtml(input: AuthEmailInput): string {
 function renderText(input: AuthEmailInput): string {
   const L: string[] = [];
   if (input.type === "reauthentication") {
-    L.push("LEXXBRUSH — VERIFICATION");
+    L.push("LEXXBRUSH · VERIFICATION");
     L.push("");
     L.push("Your verification code:");
     L.push(`   ${input.otp ?? ""}`);
@@ -305,9 +305,9 @@ function renderText(input: AuthEmailInput): string {
 
   const cfg = CONFIG[input.type as Exclude<AuthEmailType, "reauthentication">];
   // eyebrow already carries the "· Lexxbrush" tag - drop it so the text header
-  // doesn't read "LEXXBRUSH — WELCOME · LEXXBRUSH".
+  // doesn't read "LEXXBRUSH · WELCOME · LEXXBRUSH".
   const tag = cfg.eyebrow.replace(/\s*·\s*Lexxbrush\s*$/i, "").toUpperCase();
-  L.push(`LEXXBRUSH — ${tag}`);
+  L.push(`LEXXBRUSH · ${tag}`);
   L.push("");
   L.push(cfg.headline);
   L.push("");
@@ -324,7 +324,7 @@ function renderText(input: AuthEmailInput): string {
   if (input.type === "signup") {
     L.push("");
     L.push("WHAT YOUR ACCOUNT UNLOCKS");
-    L.push("01  Track every order — from the first brushstroke to your doorstep.");
+    L.push("01  Track every order, from the first brushstroke to your doorstep.");
     L.push("02  Save the one-of-ones you love before someone else takes them home.");
     L.push("03  First access to fresh drops. Each piece exists exactly once.");
     L.push("");
