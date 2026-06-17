@@ -21,6 +21,8 @@ export interface Product {
   accentColor?: string;
   /** Gradient end hex - hue-distant secondary accent. Falls back to a triadic shift of accentColor. */
   accentColorSecondary?: string;
+  /** Scheduled-drop time (ISO, UTC). null = live now. Future = hidden until then. */
+  releasedAt?: string | null;
 }
 
 // Transform Supabase row to Product interface
@@ -38,7 +40,14 @@ function toProduct(row: any): Product {
     isSold: row.is_sold,
     accentColor: row.accent_color || undefined,
     accentColorSecondary: row.accent_color_secondary || undefined,
+    releasedAt: row.released_at ?? null,
   };
+}
+
+/** A product is public once it has no release time, or that time has passed. */
+function isReleased(releasedAt: string | null | undefined): boolean {
+  if (!releasedAt) return true;
+  return new Date(releasedAt).getTime() <= Date.now();
 }
 
 // Fetch all products from Supabase
@@ -53,7 +62,12 @@ export async function getProducts(): Promise<Product[]> {
     return [];
   }
 
-  return data.map(toProduct);
+  // Filter in JS (not in the SQL query) on purpose: if this code ships before
+  // the released_at migration runs, `row.released_at` is simply undefined →
+  // isReleased() returns true → every product shows, exactly as before. A
+  // query-level `.or(released_at...)` would instead error on the missing column
+  // and empty the whole shop. Catalog is small, so the cost is negligible.
+  return data.map(toProduct).filter((p) => isReleased(p.releasedAt));
 }
 
 // Fetch single product by ID (UUID or slug)
@@ -71,7 +85,11 @@ export async function getProduct(id: string): Promise<Product | undefined> {
     return undefined;
   }
 
-  return toProduct(data);
+  // Scheduled drops stay hidden on their own URL too - a future release_at
+  // makes the detail page behave as "not found" until the drop goes live.
+  const product = toProduct(data);
+  if (!isReleased(product.releasedAt)) return undefined;
+  return product;
 }
 
 export function getProductsByCategory(allProducts: Product[], category: string): Product[] {

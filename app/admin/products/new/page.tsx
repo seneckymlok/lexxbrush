@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { AccentColorField } from "@/components/admin/AccentColorField";
+import { ReleaseScheduleField } from "@/components/admin/ReleaseScheduleField";
 import { extractAccentGradient } from "@/lib/colorExtraction";
 
 const CATEGORIES = ["tees", "hoodies", "pants", "bags", "accessories"];
@@ -28,6 +29,7 @@ export default function NewProductPage() {
     is_one_of_a_kind: true,
     accent_color: "",
     accent_color_secondary: "",
+    released_at: null as string | null,
   });
   // Tracks whether the admin has manually edited the colors - if so, we never
   // auto-overwrite them when a new image is dropped.
@@ -126,6 +128,7 @@ export default function NewProductPage() {
             is_one_of_a_kind: form.is_one_of_a_kind,
             accent_color: form.accent_color || null,
             accent_color_secondary: form.accent_color_secondary || null,
+            released_at: form.released_at,
           },
         }),
       });
@@ -249,6 +252,18 @@ export default function NewProductPage() {
             <div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_one_of_a_kind ? "translate-x-5" : "translate-x-0"}`} />
           </button>
           <span className="text-sm text-white/50">Jeden kus (unikát)</span>
+        </div>
+
+        {/* Scheduled drop */}
+        <div>
+          <label className={labelClass}>Spustenie (drop)</label>
+          <ReleaseScheduleField
+            value={form.released_at}
+            onChange={(iso) => setForm({ ...form, released_at: iso })}
+          />
+          <p className="text-[11px] text-white/30 mt-2">
+            Nechaj prázdne pre okamžité zverejnenie. Nastav budúci čas a produkt sa zobrazí na webe až vtedy.
+          </p>
         </div>
 
         {/* Accent Color */}

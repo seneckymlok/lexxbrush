@@ -6,6 +6,7 @@ import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { AccentColorField } from "@/components/admin/AccentColorField";
+import { ReleaseScheduleField } from "@/components/admin/ReleaseScheduleField";
 
 const CATEGORIES = ["tees", "hoodies", "pants", "bags", "accessories"];
 
@@ -28,6 +29,7 @@ export default function EditProductPage() {
     is_one_of_a_kind: true, is_sold: false, images: [] as string[],
     accent_color: "",
     accent_color_secondary: "",
+    released_at: null as string | null,
   });
 
   // New files to upload
@@ -48,6 +50,7 @@ export default function EditProductPage() {
             images: data.images || [],
             accent_color: data.accent_color || "",
             accent_color_secondary: data.accent_color_secondary || "",
+            released_at: data.released_at ?? null,
           });
         }
       })
@@ -138,6 +141,7 @@ export default function EditProductPage() {
             is_one_of_a_kind: form.is_one_of_a_kind, is_sold: form.is_sold,
             accent_color: form.accent_color || null,
             accent_color_secondary: form.accent_color_secondary || null,
+            released_at: form.released_at,
           },
         }),
       });
@@ -240,6 +244,18 @@ export default function EditProductPage() {
             <button type="button" onClick={() => setForm({ ...form, is_sold: !form.is_sold })} className={`w-10 h-5 rounded-full transition-colors ${form.is_sold ? "bg-red-500" : "bg-white/10"}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform mx-0.5 ${form.is_sold ? "translate-x-5" : ""}`} /></button>
             <span className="text-sm text-white/50">Predané</span>
           </div>
+        </div>
+
+        {/* Scheduled drop */}
+        <div>
+          <label className={labelClass}>Spustenie (drop)</label>
+          <ReleaseScheduleField
+            value={form.released_at}
+            onChange={(iso) => setForm({ ...form, released_at: iso })}
+          />
+          <p className="text-[11px] text-white/30 mt-2">
+            Nechaj prázdne pre okamžité zverejnenie. Nastav budúci čas a produkt sa zobrazí na webe až vtedy.
+          </p>
         </div>
 
         {/* Accent Color */}

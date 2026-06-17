@@ -31,6 +31,17 @@ interface Product {
   category: string;
   is_one_of_a_kind: boolean;
   is_sold: boolean;
+  released_at: string | null;
+}
+
+/** Future release_at = the drop is scheduled and currently hidden from the site. */
+function scheduledLabel(releasedAt: string | null): string | null {
+  if (!releasedAt) return null;
+  const d = new Date(releasedAt);
+  if (isNaN(d.getTime()) || d.getTime() <= Date.now()) return null;
+  return d.toLocaleString(undefined, {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  });
 }
 
 export default function AdminProductsPage() {
@@ -90,6 +101,14 @@ export default function AdminProductsPage() {
                 <p className="text-sm font-medium text-white/80 truncate">{product.name_en}</p>
                 <p className="text-xs text-white/30 mt-0.5">{product.category} · €{(product.price / 100).toFixed(0)}{product.is_one_of_a_kind && " · 1/1"}</p>
               </div>
+              {scheduledLabel(product.released_at) && (
+                <span
+                  className="px-2 py-1 rounded text-[10px] uppercase tracking-wider font-medium bg-amber-500/10 text-amber-400 whitespace-nowrap"
+                  title="Naplánovaný drop, skrytý na webe do tohto času"
+                >
+                  Drop · {scheduledLabel(product.released_at)}
+                </span>
+              )}
               <button onClick={() => toggleSold(product.id, product.is_sold)} className={`px-3 py-1 rounded text-[10px] uppercase tracking-wider font-medium transition-colors ${product.is_sold ? "bg-red-500/10 text-red-400 hover:bg-red-500/20" : "bg-green-500/10 text-green-400 hover:bg-green-500/20"}`}>
                 {product.is_sold ? "Predané" : "Dostupné"}
               </button>
