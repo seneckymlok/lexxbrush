@@ -26,6 +26,8 @@ interface Props {
   alt: string;
   /** Called on a clean tap/click (no zoom) - used to close the lightbox. */
   onTap?: () => void;
+  /** Called on a horizontal swipe at rest (touch, not zoomed) - switch images. */
+  onSwipe?: (dir: "next" | "prev") => void;
 }
 
 type Pt = { x: number; y: number };
@@ -34,7 +36,7 @@ type Gesture =
   | { mode: "pinch"; base: { scale: number; tx: number; ty: number }; startDist: number; startMid: Pt; center: Pt }
   | { mode: "pan" | "hold"; last: Pt };
 
-export function ZoomableImage({ src, alt, onTap }: Props) {
+export function ZoomableImage({ src, alt, onTap, onSwipe }: Props) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +44,7 @@ export function ZoomableImage({ src, alt, onTap }: Props) {
   const st = useRef({ scale: 1, tx: 0, ty: 0 });        // current applied transform
   const g = useRef<Gesture>({ mode: "none" });
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const press = useRef({ t: 0, x: 0, y: 0, moved: false });
+  const press = useRef({ t: 0, x: 0, y: 0, moved: false, type: "" });
   const raf = useRef(0);
 
   const apply = useCallback((withTransition: boolean) => {
@@ -100,7 +102,7 @@ export function ZoomableImage({ src, alt, onTap }: Props) {
         /* capture unavailable - moves still arrive while the pointer is down */
       }
       pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      press.current = { t: Date.now(), x: e.clientX, y: e.clientY, moved: false };
+      press.current = { t: Date.now(), x: e.clientX, y: e.clientY, moved: false, type: e.pointerType };
 
       if (e.pointerType === "mouse") {
         // Press-and-hold: a deliberate hold zooms; a quick click falls through
@@ -185,6 +187,16 @@ export function ZoomableImage({ src, alt, onTap }: Props) {
         if (g.current.mode === "none" && quick) {
           onTap?.();
           return;
+        }
+        // Horizontal swipe while not zoomed → switch images (touch only, so a
+        // desktop drag never triggers it). Doesn't fire when zoomed: panning wins.
+        if (g.current.mode === "none" && st.current.scale === 1 && press.current.type === "touch") {
+          const dx = e.clientX - press.current.x;
+          const dy = e.clientY - press.current.y;
+          if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+            onSwipe?.(dx < 0 ? "next" : "prev");
+            return;
+          }
         }
         if (st.current.scale !== 1 || st.current.tx !== 0 || st.current.ty !== 0) {
           reset();

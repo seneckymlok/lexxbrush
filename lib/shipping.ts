@@ -51,19 +51,6 @@ const FUEL_SURCHARGE  = 0.185; // 18.5%
 const TOLL_PER_KG_EUR = 0.04;  // €0.04 per started kg
 const VAT_RATE_SK     = 0.23;  // SK VAT 23%
 
-// ── Free shipping threshold (env-overridable) ────────────────────────────────
-const envNum = (key: string, fallback: number) => {
-  const raw = process.env[key];
-  if (!raw) return fallback;
-  const n = Number(raw);
-  return Number.isFinite(n) && n >= 0 ? n : fallback;
-};
-
-export const FREE_SHIPPING_THRESHOLD_CENTS = envNum(
-  "FREE_SHIPPING_THRESHOLD_CENTS",
-  10_000, // €100
-);
-
 // ── Cart-weight helper ───────────────────────────────────────────────────────
 
 export interface ShippingItem {
@@ -127,18 +114,18 @@ const LABELS: Record<DeliveryType, string> = {
 };
 
 /**
- * Resolve the rate the customer pays, applying the free-shipping threshold
- * against the cart subtotal.
+ * Resolve the rate the customer pays. Shipping is always charged at the
+ * computed Packeta rate (no free-shipping threshold). `subtotalCents` is kept
+ * in the signature for callers but no longer affects the price.
  */
 export function resolveShippingRate(
   deliveryType: DeliveryType,
-  subtotalCents: number,
+  _subtotalCents: number,
   weightKg: number,
 ): ShippingRate {
-  const isFree = subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS;
   return {
-    label:           isFree ? `${LABELS[deliveryType]} - Free` : LABELS[deliveryType],
-    amount:          isFree ? 0 : computeShippingCents(deliveryType, weightKg),
+    label:           LABELS[deliveryType],
+    amount:          computeShippingCents(deliveryType, weightKg),
     estimateMinDays: 1,
     estimateMaxDays: 3,
   };

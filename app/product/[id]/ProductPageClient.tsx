@@ -176,6 +176,50 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
     if (product) setActiveImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
   };
 
+  // ── Keyboard arrows switch images (inline gallery + lightbox) ──────────────
+  useEffect(() => {
+    const n = product?.images.length ?? 0;
+    if (n <= 1) return;
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag && /^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setActiveImage((p) => (p === 0 ? n - 1 : p - 1));
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setActiveImage((p) => (p === n - 1 ? 0 : p + 1));
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [product?.images.length]);
+
+  // ── Swipe the inline image to switch (mobile gallery) ──────────────────────
+  // A horizontal swipe changes the image; a clean tap still opens the lightbox.
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const swipedRef = useRef(false);
+
+  const handleImageTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+    swipedRef.current = false;
+  };
+
+  const handleImageTouchEnd = (e: React.TouchEvent) => {
+    const s = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!s || !product || product.images.length <= 1) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s.x;
+    const dy = t.clientY - s.y;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      swipedRef.current = true; // suppress the click-to-open that follows
+      if (dx < 0) handleNextImage();
+      else handlePrevImage();
+    }
+  };
+
   useEffect(() => {
     if (initialProduct) return;
     getProduct(productId).then((p) => {
@@ -282,7 +326,12 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           <div
             ref={imageRef}
             className="aspect-[4/5] lg:aspect-auto lg:h-full relative cursor-zoom-in group"
-            onClick={() => setIsLightboxOpen(true)}
+            onClick={() => {
+              if (swipedRef.current) { swipedRef.current = false; return; }
+              setIsLightboxOpen(true);
+            }}
+            onTouchStart={handleImageTouchStart}
+            onTouchEnd={handleImageTouchEnd}
             onMouseMove={handleImageMouseMove}
             onMouseLeave={handleImageMouseLeave}
           >
@@ -623,6 +672,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
               src={product.images[activeImage]}
               alt={`${product.name[locale as Locale]} - Zoomed`}
               onTap={() => setIsLightboxOpen(false)}
+              onSwipe={hasMultipleImages ? (dir) => (dir === "next" ? handleNextImage() : handlePrevImage()) : undefined}
             />
           </div>
 
