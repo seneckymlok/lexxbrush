@@ -10,6 +10,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useCart } from "@/components/providers/CartProvider";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { getProduct } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
@@ -33,8 +34,12 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   const [activeImage, setActiveImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [mounted, setMounted]       = useState(false);
+  const [coarse, setCoarse]         = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    setCoarse(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
 
   // DOM targets
   const imageRef         = useRef<HTMLDivElement>(null);      // GSAP clipPath + mousemove area
@@ -612,14 +617,20 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
           )}
 
           <div className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw]">
-            <Image
+            {/* key per image so switching with the arrows resets any zoom state */}
+            <ZoomableImage
+              key={activeImage}
               src={product.images[activeImage]}
               alt={`${product.name[locale as Locale]} - Zoomed`}
-              fill
-              className="object-contain"
-              sizes="100vw"
-              preload
+              onTap={() => setIsLightboxOpen(false)}
             />
+          </div>
+
+          {/* Zoom affordance - fades out shortly after the lightbox opens */}
+          <div className="absolute bottom-[max(env(safe-area-inset-bottom),1.5rem)] left-1/2 -translate-x-1/2 z-10 pointer-events-none lightbox-zoom-hint">
+            <span className="font-[family-name:var(--font-display)] text-[10px] tracking-[0.28em] uppercase text-white/45 bg-black/30 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 whitespace-nowrap">
+              {coarse ? t("product.zoomHintTouch") : t("product.zoomHintMouse")}
+            </span>
           </div>
 
           {hasMultipleImages && (

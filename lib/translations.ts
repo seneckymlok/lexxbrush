@@ -34,6 +34,8 @@ export const translations = {
       handPainted: "Hand-airbrushed",
       unique: "Unique piece",
       madeByHand: "Made by hand",
+      zoomHintTouch: "Pinch to zoom",
+      zoomHintMouse: "Hold to zoom",
     },
     custom: {
       title: "Custom Order",
@@ -267,6 +269,8 @@ export const translations = {
       handPainted: "Ručne airbrushované",
       unique: "Unikátny kus",
       madeByHand: "Vyrobené ručne",
+      zoomHintTouch: "Priblíž štipnutím",
+      zoomHintMouse: "Podrž pre priblíženie",
     },
     custom: {
       title: "Na Zákazku",

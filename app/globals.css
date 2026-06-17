@@ -633,6 +633,19 @@
     perspective: 800px;
   }
 
+  /* Lightbox zoom affordance: visible briefly, then fades so it doesn't sit
+     over the image. Holds at the start so it's readable, then eases out. */
+  .lightbox-zoom-hint {
+    animation: lightbox-zoom-hint-fade 3.4s ease-out forwards;
+  }
+  @keyframes lightbox-zoom-hint-fade {
+    0%, 55% { opacity: 1; }
+    100%    { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-zoom-hint { animation: none; opacity: 0.6; }
+  }
+
   .card-3d {
     transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
                 box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
