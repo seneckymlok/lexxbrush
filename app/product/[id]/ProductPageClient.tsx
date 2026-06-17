@@ -101,6 +101,8 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
   // larger so the motion reads as more dramatic while staying proportional.
   const handleImageMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Skip on touch: a tap synthesizes a mousemove that would nudge the image.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
     const clientX = e.clientX;
     const clientY = e.clientY;
     cancelAnimationFrame(rafRef.current);

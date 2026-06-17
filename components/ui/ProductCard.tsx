@@ -88,6 +88,9 @@ export function ProductCard({ product, index }: ProductCardProps) {
    */
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Touch devices synthesize a mousemove on tap, which would nudge the card
+    // (looks like a stray hover). Parallax is a pointer-only flourish.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     // Capture before RAF - React may recycle the synthetic event object
     const clientX = e.clientX;
