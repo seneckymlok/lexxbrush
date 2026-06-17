@@ -120,6 +120,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (existing) {
         if (product.isOneOfAKind) return prev;
+        // Never let the cart exceed tracked stock. (Checkout re-validates
+        // against live DB stock too - this is just immediate UX feedback.)
+        if (typeof product.stock === "number" && existing.quantity >= product.stock) return prev;
         playSpraySound();
         return prev.map((item) =>
           item.product.id === product.id && item.size === size
@@ -128,6 +131,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
+      // First add: refuse if the product is tracked and already out of stock.
+      if (typeof product.stock === "number" && product.stock <= 0) return prev;
       playSpraySound();
       return [...prev, { product, size, quantity: 1 }];
     });

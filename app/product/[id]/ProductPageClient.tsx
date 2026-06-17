@@ -456,6 +456,27 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             </span>
           </div>
 
+          {/* Low-stock urgency - only for tracked, non-unique pieces running low */}
+          {!product.isOneOfAKind &&
+            typeof product.stock === "number" &&
+            product.stock > 0 &&
+            product.stock <= 5 && (
+              <div className="-mt-3 mb-6 inline-flex items-center gap-2">
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: "var(--product-accent)", boxShadow: "0 0 8px var(--product-accent)" }}
+                />
+                <span
+                  className="font-[family-name:var(--font-display)] text-[11px] font-bold tracking-[0.18em] uppercase"
+                  style={{ color: "var(--product-accent)" }}
+                >
+                  {locale === "sk"
+                    ? `Ešte ${product.stock} ${product.stock === 1 ? "kus" : product.stock <= 4 ? "kusy" : "kusov"}`
+                    : `Only ${product.stock} left`}
+                </span>
+              </div>
+            )}
+
           {/* Full-width accent divider */}
           <div
             className="w-full h-px mb-7"

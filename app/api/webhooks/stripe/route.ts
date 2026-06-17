@@ -156,21 +156,25 @@ export async function POST(req: NextRequest) {
         console.log("[stripe-webhook] order inserted", { orderId: order?.id });
       }
 
-      // Mark one-of-a-kind products as sold. Runs in test mode too -
-      // the inventory lock is a real business effect we want to verify,
-      // and it costs nothing.
-      for (const id of productIds) {
+      // Inventory. Runs in test mode too - it's a real business effect worth
+      // verifying end-to-end, and it costs nothing. The duplicate-session guard
+      // above ensures this fires at most once per order.
+      //   • one-of-a-kind  → lock as sold.
+      //   • tracked stock  → decrement by the purchased quantity (floor 0).
+      //   • untracked      → left alone (unlimited).
+      for (const it of enrichedItems) {
         const { data: product } = await supabase
           .from("products")
-          .select("is_one_of_a_kind")
-          .eq("id", id)
+          .select("is_one_of_a_kind, stock")
+          .eq("id", it.productId)
           .single();
+        if (!product) continue;
 
-        if (product?.is_one_of_a_kind) {
-          await supabase
-            .from("products")
-            .update({ is_sold: true })
-            .eq("id", id);
+        if (product.is_one_of_a_kind) {
+          await supabase.from("products").update({ is_sold: true }).eq("id", it.productId);
+        } else if (typeof product.stock === "number") {
+          const newStock = Math.max(0, product.stock - (it.quantity || 1));
+          await supabase.from("products").update({ stock: newStock }).eq("id", it.productId);
         }
       }
 

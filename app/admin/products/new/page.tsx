@@ -27,6 +27,7 @@ export default function NewProductPage() {
     category: "tees",
     sizes: "",
     is_one_of_a_kind: true,
+    stock: "",
     accent_color: "",
     accent_color_secondary: "",
     released_at: null as string | null,
@@ -126,6 +127,10 @@ export default function NewProductPage() {
             category: form.category,
             sizes: sizes.length > 0 ? sizes : null,
             is_one_of_a_kind: form.is_one_of_a_kind,
+            // Stock only applies to non-unique products; one-of-a-kind uses is_sold.
+            stock: form.is_one_of_a_kind || form.stock.trim() === ""
+              ? null
+              : Math.max(0, parseInt(form.stock, 10) || 0),
             accent_color: form.accent_color || null,
             accent_color_secondary: form.accent_color_secondary || null,
             released_at: form.released_at,
@@ -253,6 +258,25 @@ export default function NewProductPage() {
           </button>
           <span className="text-sm text-white/50">Jeden kus (unikát)</span>
         </div>
+
+        {/* Stock - only for non-unique products */}
+        {!form.is_one_of_a_kind && (
+          <div>
+            <label className={labelClass}>Počet kusov</label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              className={`${inputClass} max-w-[180px]`}
+              placeholder="Neobmedzene"
+            />
+            <p className="text-[11px] text-white/30 mt-2">
+              Nechaj prázdne pre neobmedzený počet. Po vypredaní (0) sa produkt zobrazí ako vypredaný.
+            </p>
+          </div>
+        )}
 
         {/* Scheduled drop */}
         <div>

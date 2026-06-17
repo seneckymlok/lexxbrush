@@ -20,39 +20,52 @@ export async function POST(req: NextRequest) {
       testToken === process.env.CHECKOUT_TEST_TOKEN;
 
     // Validate products and prices against database
-    const productIds = items.map((item: any) => item.productId);
+    const requestedIds = items.map((item: any) => item.productId);
     const { data: products } = await supabase
       .from("products")
-      .select("id, slug, name_en, price, images, is_sold, category")
-      .in("id", productIds);
+      .select("id, slug, name_en, price, images, is_sold, category, stock")
+      .in("id", requestedIds);
 
     if (!products || products.length === 0) {
       return NextResponse.json({ error: "No valid products found" }, { status: 400 });
     }
 
-    // Build line items from verified database prices (security)
-    const lineItems = items
+    // How many of a product we can actually sell right now: 0 if sold or out of
+    // stock, otherwise the requested quantity clamped to tracked stock.
+    const availableQty = (product: any, requested: number): number => {
+      if (!product || product.is_sold) return 0;
+      if (typeof product.stock === "number") {
+        return product.stock <= 0 ? 0 : Math.min(requested, product.stock);
+      }
+      return requested; // untracked stock = unlimited
+    };
+
+    // One validated, clamped list drives the line items, the Stripe metadata,
+    // and the shipping weight - so the charge, the stored order, and the
+    // webhook's stock decrement all reference the same quantities.
+    const validated = items
       .map((item: any) => {
         const product = products.find((p) => p.id === item.productId);
-        if (!product || product.is_sold) return null;
-
-        return {
-          price_data: {
-            currency: "eur",
-            product_data: {
-              name: product.name_en,
-              images: product.images?.slice(0, 1) || [],
-            },
-            unit_amount: product.price,
-          },
-          quantity: item.quantity || 1,
-        };
+        return { item, product, qty: availableQty(product, item.quantity || 1) };
       })
-      .filter(Boolean);
+      .filter((v: any) => v.product && v.qty > 0);
 
-    if (lineItems.length === 0) {
+    if (validated.length === 0) {
       return NextResponse.json({ error: "No available products in cart" }, { status: 400 });
     }
+
+    // Build line items from verified database prices (security)
+    const lineItems = validated.map(({ product, qty }: any) => ({
+      price_data: {
+        currency: "eur",
+        product_data: {
+          name: product.name_en,
+          images: product.images?.slice(0, 1) || [],
+        },
+        unit_amount: product.price,
+      },
+      quantity: qty,
+    }));
 
     // Cart subtotal (cents) - used to evaluate the free-shipping threshold.
     const subtotalCents = (lineItems as Array<{
@@ -63,13 +76,10 @@ export async function POST(req: NextRequest) {
     // Cart weight (kg) - sums per-category defaults from the Packeta pricelist
     // so the shipping rate matches the actual carrier cost.
     const weightKg = cartWeightKg(
-      items.map((item: any) => {
-        const product = products.find((p) => p.id === item.productId);
-        return {
-          category: product?.category ?? null,
-          quantity: item.quantity || 1,
-        };
-      }),
+      validated.map(({ product, qty }: any) => ({
+        category: product?.category ?? null,
+        quantity: qty,
+      })),
     );
 
     // Build compact delivery data for Stripe metadata (500 char limit per value)
@@ -120,12 +130,14 @@ export async function POST(req: NextRequest) {
       success_url: successUrl || `${req.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${req.nextUrl.origin}/checkout`,
       metadata: {
-        product_ids: JSON.stringify(productIds),
+        // product_ids and items stay index-aligned (the webhook zips them by
+        // position) and both come from `validated`, so sold-out items are gone.
+        product_ids: JSON.stringify(validated.map((v: any) => v.item.productId)),
         items: JSON.stringify(
-          items.map((item: any) => ({
+          validated.map(({ item, product, qty }: any) => ({
             id: item.productId.slice(0, 8),
-            n: (products.find((p) => p.id === item.productId)?.name_en || "").slice(0, 20),
-            q: item.quantity || 1,
+            n: (product?.name_en || "").slice(0, 20),
+            q: qty,
             s: item.size || "",
           }))
         ).slice(0, 500),

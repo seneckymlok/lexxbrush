@@ -27,6 +27,7 @@ export default function EditProductPage() {
     name_en: "", name_sk: "", description_en: "", description_sk: "",
     price: "", category: "tees", sizes: "",
     is_one_of_a_kind: true, is_sold: false, images: [] as string[],
+    stock: "",
     accent_color: "",
     accent_color_secondary: "",
     released_at: null as string | null,
@@ -48,6 +49,7 @@ export default function EditProductPage() {
             sizes: data.sizes?.join(", ") || "",
             is_one_of_a_kind: data.is_one_of_a_kind, is_sold: data.is_sold,
             images: data.images || [],
+            stock: data.stock != null ? String(data.stock) : "",
             accent_color: data.accent_color || "",
             accent_color_secondary: data.accent_color_secondary || "",
             released_at: data.released_at ?? null,
@@ -139,6 +141,9 @@ export default function EditProductPage() {
             price: priceInCents, images: allImages,
             category: form.category, sizes: sizes.length > 0 ? sizes : null,
             is_one_of_a_kind: form.is_one_of_a_kind, is_sold: form.is_sold,
+            stock: form.is_one_of_a_kind || form.stock.trim() === ""
+              ? null
+              : Math.max(0, parseInt(form.stock, 10) || 0),
             accent_color: form.accent_color || null,
             accent_color_secondary: form.accent_color_secondary || null,
             released_at: form.released_at,
@@ -245,6 +250,25 @@ export default function EditProductPage() {
             <span className="text-sm text-white/50">Predané</span>
           </div>
         </div>
+
+        {/* Stock - only for non-unique products */}
+        {!form.is_one_of_a_kind && (
+          <div>
+            <label className={labelClass}>Počet kusov</label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              className={`${inputClass} max-w-[180px]`}
+              placeholder="Neobmedzene"
+            />
+            <p className="text-[11px] text-white/30 mt-2">
+              Nechaj prázdne pre neobmedzený počet. Po vypredaní (0) sa produkt zobrazí ako vypredaný.
+            </p>
+          </div>
+        )}
 
         {/* Scheduled drop */}
         <div>

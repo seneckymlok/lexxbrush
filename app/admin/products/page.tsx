@@ -33,6 +33,7 @@ interface Product {
   is_sold: boolean;
   released_at: string | null;
   sort_order: number | null;
+  stock: number | null;
 }
 
 /** Future release_at = the drop is scheduled and currently hidden from the site. */
@@ -178,6 +179,20 @@ export default function AdminProductsPage() {
                   title="Naplánovaný drop, skrytý na webe do tohto času"
                 >
                   Drop · {scheduledLabel(product.released_at)}
+                </span>
+              )}
+              {!product.is_one_of_a_kind && product.stock != null && (
+                <span
+                  className={`hidden sm:inline px-2 py-1 rounded text-[10px] uppercase tracking-wider font-medium whitespace-nowrap ${
+                    product.stock <= 0
+                      ? "bg-red-500/10 text-red-400"
+                      : product.stock <= 3
+                        ? "bg-amber-500/10 text-amber-400"
+                        : "bg-white/5 text-white/40"
+                  }`}
+                  title="Počet kusov na sklade"
+                >
+                  {product.stock <= 0 ? "Vypredané" : `${product.stock} ks`}
                 </span>
               )}
               <button onClick={() => toggleSold(product.id, product.is_sold)} className={`px-3 py-1 rounded text-[10px] uppercase tracking-wider font-medium transition-colors ${product.is_sold ? "bg-red-500/10 text-red-400 hover:bg-red-500/20" : "bg-green-500/10 text-green-400 hover:bg-green-500/20"}`}>

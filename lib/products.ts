@@ -1,5 +1,10 @@
 import { supabase } from "./supabase";
 
+/** A tracked stock (non-null number) that has run out. null = untracked/unlimited. */
+export function isOutOfStock(stock: number | null | undefined): boolean {
+  return typeof stock === "number" && stock <= 0;
+}
+
 export interface Product {
   id: string;
   name: {
@@ -16,7 +21,10 @@ export interface Product {
   category: "hoodies" | "tees" | "pants" | "bags" | "accessories";
   sizes?: string[];
   isOneOfAKind: boolean;
+  /** Sold out: the manual is_sold flag OR a tracked stock that has hit 0. */
   isSold: boolean;
+  /** Remaining pieces for non-unique products. null = untracked/unlimited. */
+  stock?: number | null;
   /** Gradient start hex - dominant accent extracted from first image. Falls back to brand purple. */
   accentColor?: string;
   /** Gradient end hex - hue-distant secondary accent. Falls back to a triadic shift of accentColor. */
@@ -39,7 +47,9 @@ function toProduct(row: any): Product {
     category: row.category,
     sizes: row.sizes || undefined,
     isOneOfAKind: row.is_one_of_a_kind,
-    isSold: row.is_sold,
+    // Sold out when manually flagged, or when a tracked stock has hit 0.
+    isSold: row.is_sold || isOutOfStock(row.stock),
+    stock: row.stock ?? null,
     accentColor: row.accent_color || undefined,
     accentColorSecondary: row.accent_color_secondary || undefined,
     releasedAt: row.released_at ?? null,
