@@ -665,7 +665,10 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
             </button>
           )}
 
-          <div className="relative w-full h-[75dvh] md:h-[90dvh] max-w-[95vw] md:max-w-[80vw]">
+          {/* Full-viewport stage so pinch-zoom fills the screen instead of being
+              clipped to a centered box. The image still sits centered via
+              object-contain; arrows/close (z-10) stay above it. */}
+          <div className="absolute inset-0">
             {/* key per image so switching with the arrows resets any zoom state */}
             <ZoomableImage
               key={activeImage}
