@@ -23,6 +23,8 @@ export interface Product {
   accentColorSecondary?: string;
   /** Scheduled-drop time (ISO, UTC). null = live now. Future = hidden until then. */
   releasedAt?: string | null;
+  /** Manual catalog position, lowest first. null = unpositioned (floats to top). */
+  sortOrder?: number | null;
 }
 
 // Transform Supabase row to Product interface
@@ -41,7 +43,17 @@ function toProduct(row: any): Product {
     accentColor: row.accent_color || undefined,
     accentColorSecondary: row.accent_color_secondary || undefined,
     releasedAt: row.released_at ?? null,
+    sortOrder: row.sort_order ?? null,
   };
+}
+
+/**
+ * Catalog order: lowest sort_order first. Unpositioned products (null) float to
+ * the top as "newest". Stable - equal positions keep the created_at-desc order
+ * the SQL query already applied. Used everywhere products are listed publicly.
+ */
+export function compareByOrder(a: Product, b: Product): number {
+  return (a.sortOrder ?? -1) - (b.sortOrder ?? -1);
 }
 
 /** A product is public once it has no release time, or that time has passed. */
@@ -62,12 +74,16 @@ export async function getProducts(): Promise<Product[]> {
     return [];
   }
 
-  // Filter in JS (not in the SQL query) on purpose: if this code ships before
-  // the released_at migration runs, `row.released_at` is simply undefined →
-  // isReleased() returns true → every product shows, exactly as before. A
-  // query-level `.or(released_at...)` would instead error on the missing column
-  // and empty the whole shop. Catalog is small, so the cost is negligible.
-  return data.map(toProduct).filter((p) => isReleased(p.releasedAt));
+  // Filter + sort in JS (not in the SQL query) on purpose: if this code ships
+  // before the released_at / sort_order migrations run, those columns are simply
+  // undefined → isReleased() is true and compareByOrder() falls back to the
+  // created_at-desc order the query already applied → nothing breaks. A
+  // query-level filter/order would instead error on the missing column and
+  // empty the whole shop. Catalog is small, so the cost is negligible.
+  return data
+    .map(toProduct)
+    .filter((p) => isReleased(p.releasedAt))
+    .sort(compareByOrder);
 }
 
 // Fetch single product by ID (UUID or slug)
