@@ -164,10 +164,12 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {/* ── Ambient color halo ────────────────────────────────────────────
               A scaled-up, heavily blurred duplicate of the product image
               bleeds its actual color palette outward as atmospheric glow.
-              Invisible at rest, fades in on hover (700ms ease-out).
-              Decorative only - pointer-events disabled.                   */}
+              Desktop-only (hover): on mobile this blur-[28px] layer painted on
+              every card at all times and re-composited on scroll - the main
+              cause of the homepage first-scroll jank. `hidden` keeps it out of
+              the layer tree (and skips the extra image decode) on phones.   */}
           <div
-            className="absolute inset-0 z-0 opacity-20 md:opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+            className="absolute inset-0 z-0 hidden md:block md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
             aria-hidden="true"
           >
             <Image
