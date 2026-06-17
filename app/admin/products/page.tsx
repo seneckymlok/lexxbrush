@@ -80,6 +80,20 @@ export default function AdminProductsPage() {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   }
 
+  async function openPreview() {
+    const token = await getToken();
+    // Enable draft mode for this browser (sets the bypass cookie), then open
+    // the live site in a new tab where scheduled drops are now visible.
+    await fetch("/api/admin/preview?on=1", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    window.open("/", "_blank");
+  }
+
+  const hasScheduled = products.some(
+    (p) => p.released_at && new Date(p.released_at).getTime() > Date.now(),
+  );
+
   async function persistOrder(list: Product[]) {
     setSavingOrder(true);
     try {
@@ -117,7 +131,21 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-xl font-semibold text-white">Produkty</h1>
-        <Link href="/admin/products/new" className="px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-white/90 transition-colors">+ Pridať produkt</Link>
+        <div className="flex items-center gap-2">
+          {hasScheduled && (
+            <button
+              onClick={openPreview}
+              title="Otvoriť web s naplánovanými produktmi v novom okne"
+              className="inline-flex items-center gap-1.5 px-3 py-2 border border-amber-400/40 text-amber-300 text-sm font-medium rounded-lg hover:bg-amber-400/10 transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" />
+              </svg>
+              Náhľad
+            </button>
+          )}
+          <Link href="/admin/products/new" className="px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-white/90 transition-colors">+ Pridať produkt</Link>
+        </div>
       </div>
 
       {products.length > 1 && (

@@ -197,7 +197,14 @@ export function ProductCard({ product, index }: ProductCardProps) {
           </div>
 
           {/* ── Badges - diamond = ONE OF ONE · spade = SOLD ── */}
-          <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col gap-0.5 z-20">
+          <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col gap-1 z-20">
+            {/* Scheduled drop - only ever rendered in admin preview, since
+                these products are filtered out of the public list otherwise. */}
+            {product.releasedAt && new Date(product.releasedAt).getTime() > Date.now() && (
+              <div className="px-1.5 py-0.5 rounded bg-amber-400 text-black text-[8px] md:text-[9px] font-bold uppercase tracking-wider whitespace-nowrap shadow-[0_0_10px_rgba(251,191,36,0.5)]">
+                {locale === "sk" ? "Naplánované" : "Scheduled"}
+              </div>
+            )}
             {product.isOneOfAKind && (
               <div className="group/badge relative cursor-pointer" onClick={handleDiamondClick}>
                 <div className="relative w-9 h-9 md:w-11 md:h-11 drop-shadow-[0_0_8px_rgba(0,220,255,0.65)]">

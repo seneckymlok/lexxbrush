@@ -72,8 +72,13 @@ function isReleased(releasedAt: string | null | undefined): boolean {
   return new Date(releasedAt).getTime() <= Date.now();
 }
 
-// Fetch all products from Supabase
-export async function getProducts(): Promise<Product[]> {
+// Fetch all products from Supabase.
+// `includeUnreleased` is the admin draft-mode preview escape hatch: when true,
+// scheduled drops are kept in the list so an admin can see the catalog as it
+// will look. Defaults to false, so every normal caller is unaffected.
+export async function getProducts(
+  opts: { includeUnreleased?: boolean } = {},
+): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -90,14 +95,17 @@ export async function getProducts(): Promise<Product[]> {
   // created_at-desc order the query already applied → nothing breaks. A
   // query-level filter/order would instead error on the missing column and
   // empty the whole shop. Catalog is small, so the cost is negligible.
-  return data
-    .map(toProduct)
-    .filter((p) => isReleased(p.releasedAt))
-    .sort(compareByOrder);
+  let list = data.map(toProduct);
+  if (!opts.includeUnreleased) list = list.filter((p) => isReleased(p.releasedAt));
+  return list.sort(compareByOrder);
 }
 
-// Fetch single product by ID (UUID or slug)
-export async function getProduct(id: string): Promise<Product | undefined> {
+// Fetch single product by ID (UUID or slug).
+// `includeUnreleased` (admin draft-mode preview) returns scheduled drops too.
+export async function getProduct(
+  id: string,
+  opts: { includeUnreleased?: boolean } = {},
+): Promise<Product | undefined> {
   // Try by UUID first, then by slug
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
@@ -112,9 +120,10 @@ export async function getProduct(id: string): Promise<Product | undefined> {
   }
 
   // Scheduled drops stay hidden on their own URL too - a future release_at
-  // makes the detail page behave as "not found" until the drop goes live.
+  // makes the detail page behave as "not found" until the drop goes live
+  // (unless an admin is previewing via draft mode).
   const product = toProduct(data);
-  if (!isReleased(product.releasedAt)) return undefined;
+  if (!opts.includeUnreleased && !isReleased(product.releasedAt)) return undefined;
   return product;
 }
 

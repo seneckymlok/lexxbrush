@@ -412,6 +412,17 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
         {/* ── Info column ── */}
         <div ref={infoRef} className="flex flex-col items-center lg:items-start text-center lg:text-left pt-2 pb-8 lg:py-4">
 
+          {/* Scheduled-drop banner - only ever shown in admin preview, since the
+              page is "not found" for the public until the drop goes live. */}
+          {product.releasedAt && new Date(product.releasedAt).getTime() > Date.now() && (
+            <div className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/40">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span className="font-[family-name:var(--font-display)] text-[10px] font-bold tracking-[0.18em] uppercase text-amber-300">
+                {`${locale === "sk" ? "Naplánované" : "Scheduled"} · ${new Date(product.releasedAt).toLocaleString(locale === "sk" ? "sk-SK" : undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`}
+              </span>
+            </div>
+          )}
+
           {/* Badge row - diamond = ONE OF ONE · spade = SOLD */}
           {(product.isOneOfAKind || product.isSold) && (
             <div className="flex items-center gap-3 mb-5">

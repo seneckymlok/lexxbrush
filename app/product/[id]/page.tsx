@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { draftMode } from "next/headers";
 import { getProduct, getProducts } from "@/lib/products";
+import { AdminPreviewBar } from "@/components/layout/AdminPreviewBar";
 import { ProductPageClient } from "./ProductPageClient";
 
 // ISR - regenerate each product page at most once every 60 seconds so edits
@@ -13,7 +15,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const product = await getProduct(id);
+  const { isEnabled: preview } = await draftMode();
+  const product = await getProduct(id, { includeUnreleased: preview });
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.com";
 
   if (!product) {
@@ -60,7 +63,8 @@ export async function generateStaticParams() {
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
-  const product = await getProduct(id);
+  const { isEnabled: preview } = await draftMode();
+  const product = await getProduct(id, { includeUnreleased: preview });
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
 
   // JSON-LD Product structured data
@@ -131,6 +135,7 @@ export default async function ProductPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
       )}
+      {preview && <AdminPreviewBar />}
       <ProductPageClient initialProduct={product} productId={id} />
     </>
   );
