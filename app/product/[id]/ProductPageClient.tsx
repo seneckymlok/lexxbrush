@@ -345,7 +345,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   index={activeImage}
                   onIndexChange={setActiveImage}
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  imageClassName="object-contain product-float-hero"
+                  imageClassName="object-contain product-float-hero img-feather"
                   eager
                   priority
                 />
@@ -355,7 +355,7 @@ export function ProductPageClient({ initialProduct, productId }: Props) {
                   alt={product.name[locale as Locale]}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain product-float-hero"
+                  className="object-contain product-float-hero img-feather"
                   priority
                 />
               )}

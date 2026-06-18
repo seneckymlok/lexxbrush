@@ -660,6 +660,22 @@
                 box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  /* Product photos ship with their own dark backdrop baked in, which shows as a
+     faint rectangle seam against the site's textured background (most visible
+     along the bottom). Feather the outer edge so the photo dissolves into the
+     page instead of sitting in a visible box. The center is untouched, so the
+     garment and its side artwork stay crisp. */
+  .img-feather {
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%),
+      linear-gradient(to right,  transparent 0, #000 5%, #000 95%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%),
+      linear-gradient(to right,  transparent 0, #000 5%, #000 95%, transparent 100%);
+    mask-composite: intersect;
+  }
+
   /* Floating product - transparent PNG with realistic two-layer shadow.
      Close shadow defines surface contact, far shadow defines ambient depth.
      Drop-shadow follows the actual silhouette of the PNG, not a bounding box. */

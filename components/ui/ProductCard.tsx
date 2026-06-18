@@ -202,7 +202,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 index={imgIndex}
                 onIndexChange={setImgIndex}
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                imageClassName="object-contain product-float"
+                imageClassName="object-contain product-float img-feather"
               />
             ) : (
               <Image
@@ -210,7 +210,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 alt={product.name[locale as Locale]}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className="object-contain product-float"
+                className="object-contain product-float img-feather"
               />
             )}
           </div>
