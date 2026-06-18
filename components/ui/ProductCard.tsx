@@ -203,7 +203,6 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 onIndexChange={setImgIndex}
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 imageClassName="object-contain product-float"
-                showDots
               />
             ) : (
               <Image

@@ -6,11 +6,13 @@ import Image from "next/image";
 // ─── Native scroll-snap image carousel ───────────────────────────────────────
 //
 // Smooth, momentum-y, gallery-style swiping comes from the browser's own
-// scroll-snap - far smoother than a hand-rolled drag, and it natively tells a
-// tap (fires the click → navigate / open lightbox) apart from a swipe (scrolls,
-// no click). Controlled: the parent owns `index`, so arrows, thumbnails and
-// keyboard stay in sync. A horizontal swipe updates `index`; an external `index`
-// change scrolls to that slide.
+// scroll-snap. Controlled: the parent owns `index`, so arrows, thumbnails and
+// keyboard stay in sync.
+//
+// Smoothness rule: do NOTHING in React while the finger is moving. The index is
+// reported only once the scroll settles (debounced), so there are no mid-swipe
+// re-renders and the programmatic `scrollTo` (for arrow/keyboard nav) never
+// fights the native momentum scroll.
 
 interface Props {
   images: string[];
@@ -38,37 +40,44 @@ export function SwipeGallery({
   showDots,
 }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
-  const rafRef = useRef(0);
-  const programmatic = useRef(false);
-  const releaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idle = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True when the pending index change came from the user's own scroll, so the
+  // effect below doesn't bounce a scrollTo back to where we already are.
+  const selfScroll = useRef(false);
 
   // External index change (arrow / thumbnail / keyboard) → glide to that slide.
   useEffect(() => {
+    if (selfScroll.current) {
+      selfScroll.current = false;
+      return;
+    }
     const el = scroller.current;
     if (!el) return;
     const left = index * el.clientWidth;
     if (Math.abs(el.scrollLeft - left) < 2) return;
-    programmatic.current = true;
     el.scrollTo({ left, behavior: "smooth" });
-    if (releaseTimer.current) clearTimeout(releaseTimer.current);
-    releaseTimer.current = setTimeout(() => (programmatic.current = false), 500);
   }, [index]);
 
-  // Swipe → report the snapped slide back up.
+  // Report the snapped slide only after scrolling fully stops - never per frame.
   const onScroll = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => {
+    if (idle.current) clearTimeout(idle.current);
+    idle.current = setTimeout(() => {
       const el = scroller.current;
-      if (!el || programmatic.current || el.clientWidth === 0) return;
+      if (!el || el.clientWidth === 0) return;
       const i = Math.round(el.scrollLeft / el.clientWidth);
-      if (i !== index && i >= 0 && i < images.length) onIndexChange(i);
-    });
+      if (i !== index && i >= 0 && i < images.length) {
+        selfScroll.current = true;
+        onIndexChange(i);
+      }
+    }, 90);
   }, [index, images.length, onIndexChange]);
 
-  useEffect(() => () => {
-    cancelAnimationFrame(rafRef.current);
-    if (releaseTimer.current) clearTimeout(releaseTimer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (idle.current) clearTimeout(idle.current);
+    },
+    [],
+  );
 
   return (
     <div className="absolute inset-0">
