@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase";
+import { sendCustomOrderNotification } from "@/lib/email/custom-order";
 import {
   customOrderLimiter,
   checkRateLimit,
@@ -76,6 +77,12 @@ export async function POST(req: NextRequest) {
     console.error("[custom-order] insert failed:", error);
     return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
+
+  // Notify the admins by email too (the DB row already exists, so this is a
+  // best-effort heads-up - it never throws and can't fail the submission).
+  // Awaited so the serverless function doesn't get torn down mid-send.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lexxbrush.eu";
+  await sendCustomOrderNotification({ name, email, garment, description, budget, siteUrl });
 
   return NextResponse.json({ ok: true });
 }
