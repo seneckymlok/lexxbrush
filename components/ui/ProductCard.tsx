@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useFavorites } from "@/components/providers/FavoritesProvider";
+import { SwipeGallery } from "@/components/ui/SwipeGallery";
 import type { Product } from "@/lib/products";
 import type { Locale } from "@/lib/translations";
 
@@ -39,6 +40,8 @@ export function ProductCard({ product, index }: ProductCardProps) {
   const timeoutRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isFav = isFavorite(product.id);
+  const hasMultiple = product.images.length > 1;
+  const [imgIndex, setImgIndex] = useState(0);
 
   // Cleanup on unmount - prevent RAF/timeout leaks
   useEffect(() => {
@@ -176,7 +179,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
             aria-hidden="true"
           >
             <Image
-              src={product.images[0]}
+              src={product.images[imgIndex] ?? product.images[0]}
               alt=""
               fill
               sizes="20vw"
@@ -192,13 +195,25 @@ export function ProductCard({ product, index }: ProductCardProps) {
             ref={imageWrapRef}
             className="absolute inset-0 z-10 will-change-transform"
           >
-            <Image
-              src={product.images[0]}
-              alt={product.name[locale as Locale]}
-              fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain product-float"
-            />
+            {hasMultiple ? (
+              <SwipeGallery
+                images={product.images}
+                alt={product.name[locale as Locale]}
+                index={imgIndex}
+                onIndexChange={setImgIndex}
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                imageClassName="object-contain product-float"
+                showDots
+              />
+            ) : (
+              <Image
+                src={product.images[0]}
+                alt={product.name[locale as Locale]}
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-contain product-float"
+              />
+            )}
           </div>
 
           {/* ── Badges - diamond = ONE OF ONE · spade = SOLD ── */}

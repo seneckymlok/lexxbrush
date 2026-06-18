@@ -633,6 +633,15 @@
     perspective: 800px;
   }
 
+  /* Hide the scrollbar on scroll-snap carousels (SwipeGallery). */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* Lightbox zoom affordance: visible briefly, then fades so it doesn't sit
      over the image. Holds at the start so it's readable, then eases out. */
   .lightbox-zoom-hint {
